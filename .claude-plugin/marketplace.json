@@ -1,0 +1,27 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "netsuskills",
+  "description": "Netsuma's hand-made Claude Code skills. Opinionated rewrites of the generic skills floating around, plus originals. Every skill is battle-tested on real projects before it lands here.",
+  "owner": {
+    "name": "Netsuma",
+    "url": "https://github.com/NetsumaInfo"
+  },
+  "plugins": [
+    {
+      "name": "netsuskills",
+      "source": "./",
+      "description": "Curated, hand-written skills for Claude Code: design, workflow, review, and creative-tool automation.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Netsuma",
+        "url": "https://github.com/NetsumaInfo"
+      },
+      "homepage": "https://github.com/NetsumaInfo/NetsuSkills",
+      "repository": "https://github.com/NetsumaInfo/NetsuSkills",
+      "license": "MIT",
+      "keywords": ["skills", "design", "workflow", "code-review", "creative-tools"],
+      "category": "productivity",
+      "strict": false
+    }
+  ]
+}

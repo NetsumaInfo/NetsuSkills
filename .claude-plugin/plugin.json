@@ -1,0 +1,13 @@
+{
+  "name": "netsuskills",
+  "version": "0.1.0",
+  "description": "Curated, hand-written skills for Claude Code: design, workflow, review, and creative-tool automation. Built and maintained by Netsuma.",
+  "author": {
+    "name": "Netsuma",
+    "url": "https://github.com/NetsumaInfo"
+  },
+  "homepage": "https://github.com/NetsumaInfo/NetsuSkills",
+  "repository": "https://github.com/NetsumaInfo/NetsuSkills",
+  "license": "MIT",
+  "keywords": ["skills", "design", "workflow", "code-review", "creative-tools"]
+}
