@@ -50,6 +50,10 @@ Rules specific to this shape:
 - The parent `SKILL.md` stays **under 100 lines**. It routes; it does not teach.
 - Every child is named in the parent with one line saying **when** to load it. A child that is
   never referenced does not exist.
+- Children come in two kinds, and the parent has to say which. An **entry point** is a case the
+  user can arrive at directly — it goes in the routing table. A **resource** is shared detail
+  that a procedure pulls in mid-run — it is named outside the table, with the step that loads it,
+  and is never loaded on its own. Both still count as children, and both must appear.
 - Children are full procedures, same quality bar as an atomic skill.
 - The parent's `description` must cover the union of the children's triggers, or the whole
   skill never fires.
@@ -131,9 +135,28 @@ it?* If not, it is not harmless — it is crowding out what matters.
 
 - A single goal, a single moment of triggering.
 - If the description says "and also", it is two skills — or one umbrella with two children.
-- `kebab-case` name, 64 characters max, no marketing prefix (`super-`, `ultra-`).
-- The name states the action or the domain, not the quality: `review-react-perf`, not
-  `amazing-react-helper`.
+- The name states the action or the domain, not the quality: `netsu-review-react-perf`, not
+  `amazing-react-helper`. No quality prefix (`super-`, `ultra-`, `pro-`).
+
+### Naming
+
+Every skill in this repo is named `netsu-<domain>`, in `kebab-case`, 64 characters max.
+
+```
+netsu-readme          ✅
+NetsuReadme           ❌  no skill in the wild uses uppercase; risks validation
+netsu_readme          ❌  underscores likewise
+readme                ❌  collides with the three README generators already installed
+```
+
+Write it as **NetsuReadme** in the `# H1`, in prose and in the README. Lowercase everywhere a
+machine reads it: the directory name, the `name:` field, and any cross-reference between skills.
+The two must always point at the same skill.
+
+The prefix is a namespace, not decoration. It exists because name collisions are real — one
+reference machine carries three skills called `commit` and three README generators — and because
+a skill you wrote should be identifiable at a glance among two hundred you did not. It costs
+nothing at trigger time: the `description` decides whether a skill fires, never the name.
 
 ## 4. The `description` is the only thing always loaded
 

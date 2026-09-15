@@ -71,14 +71,15 @@ specializing in…". Exactly the filler rule 7 bans. Good case study for an anti
 
 ## Wave 1 — the core
 
-**Status: scoped, not started.** Writing begins on explicit request.
+**Status: `netsu-readme` shipped as an umbrella. The other three are scoped, not started.**
+Writing begins on explicit request.
 
 | # | Skill | Trigger | Replaces |
 |---|---|---|---|
-| 1 | `design-review` | "critique this UI", "this looks bad", "improve the design" | ~10 generic design skills |
-| 2 | `readme` | "write the README", "redo the README" | `create-readme`, `readme-blueprint-generator`, `readme-i18n` |
-| 3 | `commit` | "commit", "commit and push" | `commit`, `aiblueprint-git-commit`, `caveman-commit` |
-| 4 | `code-review` | "review my code", "review the PR" | `requesting-/receiving-code-review`, `thermo-nuclear-…`, `caveman-review` |
+| 1 | `netsu-design-review` | "critique this UI", "this looks bad", "improve the design" | ~10 generic design skills |
+| 2 | `netsu-readme` | "write the README", "redo the README" | `create-readme`, `readme-blueprint-generator`, `readme-i18n` |
+| 3 | `netsu-commit` | "commit", "commit and push" | `commit`, `aiblueprint-git-commit`, `caveman-commit` |
+| 4 | `netsu-code-review` | "review my code", "review the PR" | `requesting-/receiving-code-review`, `thermo-nuclear-…`, `caveman-review` |
 
 Watch out on `code-review`: `/code-review` already exists natively. The skill is only justified
 if it encodes criteria the native one does not know. Decide when writing it, not before.
@@ -86,8 +87,11 @@ if it encodes criteria the native one does not know. Decide when writing it, not
 `design-review` is a strong umbrella candidate — critique, tokens and motion are distinct cases
 under one theme. See wave 7.
 
-Note: `readme` and `design-review` overlap wave 5 (anti-slop). Decide whether anti-slop is a
-separate skill or a rule baked into each — see open question 2.
+Open question 2 is now answered by the build. `netsu-readme` keeps anti-slop as a child
+(`references/voice.md`) that is *also* a routed entry point: "strip the slop out of this README"
+loads it directly, without the rest of the skill. Baked in and separately reachable. Apply the
+same pattern to `netsu-design-review`, and re-scope wave 5 around code and prose that are not
+READMEs.
 
 ## Wave 2 — web stack
 
