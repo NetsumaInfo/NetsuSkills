@@ -50,6 +50,20 @@ Pick one deliberately; it drives the layout. Defined in `docs/SKILL-RULES.md`.
 - **Command-oriented** — a decision table in `SKILL.md`, long operations in `scripts/`,
   external-tool needs declared in `Requirements`.
 
+### Do not pollute the context
+
+Everything loaded sits next to the user's request and competes with it for attention. A skill
+that loads too much makes the agent worse at the job it was called for, not just slower.
+
+- Descriptions of every installed skill are **always** loaded. Near-duplicate descriptions make
+  the agent pick the wrong skill. This is the argument for umbrellas over a pile of atomic skills.
+- A `SKILL.md` is loaded whole when it fires. The lines that change behaviour get diluted among
+  the lines that restate what the model already knew. Long skills are *less* reliable.
+- Aim: description 300–500 chars, atomic `SKILL.md` 200 lines, umbrella parent 60, child 200.
+  Caps in `docs/SKILL-RULES.md` rule 2. Hitting a cap means split or cut, not fill.
+- Splitting is not filing away the excess. A child nobody loads is the same pollution, moved.
+  Delete instead.
+
 ### Layout
 
 ```
@@ -60,7 +74,7 @@ skills/<kebab-case-name>/
 └── assets/           # optional: files to copy
 ```
 
-Keep `SKILL.md` under ~500 lines. Push depth into `references/`.
+Keep `SKILL.md` within the rule 2 limits. Push depth into `references/`.
 
 ### Skill quality
 

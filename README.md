@@ -5,6 +5,11 @@ and they trigger at the wrong time. This repo is the opposite: every skill here 
 opinionated procedure, rewritten from scratch or rebuilt from something generic that almost
 worked. Nothing lands without passing a trigger test, a non-trigger test, and a real-world run.
 
+They are also deliberately small and specialised. A skill is loaded whole when it fires, next to
+whatever the user actually asked — so a bloated one dilutes its own instructions and the agent
+follows the generalities instead of the specifics. Depth lives in `references/`, loaded only
+when the case calls for it.
+
 Rules that govern the repo: [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md).
 
 ---

@@ -65,7 +65,7 @@ Consequence for priority: an audit that lists the disabled skills and decides ca
 (re-enable / uninstall) is worth more than any new skill. See `skill-audit` in wave 6.
 
 Second finding, on quality: `copy-editing` opens with "You are an expert copy editor
-specializing in…". Exactly the filler rule 6 bans. Good case study for an anti-patterns section.
+specializing in…". Exactly the filler rule 7 bans. Good case study for an anti-patterns section.
 
 ---
 
@@ -203,7 +203,7 @@ Three channels, all covered by the current layout:
 
 [skills.sh](https://www.skills.sh/) (the `vercel-labs/skills` project) walks
 `skills/<name>/SKILL.md` up to three levels deep and only requires `name` + `description` in
-frontmatter — exactly this layout and rule 3. No extra manifest to write.
+frontmatter — exactly this layout and rule 4. No extra manifest to write.
 
 Unresolved: the site's indexing mechanism is not publicly documented (asked in
 `vercel-labs/skills` issue 880, unanswered). At least one published skill is needed to test
