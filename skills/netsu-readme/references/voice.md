@@ -124,7 +124,7 @@ The UK government style guide independently bans most of the same list and suppl
 | **"It's not X, it's Y" / "Not only… but also"** | Ban it. Present in 6% of mid-2025 chats. The shape lets a sentence avoid a falsifiable claim |
 | **Trailing `-ing` clause** | `, ensuring seamless integration` / `, allowing developers to` / `, making it easy to`. Measured at 2–5× the human rate. The highest-value thing to grep for. Split into two sentences or cut |
 | **Rule of three** | Every bullet a triad, every list exactly three items. Vary the count, or the list is decoration |
-| **Bold-lead bullets** | `- **Fast**: …` is a real human README convention. It becomes a tell when *every* bullet has it. Under 60% of a list |
+| **Bold-lead bullets** | `- **Fast**: …` is a real human README convention. It becomes a tell when *every* bullet has it. Under 60% of a list — **and only count lists of five or more**. Three bullets out of three proves nothing, and flagging it sends you rewriting good prose |
 | **Title Case Headings** | Use sentence case. Title case on every heading is a documented tell |
 | **`---` between every section** | Use a horizontal rule deliberately or not at all |
 | **Heading pathologies** | Starting at H3 with no H2; a heading containing only other headings; a section with two sentences under its own heading |

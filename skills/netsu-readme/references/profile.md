@@ -42,20 +42,32 @@ trophy wall, and anything that was true once and will never be updated.
 
 ## 3. What is dead
 
-Checked 2026-09-15. Full table in `visuals.md`. The short version for this page:
+Checked 2026-09-15. Every widget below is profile-only; the project-scope tools are in
+`visuals.md` §2. Re-check before recommending any of them — this ecosystem rots fast, and
+the state of this table is the evidence.
 
-**Do not emit** — these return errors and render as broken images:
-
-- `github-readme-stats.vercel.app` → 503
-- `github-profile-trophy.vercel.app` → 402
-- `github-readme-activity-graph.vercel.app` → 402
+| Tool | State on 2026-09-15 |
+|---|---|
+| **GitHub Readme Stats** | **Public host down — 503.** Its own README calls the public instance "best-effort and can be unreliable" |
+| **GitHub Profile Trophy** | **Host down — 402** |
+| **Readme Activity Graph** | **Host down — 402.** Already burned through Heroku, Cyclic and Vercel |
+| **Readme Streak Stats** | Alive, ~3.6 s. Its README recommends self-hosting |
+| **Profile Summary Cards** | Alive. Use the Action mode, not the endpoint |
+| **Readme Typing SVG** | Alive. Animated text is a motion-sensitivity problem |
+| **Capsule Render** | Alive. Decoration only, single point of failure |
+| **Skill Icons** | Stalled — no commit since February, 1,278 open issues |
+| **Snk** (contribution snake) | Alive, Action-based. **No LICENSE file** — legally unclear |
+| **Profile 3D Contrib** | Alive, Action-based. Good architecture |
+| **Waka Readme Stats** | Alive. Worst privacy in the set — see §4 |
+| **Metrics** (lowlighter) | **Frozen since December 2023** |
+| **Readme Quotes** | **Abandoned**, Heroku host 404s |
+| **Readme Joke** | **Abandoned since 2022.** Its SVG ships `<script>` |
+| **Profilinator** *(generator)* | **Archived.** Do not reference |
+| **GPRM** *(generator)* | Dormant, 406 open issues — and it generates exactly the three dead widgets above |
 
 **Do not use the generators.** Profilinator is archived. GPRM is dormant with 406 open issues and
 produces exactly the three dead widgets above. A profile README assembled by either is a page of
 broken images.
-
-**Still alive:** Readme Streak Stats, Profile Summary Cards, Readme Typing SVG, Capsule Render,
-Snk, Profile 3D Contrib. Shields.io and Simple Icons for anything static.
 
 **Prefer the GitHub Action variants.** Snk and Profile 3D Contrib render an SVG and commit it to
 the repository, served from `raw.githubusercontent.com`. No hosted endpoint to go down, no cold

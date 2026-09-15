@@ -86,8 +86,14 @@ table of destinations, not a wall of technology logos — that is still banned a
 
 **Dynamic versus static is the distinction that matters**, not the category.
 `img.shields.io/badge/build-passing-green` renders green on a repo with zero tests. A static
-badge asserting a quality property is worse than no badge — it looks like evidence and is not.
+badge asserting a **quality** property is worse than no badge — it looks like evidence and is not.
 Only emit a badge whose value is read from somewhere real.
+
+One exception: a static badge stating **scope** rather than quality — `platform: Windows`,
+`requires: Node 22+` — asserts nothing that can rot into a lie, and often has no live source.
+Keep those. But check whether a live source exists before settling for static: a licence, a
+release, a CI run and a download total usually have one, and a project carrying only static
+badges is usually a project that never looked.
 
 | Carries information | Pure decoration — refuse |
 |---|---|
@@ -129,25 +135,10 @@ the badge host. `standard-readme` recommends hosting static badge images locally
 | **Devicon** | project | Slowing — no release since July 2025 |
 | **Badgen** | project | Commits yes, **no release since 2019**. No reason to pick it over Shields |
 | **shieldcn** | project | 5 months old, one maintainer, and it monetises reader analytics. Promising, not a default |
-| **GitHub Readme Stats** | profile | **Public host down — 503.** Its own README calls the public instance "best-effort and can be unreliable" |
-| **GitHub Profile Trophy** | profile | **Host down — 402** |
-| **Readme Activity Graph** | profile | **Host down — 402.** Already burned through Heroku, Cyclic and Vercel |
-| **Readme Streak Stats** | profile | Alive, ~3.6 s. Its README recommends self-hosting |
-| **Profile Summary Cards** | profile | Alive. Use the Action mode, not the endpoint |
-| **Readme Typing SVG** | profile | Alive. Animated text is a motion-sensitivity problem |
-| **Capsule Render** | profile | Alive. Decoration only, single point of failure |
-| **Skill Icons** | profile | Stalled — no commit since February, 1,278 open issues |
-| **Snk** (contribution snake) | profile | Alive, Action-based. **No LICENSE file** — legally unclear |
-| **Profile 3D Contrib** | profile | Alive, Action-based. Good architecture |
-| **Waka Readme Stats** | profile | Alive. Worst privacy in the set — see §6 |
-| **Metrics** (lowlighter) | profile | **Frozen since December 2023** |
-| **Readme Quotes** | profile | **Abandoned**, Heroku host 404s |
-| **Readme Joke** | profile | **Abandoned since 2022.** Its SVG ships `<script>` |
-| **Profilinator** | generator | **Archived.** Do not reference |
-| **GPRM** | generator | Dormant, 406 open issues — and it generates exactly the three dead widgets above |
 
-**Never emit `github-readme-stats.vercel.app`, `github-profile-trophy.vercel.app`, or
-`github-readme-activity-graph.vercel.app`.** They are down and a reader sees a broken image.
+Project-scope tools only. The profile-only widgets — stats cards, streaks, trophies,
+contribution snakes and the generators that assemble them — are in `profile.md` §3, the only
+page where any of them belongs.
 
 **Prefer the Action model over the hosted-endpoint model** whenever a tool offers both. Snk,
 Profile 3D Contrib and Profile Summary Cards render an SVG and commit it to the repository,

@@ -52,6 +52,43 @@ few commits, wrote those up, and called it the feature set. **Trusting a summary
 listing or an old README is somebody's earlier cut, with their omissions baked in; re-derive from
 the interface instead of inheriting them.
 
+## 1c. If a README already exists, audit it before touching it
+
+An existing README is not a draft to edit. It is a **set of claims, each of which was true once**.
+Editing around them preserves every one that has since gone false. Audit in both directions before
+writing a line.
+
+**Direction 1 — every claim against the code.** Not three samples. Every factual assertion:
+feature names, supported formats, dependency names and version floors, commands, ports, paths,
+platform requirements, and above all **every list** — a list is where things quietly stop being
+true, because removing an item is a change nobody propagates.
+
+**Direction 2 — every capability against the README.** Walk the step 1b inventory. Anything the
+product does that the file never mentions is a gap, and it is usually a whole subsystem rather
+than a detail.
+
+Three techniques that make this fast:
+
+**The code documents its own removals.** Grep each noun the README claims. A feature that has been
+taken out rarely vanishes cleanly — it leaves a comment, a migration shim, a deprecation alias
+mapping the old value onto the new one. Those say, in the author's own words, that the README is
+wrong. One real case: a README advertised two shader families; the code kept the second family's
+identifiers only to migrate saved preferences onto the first, with a comment stating it had been
+removed, and shipped none of its files.
+
+**Assets are the ground truth for a list.** If the README names things that ship as files —
+shaders, templates, parsers, themes, locales — count the files. A list that does not match the
+directory is stale on its face.
+
+**Names must match the product's own vocabulary.** Check each feature name in the README against
+the strings the interface actually shows: the i18n or locale files, the UI markup, the CLI help.
+A name that appears in the README and nowhere in the product was invented, and invented names are
+the residue of a previous generated pass. If the name *is* in the UI but the author dislikes it,
+say so — that is a product change, not a README change, and it needs doing in both places.
+
+**A stale claim is worse than a missing one.** A reader who finds one thing untrue stops trusting
+the rest of the file, including the parts that are correct.
+
 ## 2. The question that sets the size
 
 **Does a docs site exist?** This decides more than project type does.
@@ -111,8 +148,8 @@ them, never as a plausible-looking sentence and never as an unfilled `[placehold
 
 ## 6. Verify before handing it over
 
-- [ ] Pick three claims at random and check them against the repo. Does the flag exist? Does the
-      install command match the lockfile? Does the LICENSE file say what the README says?
+- [ ] Every claim checked against the repo, not three samples — step 1c. Does the flag exist? Does
+      the install command match the lockfile? Does each list match the files on disk?
 - [ ] Walk the step 1b inventory. Every capability is documented, or left out on purpose. A
       capability you forgot is not the same as one you cut.
 - [ ] Every image referenced was **opened and looked at** (`visuals.md` §4b): it shows this
@@ -139,6 +176,9 @@ them, never as a plausible-looking sentence and never as an unfilled `[placehold
 | Features section that restates the project name in bullets | Cut it, or make each bullet a differentiator a competitor lacks |
 | Writing up the features you happened to see — one screenshot, a few commits | Enumerate every control the interface exposes (step 1b), *then* cut |
 | Inheriting the feature list from an old README or a store listing | Re-derive it from the interface. A summary carries someone else's omissions |
+| Editing around an existing README's claims, so the false ones survive | Audit every claim against the code first (step 1c) |
+| Keeping a name the README uses that the product never shows the user | Use the product's own vocabulary, or say the name needs changing in both places |
+| Trusting a list because it looks specific | Count the files. Lists go stale first, because deletions are never propagated |
 | One screenshot when the repo holds several | Use the ones that show distinct capabilities, and check each is committed and current |
 | `[Your Name]`, `<your-repo>`, `example.com` left in the output | Never ship a placeholder. Ask for the value |
 
