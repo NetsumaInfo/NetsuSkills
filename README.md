@@ -1,6 +1,6 @@
 # NetsuSkills
 
-Hand-written [Claude Code](https://claude.com/claude-code) skills by **Netsuma**.
+Hand-written agent skills by **Netsuma**.
 
 Most skills you find online are blog posts in disguise — long on context, short on procedure,
 and they trigger at the wrong time. This repo is the opposite: every skill here is a tight,

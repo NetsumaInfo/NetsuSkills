@@ -5,7 +5,7 @@ truth; `CLAUDE.md` and any other agent file point here rather than restating rul
 
 ## What this repo is
 
-Hand-written Claude Code / agent skills by **Netsuma**. It ships three ways from one layout:
+Hand-written agent skills by **Netsuma**. It ships three ways from one layout:
 
 | Channel | Command |
 |---|---|
