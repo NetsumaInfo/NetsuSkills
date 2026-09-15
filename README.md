@@ -49,7 +49,7 @@ Per-project instead of global: copy into `<project>/.claude/skills/`.
 
 | Skill | What it does | Shape |
 |---|---|---|
-| [`netsu-readme`](skills/netsu-readme) | Writes the README of a repository or a GitHub profile. Reads the code before asking anything, asks only what the repo cannot answer, agrees the structure with you, then writes. Strips AI slop, and refuses to put anything in the file that is not in the repository. | umbrella, 5 children |
+| [`netsu-readme`](skills/netsu-readme) | Writes the README of a repository or a GitHub profile. Reads the code before asking anything, asks only what the repo cannot answer, agrees the structure with you, then writes. Audits an existing README claim by claim rather than editing around it, strips AI slop, and picks badges and images that carry real information. Nothing goes in the file that is not in the repository. | umbrella, 5 children |
 
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in

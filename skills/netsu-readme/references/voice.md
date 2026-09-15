@@ -131,7 +131,7 @@ The UK government style guide independently bans most of the same list and suppl
 | **"Conclusion" / "In summary"** | A README has no conclusion. Stop when done |
 | **"Future prospects" / "Challenges" closer** | The rigid formula is the tell, not the topic |
 | **Small tables where prose would do** | A four-fact table is one sentence |
-| **Spaced em dash — English only** | Not the em dash itself, the *spacing*. A habitual English writer sets it closed: `word—word`. The spaced form `word — word` is the sub-tell that survived. Under 8 per 1,000 words either way. **Does not apply outside English**: French, Spanish and Russian typography set dashes spaced by rule, so the count is meaningless there. Check the README's language before running this one |
+| **Spaced em dash — English only** | Not the em dash itself, and **not how many**. A habitual English writer sets it closed: `word—word`; the spaced form `word — word` is the sub-tell that survived. **Never threshold the rate.** Measured human use runs 0.33 to 17.12 per 1,000 words — a 50× spread — so a document-level count carries no information and will flag good prose written by a person who simply likes the dash. Count only the spaced ones, then read them. **Does not apply outside English**: French, Spanish and Russian typography set dashes spaced by rule. Check the document's language first |
 
 ## 4. Grep
 
