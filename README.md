@@ -16,32 +16,33 @@ Rules that govern the repo: [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md).
 
 ## Install
 
-### With the `skills` CLI
-
 ```bash
 npx skills add NetsumaInfo/NetsuSkills
 ```
 
-Works with Claude Code, Cursor, Copilot, Windsurf, Gemini, Cline and other agents that read
-`SKILL.md`. Add `--skill <name>` to install a single one.
+Works with Claude Code, Cursor, Copilot, Windsurf, Gemini, Cline and anything else that reads
+`SKILL.md`. Add `--skill <name>` for a single one, `--list` to see what is in here first.
 
-### As a Claude Code plugin
+Also available as a Claude Code plugin, or by copying a folder by hand.
+
+<details>
+<summary>Those two</summary>
 
 ```
 /plugin marketplace add NetsumaInfo/NetsuSkills
 /plugin install netsuskills@netsuskills
 ```
 
-Updates come through `/plugin` — no manual copying.
-
-### By hand
+Updates then come through `/plugin`.
 
 ```bash
 git clone https://github.com/NetsumaInfo/NetsuSkills.git
 cp -r NetsuSkills/skills/<skill-name> ~/.claude/skills/
 ```
 
-Per-project instead of global: copy into `<project>/.claude/skills/`.
+Copy into `<project>/.claude/skills/` instead for one project rather than globally.
+
+</details>
 
 ---
 
