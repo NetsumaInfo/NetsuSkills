@@ -1,7 +1,7 @@
-# Journal des tests
+# Test journal
 
-Une entrée par skill mergée. Preuve que les 3 tests de la règle 8 sont passés.
+One entry per merged skill. Evidence that the three tests in rule 10 passed.
 
-| Date | Skill | Déclenchement testé | Non-déclenchement testé | Exécution | Notes |
+| Date | Skill | Trigger tested | Non-trigger tested | Execution | Notes |
 |---|---|---|---|---|---|
-| — | — | — | — | — | (vide pour l'instant) |
+| — | — | — | — | — | (empty for now) |

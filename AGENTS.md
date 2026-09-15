@@ -17,9 +17,9 @@ Do not restructure the repo without checking all three still work.
 
 ## Before writing or editing a skill
 
-1. Read `docs/REGLES-SKILLS.md`. It is the merge contract, not a suggestion.
+1. Read `docs/SKILL-RULES.md`. It is the merge contract, not a suggestion.
 2. Check `docs/BACKLOG.md` — the skill may already be scoped, or deliberately deferred.
-3. Start from `docs/templates/SKILL.md`.
+3. Start from `docs/templates/SKILL.md`, or `docs/templates/UMBRELLA-SKILL.md` for a theme with children.
 
 **Do not create a skill unless Netsuma explicitly asks for it.** Scoping, auditing and
 documenting are always fine. Writing `skills/<name>/SKILL.md` is not, until he says go.
@@ -35,9 +35,20 @@ documenting are always fine. Writing `skills/<name>/SKILL.md` is not, until he s
 
 ### Language
 
-- Skill content (`SKILL.md`, `references/`, `scripts/`) → **English**.
-- Working docs under `docs/` and `.private/` → **French**.
-- `README.md`, `CONTRIBUTING.md`, this file → **English**.
+Everything committed here is **English** — skills, references, scripts, docs, README, commit
+messages. Only `.private/` is exempt.
+
+### Skill types
+
+Pick one deliberately; it drives the layout. Defined in `docs/SKILL-RULES.md`.
+
+- **Atomic** — one procedure, one `SKILL.md`. Most skills.
+- **Umbrella** — one entry point per theme, children in `references/` loaded on demand. The
+  parent stays under 100 lines and routes; it does not teach. Use it so there is one name to
+  remember per theme. A skill cannot call another skill, so this is the only shape that makes
+  "let the agent pick" actually work.
+- **Command-oriented** — a decision table in `SKILL.md`, long operations in `scripts/`,
+  external-tool needs declared in `Requirements`.
 
 ### Layout
 

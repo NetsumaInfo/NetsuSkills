@@ -11,10 +11,9 @@ wrong moment. Those get closed here, however well written.
 Apply this test to every paragraph you write: *would the agent behave differently without this
 sentence?* If not, delete it.
 
-The full contract is [`docs/REGLES-SKILLS.md`](docs/REGLES-SKILLS.md) (French). The short
-version:
+The full contract is [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md). The short version:
 
-- **One skill, one job.** If the description says "and also", it is two skills.
+- **One skill, one job.** If the description says "and also", it is two skills — or one umbrella with two children.
 - **The `description` is the whole trigger.** Third person, the literal words a user would
   type, and an explicit "do NOT use for …" whenever it overlaps another skill.
 - **`SKILL.md` under ~500 lines.** Depth goes in `references/`, code in `scripts/`,
@@ -37,9 +36,11 @@ skills/<kebab-case-name>/
 └── assets/           # optional
 ```
 
-Start from [`docs/templates/SKILL.md`](docs/templates/SKILL.md).
+Start from [`docs/templates/SKILL.md`](docs/templates/SKILL.md), or
+[`docs/templates/UMBRELLA-SKILL.md`](docs/templates/UMBRELLA-SKILL.md) when a theme needs
+several children under one entry point.
 
-Skill content is written in **English**. Working docs under `docs/` are in French.
+Everything in this repo is written in **English**.
 
 ## Before you open a PR
 

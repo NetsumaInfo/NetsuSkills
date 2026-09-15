@@ -1,13 +1,11 @@
 # NetsuSkills
 
-Hand-written agent skills by **Netsuma**.
-
 Most skills you find online are blog posts in disguise — long on context, short on procedure,
 and they trigger at the wrong time. This repo is the opposite: every skill here is a tight,
 opinionated procedure, rewritten from scratch or rebuilt from something generic that almost
 worked. Nothing lands without passing a trigger test, a non-trigger test, and a real-world run.
 
-Rules that govern the repo: [`docs/REGLES-SKILLS.md`](docs/REGLES-SKILLS.md).
+Rules that govern the repo: [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md).
 
 ---
 
@@ -61,7 +59,7 @@ CLAUDE.md             pointer to AGENTS.md
 .claude-plugin/       plugin + marketplace manifests
 skills/               one folder per skill, SKILL.md required
 docs/
-  REGLES-SKILLS.md    authoring rules (merge contract)
+  SKILL-RULES.md      authoring rules (merge contract)
   BACKLOG.md          what gets built next, and what it replaces
   JOURNAL.md          per-skill test log
   templates/SKILL.md  starting point for a new skill
@@ -83,4 +81,4 @@ Never expected, and it never buys a merge.
 
 ## License
 
-MIT © Netsuma
+MIT — see [LICENSE](LICENSE).

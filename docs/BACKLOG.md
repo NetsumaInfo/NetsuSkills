@@ -1,235 +1,235 @@
-# Backlog — skills à construire
+# Backlog
 
-Liste de travail. Rien ici n'est encore écrit : on choisit, on tranche, **puis** on code.
+Working list. Nothing here is written yet: decide first, build after.
 
-## Méthode
+## Method
 
-Pour chaque skill candidate, on répond à 3 questions avant d'écrire une ligne :
+For every candidate skill, answer three questions before writing a line:
 
-1. **Quel moment précis ?** — la phrase exacte que je taperais pour la déclencher.
-2. **Qu'est-ce que Claude fait de travers sans elle ?** — si rien, on ne l'écrit pas.
-3. **Qu'est-ce qu'elle remplace ?** — quelle(s) skill(s) tierce(s) on désinstalle en échange.
+1. **Which exact moment?** — the sentence that would really be typed to trigger it.
+2. **What does the agent get wrong without it?** — if nothing, do not write it.
+3. **What does it replace?** — which third-party skill gets uninstalled in exchange.
 
-Une skill qui ne répond pas aux 3 reste dans "Idées", pas dans "À faire".
-
----
-
-## État des lieux — machine de Netsuma
-
-180 skills installées dans `~/.claude/skills`. Redondance massive :
-
-| Cluster | Nombre installé | Problème |
-|---|---|---|
-| Design / UI / UX | ~21 | `frontend-design`, `ui-ux-designer`, `ui-ux-pro-max`, `minimalist-ui`, `sleek-design-mobile-apps`, `stitch-design`, `huashu-design`, `make-interfaces-feel-better`, `delight`, `use-style`… toutes disent la même chose, aucune ne déclenche au bon moment |
-| Git / workflow / review | ~22 | 3 `commit`, 2 `merge`, 2 `oneshot`, 2 `ultrathink`, 3 skills de review qui se marchent dessus |
-| Docs / meta (README, skills, prompts, mémoire) | ~20 | 3 générateurs de README, 3 créateurs de prompts, 3 gestionnaires de skills |
-| TanStack | 15 | une par lib — granularité correcte, mais qualité à vérifier |
-| Next.js | 5 | **stack abandonnée** → à désinstaller, pas à réécrire |
-| Convex | 6 | **backend principal confirmé** → à auditer puis custom |
-
-Conclusion : le gain immédiat n'est pas d'ajouter des skills, c'est d'en **remplacer 20 par 1**
-qui déclenche correctement.
+A candidate that fails any of the three stays in "Ideas", not in "To build".
 
 ---
 
+## Starting point
 
-## Stack de référence (confirmée)
+180 skill directories installed on the reference machine. Heavy redundancy:
 
-Toute skill technique de ce repo vise cette stack. Rien d'autre.
-
-| Domaine | Ce qu'on vise | Ce qu'on ignore |
+| Cluster | Installed | Problem |
 |---|---|---|
-| Web full-stack | **TanStack Start** | Next.js (abandonné) |
+| Design / UI / UX | ~21 | `frontend-design`, `ui-ux-designer`, `ui-ux-pro-max`, `minimalist-ui`, `sleek-design-mobile-apps`, `stitch-design`, `huashu-design`, `make-interfaces-feel-better`, `delight`, `use-style`… all say the same thing, none fires at the right moment |
+| Git / workflow / review | ~22 | 3 `commit`, 2 `merge`, 2 `oneshot`, 2 `ultrathink`, 3 overlapping review skills |
+| Docs / meta (README, skills, prompts, memory) | ~20 | 3 README generators, 3 prompt creators, 3 skill managers |
+| TanStack | 15 | one per library — right granularity, quality unverified |
+| Next.js | 5 | **abandoned stack** → uninstall, do not rewrite |
+| Convex | 6 | main backend, confirmed → audit then rewrite |
+
+The immediate win is not adding skills. It is **replacing 20 with 1** that fires correctly.
+
+## Reference stack
+
+Every technical skill in this repo targets this stack. Nothing else.
+
+| Area | Target | Ignored |
+|---|---|---|
+| Web full-stack | **TanStack Start** | Next.js (abandoned) |
 | Web SPA | **Vite + React + TypeScript** | — |
 | Desktop | **Tauri v2** | Electron |
 | Mobile | **React Native** | — |
-| Backend / data | **Convex** (backend principal) | — |
-| Autres frameworks | à préciser au cas par cas | — |
+| Backend / data | **Convex** (main backend) | — |
 
-Conséquence directe : les 5 skills `nextjs-*` installées sont à désinstaller, pas à réécrire.
-Les 15 `tanstack-*` et les 6 `convex-*` sont à auditer — on garde ce qui déclenche bien,
-on réécrit le reste.
+Direct consequence: the 5 installed `nextjs-*` skills get uninstalled, not rewritten. The 15
+`tanstack-*` and 6 `convex-*` get audited — keep what fires well, rewrite the rest.
 
 ---
 
-## Découverte critique — 68 % des skills installées ne peuvent pas se déclencher
+## The finding that reorders everything
 
-Mesure faite sur la machine le 15/09/2026 :
+Measured on the reference machine, 2026-09-15:
 
-| Mesure | Valeur |
+| Measure | Value |
 |---|---|
-| Dossiers dans `~/.claude/skills` | 180 (dont 170 symlinks) |
-| `SKILL.md` atteignables | 257 |
-| Avec `disable-model-invocation: true` | **175 (68 %)** |
-| Réellement auto-sélectionnables par l'agent | 82 |
+| Directories in `~/.claude/skills` | 180 (170 of them symlinks) |
+| Reachable `SKILL.md` | 257 |
+| Carrying `disable-model-invocation: true` | **175 (68%)** |
+| Actually selectable by the agent | 82 |
 
-`disable-model-invocation: true` interdit à l'agent de choisir la skill tout seul : elle ne
-part que si on l'invoque à la main. C'est **la** cause de « je ne les utilise pas » et de
-« ça me saoule de retenir tous les skills ». Ce n'est pas un problème de pertinence, c'est un
-interrupteur coupé.
+`disable-model-invocation: true` forbids the agent from choosing the skill on its own: it only
+runs when invoked by hand. That is the real cause of "I never use them" and "I can't remember
+their names". Not a relevance problem — a switch left off.
 
-Conséquence sur la priorité : avant d'écrire quoi que ce soit, un audit qui liste les skills
-coupées et qui tranche skill par skill (rallumer / désinstaller) rapporte plus que n'importe
-quelle nouvelle skill. Voir `skill-audit` en vague 6.
+Consequence for priority: an audit that lists the disabled skills and decides case by case
+(re-enable / uninstall) is worth more than any new skill. See `skill-audit` in wave 6.
 
-Second constat, sur la qualité : `copy-editing` ouvre sur « You are an expert copy editor
-specializing in… ». C'est exactement le remplissage que la règle 4 interdit. Bon cas d'école
-à citer dans les anti-patterns.
+Second finding, on quality: `copy-editing` opens with "You are an expert copy editor
+specializing in…". Exactly the filler rule 6 bans. Good case study for an anti-patterns section.
 
 ---
 
-## Vague 1 — le socle
+## Wave 1 — the core
 
-**Statut : documentée, non démarrée.** On écrit quand Netsuma donne le signal.
+**Status: scoped, not started.** Writing begins on explicit request.
 
-| # | Skill | Déclenchement | Remplace |
+| # | Skill | Trigger | Replaces |
 |---|---|---|---|
-| 1 | `design-review` | "critique cette UI", "c'est moche", "améliore le design" | ~10 skills design génériques |
-| 2 | `readme` | "fais le README", "refais le README" | `create-readme`, `readme-blueprint-generator`, `readme-i18n` |
-| 3 | `commit` | "commit", "commit et push" | `commit`, `aiblueprint-git-commit`, `caveman-commit` |
-| 4 | `code-review` | "relis mon code", "review la PR" | `requesting-/receiving-code-review`, `thermo-nuclear-…`, `caveman-review` |
+| 1 | `design-review` | "critique this UI", "this looks bad", "improve the design" | ~10 generic design skills |
+| 2 | `readme` | "write the README", "redo the README" | `create-readme`, `readme-blueprint-generator`, `readme-i18n` |
+| 3 | `commit` | "commit", "commit and push" | `commit`, `aiblueprint-git-commit`, `caveman-commit` |
+| 4 | `code-review` | "review my code", "review the PR" | `requesting-/receiving-code-review`, `thermo-nuclear-…`, `caveman-review` |
 
-Point de vigilance sur `code-review` : `/code-review` existe déjà en natif. La skill ne se
-justifie que si elle encode des critères propres à Netsuma que le natif ne connaît pas.
-À trancher au moment de l'écrire, pas avant.
+Watch out on `code-review`: `/code-review` already exists natively. The skill is only justified
+if it encodes criteria the native one does not know. Decide when writing it, not before.
 
-Note : `readme` et `design-review` recoupent la vague 5 (anti-slop). Décider si l'anti-slop
-est une skill à part ou une règle intégrée dans chacune — voir question ouverte n°2.
+`design-review` is a strong umbrella candidate — critique, tokens and motion are distinct cases
+under one theme. See wave 7.
 
-## Vague 2 — stack web
+Note: `readme` and `design-review` overlap wave 5 (anti-slop). Decide whether anti-slop is a
+separate skill or a rule baked into each — see open question 2.
 
-| # | Skill | Périmètre |
+## Wave 2 — web stack
+
+| # | Skill | Scope |
 |---|---|---|
-| 5 | `tanstack-start-setup` | démarrage d'un projet TanStack Start selon les conventions maison |
-| 6 | `convex-schema` | modélisation + migrations Convex, à cadrer après audit des 6 skills existantes |
-| 7 | `tauri-setup` | app desktop Tauri v2 |
-| 8 | `rn-setup` | app React Native |
+| 5 | `tanstack-start-setup` | starting a TanStack Start project to house conventions |
+| 6 | `convex-schema` | Convex modelling + migrations, scoped after auditing the 6 existing skills |
+| 7 | `tauri-setup` | Tauri v2 desktop app |
+| 8 | `rn-setup` | React Native app |
 
-Préalable commun : auditer les 15 `tanstack-*` et 6 `convex-*`. Peut-être que 3 sont bonnes
-et qu'il n'y a rien à refaire.
+Shared prerequisite: audit the 15 `tanstack-*` and 6 `convex-*` first. Maybe 3 are good and
+there is nothing to redo.
 
-## Vague 3 — outils créatifs
+## Wave 3 — creative tools
 
-Aucune skill installée ne pilote ces outils alors que les MCP sont connectés. Territoire vierge.
-Règle : une skill par **tâche répétitive précise**, jamais "piloter Blender" en général.
+No installed skill drives these tools, although the MCP servers are connected. Open ground.
+Rule: one skill per **precise repeated task**, never "drive Blender" in general.
 
-| # | Outil | MCP | À cadrer |
+| # | Tool | MCP | To scope |
 |---|---|---|---|
-| 9 | DaVinci Resolve | connecté (scripting, LUTs, DCTL) | cœur de NetsuRush — la plus légitime des trois |
-| 10 | After Effects | connecté (comps, effets, keyframes, expressions) | NetsuRush fait déjà un pont vers AE |
-| 11 | Blender | connecté (bpy, screenshots, API docs) | quel usage récurrent ? |
+| 9 | DaVinci Resolve | connected (scripting, LUTs, DCTL) | core of NetsuRush — the most justified of the three |
+| 10 | After Effects | connected (comps, effects, keyframes, expressions) | NetsuRush already bridges to AE |
+| 11 | Blender | connected (bpy, screenshots, API docs) | which recurring use? |
 
-Photoshop : MCP connecté, hors périmètre pour l'instant.
+Photoshop: MCP connected, out of scope for now.
 
-## Vague 4 — NetsuRush
+These are natural command-oriented skills: a decision table in `SKILL.md`, the long operations
+in `scripts/`.
 
-`NetsumaInfo/NetsuRush` — *footage-review hub for DaVinci Resolve Studio : preview rushes,
-AI shot detection, lossless cuts, frame-accurate timelines. Bridges to Premiere Pro and
-After Effects.* TypeScript, public.
+## Wave 4 — NetsuRush
 
-Recoupe directement la vague 3 : les skills Resolve et AE servent d'abord ce projet.
+`NetsumaInfo/NetsuRush` — *footage-review hub for DaVinci Resolve Studio: preview rushes, AI
+shot detection, lossless cuts, frame-accurate timelines. Bridges to Premiere Pro and After
+Effects.* TypeScript, public.
 
-| # | Skill envisagée | Note |
+Overlaps wave 3 directly: the Resolve and AE skills serve this project first.
+
+| # | Candidate | Note |
 |---|---|---|
-| 12 | `netsurush-conventions` | conventions du projet, à extraire du code existant |
-| 13 | `resolve-scripting` | scripting Resolve récurrent pour NetsuRush |
+| 12 | `netsurush-conventions` | project conventions, to extract from the existing code |
+| 13 | `resolve-scripting` | recurring Resolve scripting for NetsuRush |
 
-À trancher : publiques ici, ou privées dans `NetsuRush/.claude/skills/` ? Une skill de
-conventions projet n'a de sens pour personne d'autre — probablement dans le projet.
+To decide: public here, or private in `NetsuRush/.claude/skills/`? A project-conventions skill
+is useless to anyone else — probably belongs in the project.
 
-## Vague 5 — anti-slop (thème prioritaire de Netsuma)
+## Wave 5 — anti-slop
 
-Objectif déclaré : **retirer le slop IA**. Trop d'informations pour rien, mots que personne
-n'emploie au quotidien, commentaires qui paraphrasent le code, README gonflés.
+Stated goal: **strip AI slop**. Too much information for nothing, words nobody uses in real
+life, comments that paraphrase the code, bloated READMEs.
 
-Existant installé à disséquer avant d'écrire :
+Installed prior art to dissect before writing:
 
-| Skill installée | Ce qu'elle fait | Verdict provisoire |
+| Installed skill | What it does | Provisional verdict |
 |---|---|---|
-| `deslop` | retire le slop du diff de la branche | bonne idée, périmètre trop étroit (code uniquement) |
-| `uncodixfy` | évite les patterns UI génériques IA | prévention UI, pas du nettoyage |
-| `copy-editing` | édition de copy marketing | ironique : elle est elle-même pleine de slop |
-| `writing-shape` | met en forme de la matière brute | orthogonal |
+| `deslop` | strips slop from the branch diff | right idea, scope too narrow (code only) |
+| `uncodixfy` | avoids generic AI UI patterns | prevention for UI, not cleanup |
+| `copy-editing` | edits marketing copy | ironic: it is itself full of slop |
+| `writing-shape` | shapes raw material into prose | orthogonal |
 
-| # | Skill envisagée | Déclenchement | Périmètre |
+| # | Candidate | Trigger | Scope |
 |---|---|---|---|
-| 14 | `deslop-prose` | "enlève le slop", "c'est trop verbeux", "allège ce README" | README, docs, textes d'UI. Coupe le remplissage, bannit le vocabulaire qu'on n'emploie jamais à l'oral |
-| 15 | `deslop-code` | "nettoie les commentaires", "y'a trop de commentaires" | commentaires qui paraphrasent le code, gardes défensives inutiles, noms pompeux |
-| 16 | `no-slop` (préventive) | aucune — règle chargée en amont de l'écriture | empêche le slop d'apparaître plutôt que de le retirer après |
+| 14 | `deslop-prose` | "strip the slop", "too verbose", "trim this README" | READMEs, docs, UI copy. Cuts filler, bans vocabulary nobody says out loud |
+| 15 | `deslop-code` | "clean up the comments", "too many comments" | comments that paraphrase code, useless defensive guards, pompous names |
+| 16 | `no-slop` (preventive) | none — a rule loaded before writing | stops slop appearing instead of removing it afterwards |
 
-Point de conception à trancher : **retirer après** (14, 15) ou **empêcher avant** (16) ?
-Le préventif ne se déclenche pas de façon fiable ; le curatif demande une passe explicite.
-Probablement les deux, mais 14/15 d'abord car testables.
+Design call to make: **remove after** (14, 15) or **prevent before** (16)? Prevention does not
+fire reliably; cleanup needs an explicit pass. Probably both, but 14/15 first because they are
+testable.
 
-Matière nécessaire avant d'écrire : une **liste noire de vocabulaire** et une collection
-d'exemples avant/après tirés de vrais fichiers. À accumuler dans `.private/` au fil de l'eau.
+Material needed before writing: a **vocabulary blocklist** and a set of real before/after
+examples. Accumulate in `.private/` over time.
 
-## Vague 6 — méta : routeur et audit
+## Wave 6 — meta
 
-Demande de Netsuma : une skill « chapeau » par thème, qui laisse l'agent choisir la bonne
-sous-procédure, pour ne plus avoir à retenir les noms.
-
-**Précision technique avant d'écrire quoi que ce soit** : une skill ne peut pas en appeler une
-autre ni forcer son chargement. Un « routeur » qui distribuerait vers d'autres skills
-installées ne marchera pas. Ce qui marche :
-
-1. **La skill-parapluie** — une seule skill par thème, dont le `SKILL.md` est un index court
-   qui renvoie vers `references/<cas>.md` chargés à la demande. Un seul nom à retenir par
-   thème, l'agent choisit le bon cas. C'est le vrai remède au problème.
-2. **Des descriptions correctes** — l'agent choisit déjà tout seul si la `description` contient
-   les bons mots et si `disable-model-invocation` n'est pas à `true`. 68 % des skills installées
-   échouent sur ce second point.
-
-Autrement dit : le besoin est réel, mais la réponse est « moins de skills, mieux décrites »,
-pas « une skill de plus qui aiguille ».
-
-| # | Skill envisagée | Rôle |
+| # | Candidate | Role |
 |---|---|---|
-| 17 | `skill-audit` | lister les skills installées, repérer `disable-model-invocation: true`, les doublons, les descriptions qui ne déclenchent jamais. Sortie : un tableau de décisions |
-| 18 | `cleanup-skills` | désinstallation de masse (les 5 `nextjs-*` en premier client) |
+| 17 | `skill-audit` | list installed skills, flag `disable-model-invocation: true`, duplicates, and descriptions that never fire. Output: a decision table |
+| 18 | `cleanup-skills` | bulk uninstall (the 5 `nextjs-*` are the first client) |
 
-`skill-audit` est probablement la première skill à écrire de tout le repo : elle se teste sur
-un cas réel immédiat (les 180 dossiers de la machine) et elle produit la matière des autres vagues.
+`skill-audit` is probably the first skill to write in this repo: it is testable on a real case
+immediately (180 directories), and it produces the raw material for every other wave.
+
+## Wave 7 — umbrella skills
+
+One entry point per theme, children loaded on demand, so there is one name to remember per
+theme instead of twenty. The shape is defined in [`SKILL-RULES.md`](SKILL-RULES.md#1-skill-types).
+
+**Technical constraint that rules out the obvious alternative**: a skill cannot call another
+skill, nor force one to load. A "router" skill dispatching to other installed skills does not
+work. The umbrella is the working version of that idea.
+
+| # | Umbrella | Children |
+|---|---|---|
+| 19 | `design` | critique, tokens, motion, layout |
+| 20 | `git` | commit, PR, review, worktrees, branch cleanup |
+| 21 | `docs` | README, CONTRIBUTING, changelog, API reference |
+
+Open call: do waves 1 and 7 collide? If `design` ships as an umbrella with a `critique` child,
+then `design-review` from wave 1 should not exist as a separate skill. Decide the split before
+writing either — see open question 6.
 
 ---
 
 ## Distribution
 
-Trois canaux, tous couverts par la structure actuelle :
+Three channels, all covered by the current layout:
 
-| Canal | Commande | État |
+| Channel | Command | State |
 |---|---|---|
-| Plugin Claude Code | `/plugin marketplace add NetsumaInfo/NetsuSkills` | prêt |
-| Copie manuelle | `cp -r skills/<nom> ~/.claude/skills/` | prêt |
-| [skills.sh](https://www.skills.sh/) | `npx skills add NetsumaInfo/NetsuSkills` | **compatible par construction** |
+| `skills` CLI | `npx skills add NetsumaInfo/NetsuSkills` | **compatible by construction** |
+| Claude Code plugin | `/plugin marketplace add NetsumaInfo/NetsuSkills` | ready |
+| Manual copy | `cp -r skills/<name> ~/.claude/skills/` | ready |
 
-skills.sh (projet `vercel-labs/skills`) scanne `skills/<nom>/SKILL.md` jusqu'à trois niveaux
-et n'exige que `name` + `description` en frontmatter — exactement notre layout et notre règle 2.
-Aucun manifeste supplémentaire à écrire.
+[skills.sh](https://www.skills.sh/) (the `vercel-labs/skills` project) walks
+`skills/<name>/SKILL.md` up to three levels deep and only requires `name` + `description` in
+frontmatter — exactly this layout and rule 3. No extra manifest to write.
 
-Point non résolu : le mécanisme d'indexation du site n'est pas documenté publiquement
-(question posée dans `vercel-labs/skills`, issue 880, sans réponse). Il faut au moins une skill
-publiée pour tester si l'indexation est automatique.
+Unresolved: the site's indexing mechanism is not publicly documented (asked in
+`vercel-labs/skills` issue 880, unanswered). At least one published skill is needed to test
+whether indexing is automatic.
 
-À noter : `metadata.internal: true` masque une skill de la découverte skills.sh — utile si une
-skill NetsuRush reste dans le repo sans être proposée à tout le monde.
+Note: `metadata.internal: true` hides a skill from skills.sh discovery — useful if a
+project-specific skill lives here without being offered to everyone.
 
 ---
 
-## Idées (pas encore qualifiées)
+## Ideas (not yet qualified)
 
-- `design-system` — tokens, échelles, thèmes
-- `debug` — remplacerait `systematic-debugging`
-- `prd` / `tasks` — à voir si les versions existantes suffisent
+- `design-system` — tokens, scales, themes
+- `debug` — would replace `systematic-debugging`
+- `prd` / `tasks` — check whether existing versions are good enough
 
-## Questions ouvertes
+## Open questions
 
-1. **Par quoi on démarre ?** `skill-audit` (vague 6) rapporte plus vite que la vague 1 : il se
-   teste sur les 180 dossiers de la machine et il produit la matière du reste. À valider.
-2. **Anti-slop : skill séparée ou règle intégrée ?** Si `readme` intègre déjà l'anti-slop,
-   `deslop-prose` fait double emploi. Trancher avant d'écrire l'une des deux.
-3. **Les 175 skills coupées** : on les rallume au cas par cas, ou on désinstalle en masse et on
-   ne garde que ce qu'on réécrit ici ?
-4. **Blender** : quelle tâche répétitive précise ? Resolve et AE sont justifiés par NetsuRush,
-   Blender pas encore.
-5. **Skills NetsuRush** : publiques ici, ou privées dans le repo du projet ?
+1. **Where to start?** `skill-audit` (wave 6) pays off faster than wave 1: it is testable on the
+   180 installed directories and it produces the material for the rest.
+2. **Anti-slop: separate skill or baked-in rule?** If `readme` already enforces anti-slop,
+   `deslop-prose` is redundant. Decide before writing either.
+3. **The 175 disabled skills**: re-enable case by case, or bulk uninstall and keep only what
+   gets rewritten here?
+4. **Blender**: which precise repeated task? Resolve and AE are justified by NetsuRush,
+   Blender is not yet.
+5. **NetsuRush skills**: public here, or private in the project repo?
+6. **Wave 1 vs wave 7**: atomic skills first, or go straight to umbrellas and make wave 1 the
+   children of `design`, `git` and `docs`?
