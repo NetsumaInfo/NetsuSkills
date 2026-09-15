@@ -209,9 +209,23 @@ Three channels, all covered by the current layout:
 `skills/<name>/SKILL.md` up to three levels deep and only requires `name` + `description` in
 frontmatter — exactly this layout and rule 4. No extra manifest to write.
 
-Unresolved: the site's indexing mechanism is not publicly documented (asked in
-`vercel-labs/skills` issue 880, unanswered). At least one published skill is needed to test
-whether indexing is automatic.
+**How the site's index works, established 2026-09-15.** skills.sh is not a directory of published
+repositories. It is a **leaderboard built from install telemetry**: no submission, no registry, no
+review. A repository appears once somebody installs it with `npx skills add`, and its rank is the
+install count.
+
+Measured, not inferred: `skills.sh/b/anthropics/skills` renders `Skills: 3.1M` — that badge is an
+install counter. The same badge for this repository renders `not found`, and
+`skills.sh/NetsumaInfo/NetsuSkills` is a 404, while `npx skills add NetsumaInfo/NetsuSkills
+--list` resolves the repository and prints the skill correctly. Publication is fine; the install
+count is zero.
+
+Consequence: being listed is downstream of adoption, not of publishing. The skills.sh badge
+documented at `skills.sh/docs` should not go in the README until the count is non-zero — it reads
+`not found` otherwise, which rule 2 of `visuals.md` forbids.
+
+`vercel-labs/skills` issue 880 asked this and is still unanswered, which is why none of it is
+written down anywhere.
 
 Note: `metadata.internal: true` hides a skill from skills.sh discovery — useful if a
 project-specific skill lives here without being offered to everyone.
