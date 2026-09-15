@@ -12,13 +12,29 @@ theme, and takes almost no room:
 |---|---|
 | **Alerts** — `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]` | Native GitHub, theme-aware, no image. Use them for the one or two things a reader must not miss, never for ordinary prose |
 | **`<details>`** around long optional blocks | Keeps an install matrix or a manual-build section from burying the content under it |
-| **Tables** where a list would repeat the same shape | Only when every row shares the columns. Prose beats a two-row table |
+| **Tables** where a list would repeat the same shape | Only when every row shares the columns and every cell is short. See below |
 | **Sentence-case headings** | Reads as written by a person |
 | **Relative links** to files in the repo | Survives forks and clones |
 | **Mermaid** for any diagram | Theme-aware, searchable, diffable, zero third parties |
 | **The project's own icon**, if it ships one | It is already in the repo and already committed |
 
 Ask before going past this: banners, animated text, hero art, anything from §2.
+
+### Never put an identifier next to a paragraph in a table
+
+Markdown gives you no control over column widths. A cell holding a paragraph takes the width and
+the other columns are crushed to fit. Ordinary words survive that — they wrap at spaces. An
+**identifier does not**: a code span, a path, a hyphenated name or a URL has no space to break at,
+so the renderer breaks it *inside the word*. A skill named `netsu-readme` comes out as `netsu-`
+stacked above `readme`. The one string the reader came for is the first thing the layout destroys.
+
+So the rule is not "no long cells". It is: **a column of identifiers and a column of prose cannot
+share a table.** A feature table whose left column is two plain words is fine at any width.
+
+When each item needs a paragraph, drop the table. A short heading per item, then the paragraph —
+that shape survives every width, including a phone, and the name stays whole.
+
+And a one-row table is never right. If there is one of something, write the sentence.
 
 Everything below is the opt-in layer.
 
@@ -139,10 +155,6 @@ the badge host. `standard-readme` recommends hosting static badge images locally
 Project-scope tools only. The profile-only widgets — stats cards, streaks, trophies,
 contribution snakes and the generators that assemble them — are in `profile.md` §3, the only
 page where any of them belongs.
-
-**Prefer the Action model over the hosted-endpoint model** whenever a tool offers both. Snk,
-Profile 3D Contrib and Profile Summary Cards render an SVG and commit it to the repository,
-served from `raw.githubusercontent.com`. No cold start, no rate limit, nothing to 402.
 
 ## 3. Theme-aware images
 
