@@ -43,5 +43,7 @@ unless it is already committed to a file in that repository.
 start. The order exists so the questions are short and the structure is agreed before 200 lines
 are spent on the wrong shape.
 
-**Badges and visuals are opt-in.** Default to none beyond what carries real information. Load
-`references/visuals.md` only when the user asks for decoration.
+**A minimal style baseline always applies; decoration is opt-in.** Native GitHub alerts,
+`<details>`, mermaid, the project's own icon, and the dynamic badges a published project already
+earns — those are the default, not a request. Banners, animated text and hero art are asked for.
+`references/visuals.md` §0 holds the baseline; the rest of that file is the opt-in layer.

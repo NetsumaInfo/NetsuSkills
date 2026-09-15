@@ -18,7 +18,7 @@ deno, excalidraw, supabase, zed, sqlite, gum, execa).
 | **Usage / Quick start** | 13/24 | Always | Never | Early. Median first code block: line 48 |
 | **Docs link** | 9/24 | A docs site exists | It does not | Right after the intro. This is what lets the README stay short |
 | **Why / Background** | 7/24 | Crowded field, or non-obvious category | The category is self-evident | Before the "how". esbuild's entire README is one `## Why?` |
-| **Features / Highlights** | 9/24 | Scannable differentiators a competitor lacks | Restating the one-liner as bullets | After the description |
+| **Features / Highlights** | 9/24 | Scannable differentiators a competitor lacks. Cut down from the full inventory in `project.md` step 1b, never assembled from memory | Restating the one-liner as bullets | After the description |
 | **Comparison to alternatives** | 5/24 | A well-known incumbent exists | No real competitor, or it reads as a hit piece | After Why. ripgrep's "Why shouldn't I use ripgrep?" is the model |
 | **Configuration** | 7/24 | Config is the main surface | Dumping every flag instead of `--help` | After Usage — and only if there is no docs site |
 | **FAQ / Troubleshooting** | 5/24 | Recurring issues clog the tracker | Invented questions nobody asked | Bottom, above Contributing |

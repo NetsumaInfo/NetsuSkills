@@ -17,11 +17,40 @@ Every question you ask that the repo already answers makes the user do your job.
 | `docs/`, `mkdocs.yml`, `docusaurus.config.*`, `.vitepress/`, `book.toml` | **is there a docs site** — step 2 |
 | `CONTRIBUTING.md`, `SECURITY.md`, `CHANGELOG.md`, `CODE_OF_CONDUCT.md` | each one that exists gets a link, never a copy |
 | The CLI's argument parser, or run `--help` | the real flags |
+| UI markup and components — `*.html`, `*.jsx`, `*.vue`, `*.svelte` | **every control a user can touch**: each `<select>` and its options, checkboxes, buttons, modes |
+| The settings or preferences module | the full option surface, including what is off by default |
 | Routes / pages / exported API surface | what the thing actually does |
+| Screenshots already in the repo | what it looks like — and check each one is current, not inherited |
 | `git log --oneline -20`, first commit date | maturity, activity, whether it is a hobby project |
 | The existing README | what is hand-written and worth keeping |
 
 Note what you could not determine. That list becomes step 3.
+
+## 1b. Inventory the feature surface, then cut
+
+Before deciding anything, list **every** capability the product exposes. Not the ones that seem
+important, not the ones a changelog mentions — all of them, from the interface itself.
+
+Where the list comes from, in order of reliability:
+
+1. **The controls.** Every `<select>` and each of its options, every checkbox, every button, every
+   mode. A dropdown with three options is three capabilities, not one.
+2. **The settings module.** Options that are off by default are still features, and they are the
+   ones users never discover.
+3. **The screenshots**, read as evidence: a panel visible in an image is a feature that exists.
+4. Commit messages and release notes — **last**, and only to confirm. They record what changed,
+   not what the product does.
+
+Then cut the list to what a reader needs. Most of it will not make the README, and that is the
+point: you cut from a complete list, so what is left is a decision. Cutting from a partial list is
+not editing, it is omission by accident.
+
+> A feature the interface exposes and the README never mentions is a feature nobody will find.
+
+Two traps this step exists to catch. **Describing what you saw** — you read one screenshot and a
+few commits, wrote those up, and called it the feature set. **Trusting a summary** — a store
+listing or an old README is somebody's earlier cut, with their omissions baked in; re-derive from
+the interface instead of inheriting them.
 
 ## 2. The question that sets the size
 
@@ -84,6 +113,10 @@ them, never as a plausible-looking sentence and never as an unfilled `[placehold
 
 - [ ] Pick three claims at random and check them against the repo. Does the flag exist? Does the
       install command match the lockfile? Does the LICENSE file say what the README says?
+- [ ] Walk the step 1b inventory. Every capability is documented, or left out on purpose. A
+      capability you forgot is not the same as one you cut.
+- [ ] Every image referenced was **opened and looked at** (`visuals.md` §4b): it shows this
+      product, it is current, it leaks nothing in the frame, and it is committed.
 - [ ] Run the greps in `voice.md`. Any context-leak hit is a blocker.
 - [ ] Delete every adjective and re-read. If nothing was lost, they were slop — leave them out.
 - [ ] Is there one opinion, one tradeoff, or one "do not use this if" in the file? If not,
@@ -104,6 +137,9 @@ them, never as a plausible-looking sentence and never as an unfilled `[placehold
 | Writing the whole README then asking what the user thinks | Plan approved at step 4, before the prose exists |
 | Filling a gap with a plausible sentence | Ask. An unverified claim is worse than a missing section |
 | Features section that restates the project name in bullets | Cut it, or make each bullet a differentiator a competitor lacks |
+| Writing up the features you happened to see — one screenshot, a few commits | Enumerate every control the interface exposes (step 1b), *then* cut |
+| Inheriting the feature list from an old README or a store listing | Re-derive it from the interface. A summary carries someone else's omissions |
+| One screenshot when the repo holds several | Use the ones that show distinct capabilities, and check each is committed and current |
 | `[Your Name]`, `<your-repo>`, `example.com` left in the output | Never ship a placeholder. Ask for the value |
 
 ## References

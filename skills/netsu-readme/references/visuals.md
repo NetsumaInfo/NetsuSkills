@@ -1,7 +1,26 @@
 # Visuals
 
-Badges, demos, diagrams, theme-aware images. Load only when the user asks for decoration —
-the default in `SKILL.md` is none.
+Badges, demos, diagrams, theme-aware images.
+
+## 0. The minimal default
+
+"No decoration" does not mean a bare wall of text. A small baseline always applies, without
+asking, because every item in it is native to GitHub, costs no third party, adapts to the reader's
+theme, and takes almost no room:
+
+| Always | Why it is free |
+|---|---|
+| **Alerts** — `> [!NOTE]`, `> [!TIP]`, `> [!IMPORTANT]`, `> [!WARNING]`, `> [!CAUTION]` | Native GitHub, theme-aware, no image. Use them for the one or two things a reader must not miss, never for ordinary prose |
+| **`<details>`** around long optional blocks | Keeps an install matrix or a manual-build section from burying the content under it |
+| **Tables** where a list would repeat the same shape | Only when every row shares the columns. Prose beats a two-row table |
+| **Sentence-case headings** | Reads as written by a person |
+| **Relative links** to files in the repo | Survives forks and clones |
+| **Mermaid** for any diagram | Theme-aware, searchable, diffable, zero third parties |
+| **The project's own icon**, if it ships one | It is already in the repo and already committed |
+
+Ask before going past this: banners, animated text, hero art, anything from §2.
+
+Everything below is the opt-in layer.
 
 Endpoint states below were checked on 2026-09-15. Re-check before recommending any hosted
 service: this ecosystem rots fast, and that is the main finding of this file.
@@ -10,6 +29,60 @@ service: this ecosystem rots fast, and that is the main finding of this file.
 
 **Cap: 5–8, one row, every one dynamic.** Fixed order: version → build → coverage → licence →
 docs/chat.
+
+Badges are part of the default when the project is **published somewhere that reports numbers**:
+a package registry, an app store, a CI run. Those badges are read from a live source, so they
+inform rather than decorate. A project that publishes nowhere gets none, and that is not an
+omission.
+
+### Verify the value, not just the endpoint
+
+A 200 response is not a working badge. Fetch each candidate and read the `<title>` out of the SVG
+before committing to it — shields renders a badge either way, and a badge that says the wrong
+thing is worse than no badge:
+
+```bash
+curl -sL "https://img.shields.io/<path>" | grep -o '<title>[^<]*</title>'
+```
+
+Drop any badge whose real value is `not found`, `0`, `unknown`, `invalid`, or `no releases`. Seen
+in practice: a store rating badge reading `rating: not found` on an extension with no reviews
+yet, and an `amo/rating` badge rendering a confident `0/5`. Both would have shipped as evidence
+against the project.
+
+A failing licence badge is a finding, not a badge problem: `license: not identifiable by github`
+means GitHub cannot detect the licence, so it is missing from the repository sidebar too. Report
+that instead of working around it.
+
+### App-store badges
+
+For a browser extension, a mobile app, or anything else distributed through a store, the store
+badges are the most informative ones available — they carry the reviewed version, which is the
+number a reader actually wants, and they show drift when one store is slower to approve.
+
+| Source | Shields path |
+|---|---|
+| Chrome Web Store | `chrome-web-store/v/<id>`, `/users/<id>`, `/rating/<id>` |
+| Firefox add-ons | `amo/v/<slug>`, `/users/<slug>`, `/rating/<slug>` |
+| Visual Studio Code | `visual-studio-marketplace/v/<publisher>.<name>` |
+
+Add `?logo=googlechrome&logoColor=white` or `?logo=firefoxbrowser&logoColor=white` — those come
+from Simple Icons and cost nothing extra. Use the default flat style; never `for-the-badge`.
+
+### A single brand icon, outside a badge
+
+An install table reads better with the browser or platform mark beside each row than with the name
+alone. `cdn.simpleicons.org` serves one icon as a small SVG, colour set in the path:
+
+```markdown
+| <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="16"> Chrome | [Web Store](…) |
+| <img src="https://cdn.simpleicons.org/firefoxbrowser/FF7139" width="16"> Firefox | [Add-ons](…) |
+```
+
+Around 550 bytes each, camo-proxied on GitHub. Two rules: use the exact slug
+([simpleicons.org](https://simpleicons.org) — `firefoxbrowser` is the browser, `firefox` is the
+brand), and set `width` so it matches the text rather than towering over it. This is for a short
+table of destinations, not a wall of technology logos — that is still banned above.
 
 **Dynamic versus static is the distinction that matters**, not the category.
 `img.shields.io/badge/build-passing-green` renders green on a repo with zero tests. A static
@@ -114,6 +187,43 @@ already has one.
 
 Never ASCII-art a diagram. Misaligned pipes are a documented slop tell.
 
+## 4b. Open every image before you use it
+
+**Never reference an image you have not looked at.** A filename is not evidence. Open each
+candidate, and answer four questions before it goes in the file.
+
+**1. Is this the right product?** A forked or templated repository carries the original's
+screenshots, and they look plausible. Check the window title, the branding, the URL bar, the shape
+of the interface. If the interface in the image is not the one the code builds, the image is a lie
+in a form readers trust more than prose.
+
+**2. Is it current?** Compare against what the code renders now. A screenshot taken before a
+redesign undersells the project and confuses anyone following along.
+
+**3. Does it leak?** A screenshot captures whatever was on screen. Look at the whole frame, not
+the part you meant to capture:
+
+- Browser tabs and their titles, bookmarks bar, open windows behind
+- The URL bar: account names, tokens in query strings, internal hosts
+- Window title bars and file paths, which carry the machine's username
+- Real names, email addresses and real data in what looks like sample data
+- Notifications, calendar peeks, anything from a messaging app
+
+An image leak is worse than a prose leak: it is not greppable, and nobody re-reads it before
+publishing. Treat anything you find here as a blocker, the same as §1 of `voice.md`.
+
+**4. What does it actually show?** This determines two things. The `alt` text, which describes the
+content rather than the filename or the theme. And the placement: an image belongs next to the
+feature it demonstrates, not stacked at the top with the others. A repository holding four
+screenshots usually holds four different capabilities — find out which, then put each one where it
+explains something.
+
+For an animated GIF or a video you will typically see only the first frame. Say so rather than
+describing the whole clip from a guess: check the source the clip was made from, or ask.
+
+Also confirm the file is **committed**. An image that exists on disk but is untracked renders as a
+broken image for everyone else.
+
 ## 5. Demos
 
 **For a 10-second terminal demo:**
@@ -165,6 +275,9 @@ Three separate exposures. Keep them separate when advising:
 | `![](https://img.shields.io/...)` with empty alt | `![CI status](...)` — label-shaped, never value-shaped |
 | A static `build-passing` badge | The real workflow badge URL, or nothing |
 | Emitting a widget without checking it responds | Check, or use the Action-generated variant |
+| Shipping a badge because the endpoint returned 200 | Read the SVG `<title>`. Drop `not found`, `0`, `unknown` |
+| A bare wall of text because "decoration is opt-in" | The §0 baseline always applies. It costs nothing |
+| An emphasis paragraph in bold prose | `> [!IMPORTANT]` — native, theme-aware, and a reader's eye finds it |
 | `#gh-dark-mode-only` | `<picture>` with `prefers-color-scheme` |
 | An image of a diagram | A ` ```mermaid ` fence |
 | A 40-second GIF at the top of the README | A VHS-generated clip under 10 s, or a still |

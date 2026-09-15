@@ -135,7 +135,11 @@ The UK government style guide independently bans most of the same list and suppl
 
 ## 4. Grep
 
-Context leak — any hit is a blocker:
+Context leak — any hit is a blocker.
+
+Run these as six separate commands. Do **not** merge them into one pattern with `-i`: the last two
+are case-sensitive on purpose, and `/Users/` folded to lowercase matches the `/users/` in ordinary
+URLs, so a page full of badge links reports a leak that is not there.
 
 ```bash
 grep -rniE "certainly!|i hope this helps|let me know if|would you like me to|as requested|you'?re absolutely right|here'?s a (template|breakdown)" README.md
