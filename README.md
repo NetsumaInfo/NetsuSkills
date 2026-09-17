@@ -65,6 +65,19 @@ runs, so a suite that could not start is never reported as a suite that passed. 
 has not opened, and adds as little code as the change allows. It stops at the working tree and
 leaves git alone.
 
+### [`netsu-peccable`](skills/netsu-peccable) · umbrella, eighteen children
+
+Front-end work and the words in it: new screens, components, fonts and colors, motion, and
+every string a user reads, from a button label to a store listing or a release note. Writes a
+`DESIGN.md` per project first, with the address form, the product's own words and the look, and
+points every agent at it. Proposes visual directions instead of falling back on the model's house
+style, builds every state a component can reach, and reviews existing screens and text by
+severity. Lexicons and typography for French, English, Spanish, German, Japanese and Chinese,
+and a method for any other language. A zero-dependency scanner pulls the strings out of
+components, tooltips and locale files and flags stock phrases, vague buttons, a mixed form of
+address, and the generic AI look. Across translations it catches broken placeholders, missing
+keys and text left in code.
+
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in
 [`docs/BACKLOG.md`](docs/BACKLOG.md).

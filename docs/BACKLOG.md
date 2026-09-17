@@ -72,13 +72,13 @@ specializing in…". Exactly the filler rule 7 bans. Good case study for an anti
 ## Wave 1 — the core
 
 **Status: `netsu-readme` shipped. `netsu-implement` written and executed twice on the full path;
-the fast path and `--resume` still have no real run. `netsu-design-review`,
-`netsu-commit` and `netsu-code-review` are scoped, not started.**
+the fast path and `--resume` still have no real run. `netsu-design-review` was built as the wider
+`netsu-peccable` (see wave 7). `netsu-commit` and `netsu-code-review` are scoped, not started.**
 Writing begins on explicit request.
 
 | # | Skill | Trigger | Replaces |
 |---|---|---|---|
-| 1 | `netsu-design-review` | "critique this UI", "this looks bad", "improve the design" | ~10 generic design skills |
+| 1 | ~~`netsu-design-review`~~ → `netsu-peccable` | "critique this UI", "this looks bad", "improve the design" | ~10 generic design skills |
 | 2 | `netsu-readme` | "write the README", "redo the README" | `create-readme`, `readme-blueprint-generator`, `readme-i18n` |
 | 3 | `netsu-commit` | "commit", "commit and push" | `commit`, `aiblueprint-git-commit`, `caveman-commit` |
 | 4 | `netsu-code-review` | "review my code", "review the PR" | `requesting-/receiving-code-review`, `thermo-nuclear-…`, `caveman-review` |
@@ -167,6 +167,13 @@ testable.
 Material needed before writing: a **vocabulary blocklist** and a set of real before/after
 examples. Accumulate in `.private/` over time.
 
+**Update 2026-09-16.** UI copy left this wave: `netsu-peccable` covers every string a product
+shows, in six languages with lexicons and a method for the rest, and its scanner is the
+blocklist in executable form. `deslop-prose` now only has prose that is neither a README nor
+product text (docs pages, articles), and `deslop-code` is untouched. Question 2 below is answered
+the same way twice: anti-slop lives inside each domain skill, as a child that is also an entry
+point.
+
 ## Wave 6 — meta
 
 | # | Candidate | Role |
@@ -188,13 +195,44 @@ work. The umbrella is the working version of that idea.
 
 | # | Umbrella | Children |
 |---|---|---|
-| 19 | `design` | critique, tokens, motion, layout |
+| 19 | `design` → built as `netsu-peccable` | setup, new UI, components, visual, motion, copy in the app, copy on pages and stores, copy review, UI review; resources for six languages, states and the AI look |
 | 20 | `git` | commit, PR, review, worktrees, branch cleanup |
 | 21 | `docs` | README, CONTRIBUTING, changelog, API reference |
 
 Open call: do waves 1 and 7 collide? If `design` ships as an umbrella with a `critique` child,
 then `design-review` from wave 1 should not exist as a separate skill. Decide the split before
 writing either — see open question 6.
+
+Decided for design on 2026-09-16: one umbrella, `netsu-peccable`, and no separate
+`design-review`. Netsuma chose the name as a nod to `impeccable`.
+
+### What `netsu-peccable` replaces
+
+The blind routing test (JOURNAL) shows these win sentences from it while they stay installed:
+`impeccable` on redesigns, `ui-ux-pro-max` on fonts, palettes and dark mode,
+`make-interfaces-feel-better` on animation and "feels off", `frontend-design` on landing pages.
+Adopting it means removing them.
+
+Among the design skills on this machine, only `impeccable` is model-invocable (checked
+2026-09-17; three skills in all, with `react-doctor` and `gpt-image-2-style-library`). The rest
+carry `disable-model-invocation: true` and run only when typed. Removing `impeccable` is what
+routing needs; removing the others is cleanup. The coverage audit of 2026-09-17 (impeccable and
+19 others) found nothing lost once its gaps were added to `netsu-peccable`. Three projects run
+impeccable's hook script unguarded from `.claude/settings.local.json`: remove those entries with
+the skill, or every edit there fails.
+
+| Remove | Why |
+|---|---|
+| `impeccable` | Near-duplicate description. Its states, accessibility, native, image and "bolder / calmer / simpler" rules were added; its own tooling (live, hooks, doctor, scores) is dropped on purpose |
+| `delight`, `minimalist-ui`, `uncodixfy`, `make-interfaces-feel-better` | Style presets or partial rule sets now covered by `components.md`, `motion.md`, `ai-look.md`; `minimalist-ui` ships a look `ai-look.md` lists as a default |
+| `frontend-design`, `frontend-ui-ux-engineer`, `ui-ux-designer`, `ui-ux-pro-max` | Generic design personas; `ui-ux-pro-max` has no data on disk and allows 3:1 body text in dark mode |
+| `claude-design`, `chrome-extension-ui` | Covered: setup questions, extension popups and store listings |
+| `design-md`, `stitch-design`, `sleek-design-mobile-apps` | Vendor tools whose server or key is not configured here |
+
+Keep: `react-doctor` (a tool the skill calls as an optional check), `shadcn`,
+`tailwind-design-system`, `use-style` (named styles on request), `copy-editing` (blog and
+newsletter copy, which `netsu-peccable` excludes), `deslop` (code), `huashu-design` (HTML
+prototypes and decks), `game-ui-design`, `mobile-android-design` (native Compose code).
 
 ---
 
@@ -261,7 +299,8 @@ skills against their source repository where one is known, not just read what is
 The earlier figure was 175 of 257 reachable `SKILL.md` (68%). Narrowed to the top level of
 `~/.claude/skills` — about 180 directories — the number is **two**: `impeccable` and
 `gpt-image-2-style-library` are the only ones the agent can select on its own. Everything else,
-including every skill worth keeping, is switched off.
+including every skill worth keeping, is switched off. Counted again on 2026-09-17: three, since
+`react-doctor` joined them.
 
 ---
 
@@ -280,8 +319,8 @@ including every skill worth keeping, is switched off.
 
 1. **Where to start?** `skill-audit` (wave 6) pays off faster than wave 1: it is testable on the
    180 installed directories and it produces the material for the rest.
-2. **Anti-slop: separate skill or baked-in rule?** Answered for READMEs: baked in, reachable as an
-   entry point (`netsu-readme` voice.md).
+2. **Anti-slop: separate skill or baked-in rule?** Answered: baked in per domain, reachable as an
+   entry point (`netsu-readme` voice.md, `netsu-peccable` review-copy.md and the lexicons).
 3. **The 175 disabled skills**: re-enable case by case, or bulk uninstall and keep only what
    gets rewritten here?
 4. **Blender**: which precise repeated task? Resolve and AE are justified by NetsuRush,

@@ -7,6 +7,8 @@ One entry per merged skill. Evidence that the three tests in rule 11 passed.
 | 2026-09-15 | `netsu-readme` | 9/9 | 10/10 | slop audit over 15 real repositories | two defects found by the tests and fixed before merge |
 | 2026-09-16 | `netsu-implement` | 9/9 | 10/10 | NetsuRush, upscale target resolution | the run exposed a real defect: it stopped mid-implementation to ask |
 | 2026-09-16 | `netsu-implement` | — | — | NetsuRush, preview optimisation in the Adobe panel | questions stayed up front; review found a pre-existing blocker, then a flaw in its own fix |
+| 2026-09-16 | `netsu-peccable` | 13/13 (rerun: 22/22 routed) | 12/12 | NetsuRush copy and UI reviews (read-only), a new screen built and rendered | three blind runs found 10 scanner bugs and 12 instruction defects, all fixed; lexicons for six languages |
+| 2026-09-18 | `netsu-peccable` | — | — | report-only reviews of five real projects in up to six languages | coverage audit of 20 design skills; catalog checks added; two reviews said not validated, all findings fixed |
 
 ---
 
@@ -439,3 +441,197 @@ against 300. Description 571 characters, since it gained the exclusion for inter
 text. `fast.md` and `full.md` are entry points and sit in the routing table; `code.md`,
 `verify.md` and `review.md` are resources, named outside it with the step that loads them, per
 rule 1.
+
+---
+
+## `netsu-peccable` — 2026-09-16
+
+Asked by Netsuma: one front-end skill, complete and well separated, for interface text in the
+words people actually say and against the generic AI look, in copy and in components. Asked
+mid-build: every language the products ship, not only French and English. The name is his, a nod
+to `impeccable`.
+
+### Research before writing
+
+Three parallel surveys (the five reference skills he named, twenty other installed design and
+copy skills, public skills and style guides) plus a direct search. What changed the design:
+
+| Finding | Consequence |
+|---|---|
+| Claude Sonnet 5 prompting docs (read 2026-09-16): "don't use that color" moves the model to another fixed palette; a concrete spec or a choice between proposed directions works | No ban-list aesthetics. `new-ui.md` proposes 3 or 4 directions and asks once |
+| Antislop, arXiv 2510.15061 (2025-10-16): token banning becomes unusable at 2,000 patterns | Short lexicons plus a scanner run after writing, not a giant list in the prompt |
+| React Doctor 0.9.14 retired 12 taste rules: preferences "belong in an explicit design guide" | A per-project `DESIGN.md`, and one pointer line in `AGENTS.md` so every agent follows it |
+| Anthropic's frontend-design skill (updated 2026-09-02) now flags cream, serif and terracotta: the fix for purple became the next cliché | `ai-look.md` is dated, re-checked every six months, and asks a question instead of naming a replacement |
+| Subtitle frequencies predict word processing better than book counts (SUBTLEX; Lexique 3 `freqfilms2`) | "Everyday word" has a measurable tie-breaker in each lexicon |
+| No public French microcopy skill; every installed design skill but `impeccable` carries `disable-model-invocation: true` | The French lexicon and typography were written from sources, not mined |
+
+Shape: an umbrella with nine entry points and nine resources (six lexicons, `words-any.md`,
+`states.md`, `ai-look.md`), a zero-dependency scanner and a `DESIGN.md` template.
+
+### Trigger and non-trigger
+
+Method as for the other skills: a fresh context saw only the descriptions.
+
+First run, 25 sentences. Against the target set (`netsu-peccable`, `netsu-implement`,
+`netsu-readme`, `react-doctor`, `copy-editing`, `deslop`): **13/13 trigger, 12/12 non-trigger**,
+three picks only inferred (animations, tu or vous, dark mode). Against everything installed, it
+lost six sentences to `impeccable`, `ui-ux-pro-max`, `make-interfaces-feel-better` and
+`frontend-design`, whose descriptions carry those exact words. Adopting the skill means removing
+them; the list is in `BACKLOG.md`.
+
+Checked on disk on 2026-09-17: that run showed every description, but on this machine all of
+them except `impeccable` carry `disable-model-invocation: true`, so the agent never picks them on
+its own. In practice only `impeccable` competes; the others load only when typed.
+
+Fixes: the description gained fonts, colors, dark mode, animations, settings pages, release
+notes, translation, "in any language" and the design-file setup. `netsu-implement` gained the
+matching exclusion ("designing, restyling or critiquing an interface or writing its text").
+
+Second run, 22 sentences including Spanish, German and Japanese requests: **22/22** (15
+`netsu-peccable`, 4 `netsu-implement`, 3 none). One pick marked marginal, and it belongs to
+`netsu-implement`: a refactor reaches it only through "change something in the code".
+
+### Execution
+
+Three blind runs in fresh contexts, each told to follow the skill literally and to report where
+it could not.
+
+**Copy review, NetsuRush's Adobe panel, read-only.** 876 strings in six languages. The report is
+usable as is: six raw errors shown on screen (P0), "Core", "Hôte" and "CEP" in front of editors,
+tu and vous mixed, a glossary drift table. It also exposed the scanner:
+
+- `locales/fr/ae.json` was read as the language "ae": the file name beat the folder;
+- about 70 strings per language in `panel.js` were invisible, being a plain message table;
+- JSX ternaries (`{busy ?`) were read as text and flagged;
+- tu and vous were counted by pronoun only, so "Faites un clic droit" passed;
+- "Oui" in a diagnostic line and Spanish "No" were flagged as vague buttons;
+- the setup grep put `--include` after `--`, so grep read it as a file;
+- a report-only request still led setup to write `DESIGN.md` and `AGENTS.md`.
+
+**UI review, NetsuRush's collections screen, code-only** (its `AGENTS.md` forbids launching the
+app). 22 findings by severity, among them no error state (a failed load spins forever), a
+collection called « dossier » in its own editor, and amber text near 2:1 in the light themes.
+Defects: `PRODUCT.md` was listed as a design file although it has no voice or look section; the
+drift grep skipped `.ts`; locale files were never scanned; a design file drafted from the same
+code minutes earlier turned drift into circular findings; the hover-only rule went quiet once
+`group-focus-within` was present, though touch screens still never showed the action.
+
+**New screen from scratch.** A fictional shot-logging app in static files: nine states, keyboard
+order, dialog focus and flows checked in headless Chrome, scans at zero after fixing ten real
+spacing findings. Defects: an HTML entity inside JSX text hid the whole string from the scan;
+`--lang fr` did not force French; the confirmation example confirmed a reversible action, against
+the rule above it; the stale-data example used the middle-dot join that `ai-look.md` lists; the
+proof sections were too heavy for one screen; setup left no room for product questions.
+
+Every defect above is fixed. After the fixes, the scanner on the same NetsuRush files: `panel.js`
+0 → 148 strings, `fr/ae.json` read as French, three vouvoiement strings found with
+`--address tu`, ternaries no longer reported.
+
+**Proof by render.** Screenshots at 1280 px and 375 px. The first 375 px captures looked
+broken: `chrome --headless --window-size=375,812` lays the page out wider and crops it, because
+desktop Chrome keeps a minimum window width. The same states through viewport emulation (DevTools
+protocol) showed a clean layout and no horizontal scroll. `new-ui.md` §8 now says to emulate.
+
+### Multilingual
+
+Lexicons for Spanish, German, Japanese and Chinese, written from Microsoft's localization style
+guides, RAE and Fundéu, Duden and the Rat für deutsche Rechtschreibung, W3C JLReq and CLReq and
+the national punctuation standards. No measured AI-vocabulary study was found for any of the four
+(searched 2026-09-16), so each row says whether it comes from a dated practitioner list or is a
+house rule. `words-any.md` covers every other language: the order to build rules in, a table for
+15 more languages, right-to-left, scripts without spaces, and `Intl.PluralRules` output pasted
+from Node 22.
+
+The scanner now guesses the language from the script (Japanese, Korean, Chinese, Cyrillic,
+Arabic, Hebrew, Thai) or from word lists, loads `words-<code>.md` whenever it exists, matches
+Japanese, Chinese, Korean and Thai patterns as substrings, checks ¿ and ¡, German quotes and
+full-width punctuation next to CJK text, and names every language it found without a lexicon.
+
+Proof: one stock phrase per language flagged (« Sumérgete… », « Tauchen Sie ein… », シームレス,
+赋能), one ordinary string per language left alone, Italian routed to `words-any.md`. The six
+lexicons hold 418 rows; all parse.
+
+### Sizes
+
+Parent 75 of 100. Entry children 121 to 273, resources 146 to 293, all under 300. Scanner 750
+lines. Description 747 characters: above the 300 to 500 aim and under the 1,024 cap. It covers
+nine cases in any language, and the routing runs above are what justify the length.
+
+### Independent review
+
+One cold reviewer, one pass, verdict first: **not validated**, seven findings. It had run every
+prescribed command, the scanner on both fixtures, and all 1,068 lexicon patterns.
+
+- A loading button used `disabled`, which drops keyboard focus, against `states.md`.
+- Japanese needed five recorded choices, but `DESIGN.md` had a slot for one, so setup could not
+  finish without guessing.
+- Chinese read its market from the wrong section.
+- "Etat du projet" was tagged English, because `du` is French and German, so `fr-caps` never
+  fired.
+- `Requirements` sat at the bottom of the parent.
+- Two files disagreed on whether an Undo toast times out.
+- Three French `block` rows had neither a source nor a house-rule label.
+
+All fixed. The reviewer re-checked only those seven: **validated**. One side effect noted, not a
+defect: in a file that mixes both languages, English words the scanner does not know now take the
+file's French; "Submit" is still caught by `vague-action`.
+
+### Real projects — 2026-09-17 and 2026-09-18
+
+Asked by Netsuma: check that the skill covers what the design skills it replaces did, and test it
+on his projects. Every run was read-only and report-only; no app was built or started.
+
+**Coverage audit.** Two cold readers went through `impeccable` (about 150 files) and nineteen other
+installed design and copy skills, capability by capability. Gaps added: error states beyond the
+basic ones (session expired, not found, rate limited, edit conflict, optimistic rollback),
+first-use hints, forms, drag alternatives, forced-colors focus, zoom and reflow, sticky bars,
+colour blindness, page structure, images, browser extensions, native mobile, plan-only requests,
+"bolder, calmer, simpler", and four dated rows in `ai-look.md`. Dropped on purpose: impeccable's
+own tooling (live mode, hooks, scores). The audit also found claims in those skills that
+contradict current sources (3:1 body text in dark mode, `transition` read as `all`, 44 px called
+the WCAG minimum).
+
+**Five projects.** A Tauri app in six languages, a browser extension in four, a monorepo with a
+Stitch-format `DESIGN.md` and a TypeScript catalog, a marketing site, and a scoring app in six
+languages. The reports found what the owner had asked about: raw errors on screen in every
+project, translated placeholders (`{contar}`, `{タイムコード}`) breaking 149 strings in one app,
+mistranslated key terms, claims on the site that the product does not keep. The runs also found what was wrong with the skill:
+
+| Area | Found | Fixed |
+|---|---|---|
+| Language detection | `é` missing from the French letters; one-word English strings escaped the French lexicon; Spanish read as French | Accent classes, short strings take their file's language, Spanish marks weigh more |
+| Extraction | TypeScript catalogs gave 0 strings; `__MSG_` keys, concatenated HTML and CSS values read as text; ternaries, `setError`, `textContent`, manifests and tooltip components missed | Key paths for TS catalogs, code filters that need code syntax, the missing call and attribute forms |
+| Missing checks | No placeholder parity, missing keys, text left in code, dead keys, `(s)` plurals, decimal comma, apostrophe mix, glued strings, pinned locales, address outside French | `placeholder-mismatch` (ICU-aware, source language first), `locale-missing`, `not-translated`, dead-key marks on whole-app scans, and six smaller rules |
+| False positives | Title Case on names, all caps on acronyms, `outline-none` on popups, German `null`, `(e)` gender forms | Names learned from the project, word checks, element-level context |
+| Instructions | Which file owns a mixed review; questions in report-only runs; other-format design files; screenshots written into the project | One report owned by `review-ui.md`; questions at the end with a recommended answer; `VOICE.md`; `<scratch>` |
+
+**Tooltips.** Added on Netsuma's request, in every language: tooltip attributes and components
+are read, `long-tooltip` counts 80 characters, 40 in Chinese, Japanese and Korean.
+
+**Validation.** A verification run on two projects and an independent review both said **not
+validated** after the first fix pass: the new code filter dropped plain English sentences, ICU
+branch bodies counted as placeholders, and the unused-key marks were wrong on one-screen scans,
+among others. All fixed. The final reviewer confirmed every earlier item fixed except minor
+ones, measured 0 false positives in about 45 sampled `placeholder-mismatch` findings and in about 60
+`fr-nbsp` findings, and blocked on one defect: a JS string such as `"C:\Users"` crashed the scan.
+That guard and the minor items were fixed and checked on the same probe inputs; the scan no
+longer stops, and all 1,072 lexicon patterns still fire. Validated on that evidence, without a
+further agent run, at Netsuma's request to keep the number of agents down.
+
+Known limits, left as they are: a word the project writes in lower case somewhere can still make
+a proper name look like Title Case; `outline-none` cannot see a `focus-within` wrapper more than
+eight lines up; the German and Spanish address counts use pronouns only.
+
+Sizes after this pass: parent 84 of 100, children 137 to 298, scanner 1,260 lines, description
+747 characters.
+
+### Merge checklist
+
+Passed. Umbrella: nine entry points in the routing table, nine resources named outside it with
+the step that loads them. Parent 84 of 100, children at most 298 of 300. Description 747
+characters, under the cap. `disable-model-invocation` not set. Every child has an anti-patterns
+table, dated claims, and runnable commands. The scanner needs only Node, declared under
+`Requirements`. English throughout, with French, Spanish, German, Japanese and Chinese strings
+only as examples and lexicon data.
+
+Not done here: the version bump in the two plugin manifests, which happens with the commit.
