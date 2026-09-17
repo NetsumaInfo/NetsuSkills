@@ -8,7 +8,7 @@ or "check every state" of a component or a small screen. Fixing happens only whe
 
 | | |
 |---|---|
-| Changes | One temporary page and its fixtures. Nothing in the component unless the user asks for fixes |
+| Changes | One temporary page and its fixtures, in the project only when it may run and the request allows changes; otherwise nothing. Nothing in the component unless the user asks for fixes |
 | Never changes | The component while testing, production data, the app's layout or styles |
 | Asks first | Which component, when the request names a whole screen or several |
 | Stops when | The page is built, looked at once, and the table of §5 is written |
@@ -21,8 +21,8 @@ One component per run: "the settings page" is not one; its name field is. Adapte
 ## 1. Read the component
 
 Its props, slots, states, the data it renders and where it is used. Write one sentence: what it
-accepts, what it shows, where it lives. Read `AGENTS.md`: a project that forbids running the app
-gets the page written but not opened (§4).
+accepts, what it shows, where it lives. Read `AGENTS.md`. A project that forbids running the app,
+or a request that changes nothing, gets no page: §2 and the code reading of §4 only.
 
 ## 2. Keep only the scenarios that can happen
 
@@ -49,9 +49,12 @@ languages (`## Voice`).
 - One throwaway route or story (`/_states/<component>`, a Storybook story, a fixture page) that
   imports the real component. Never a rebuilt lookalike.
 - One instance per scenario, in one column, each with a short label above it. Width scenarios sit
-  in fixed-width boxes beside a full-width one, so one load shows them all.
-- Fixtures as props only. The page never reads production state or live data, and production
-  code never imports the page.
+  in fixed-width boxes beside a full-width one, so one load shows them all. A dialog or anything
+  fixed on screen gets one scenario per URL (`?scenario=long-name`) at emulated widths instead.
+- Fixtures as props only. A component that loads its own data gets the stub the project's tests
+  already use (a mock client or provider); without one, its data scenarios are listed as not
+  rendered. The page never reads production state or live data, and production code never
+  imports the page.
 - The page adds labels and boxes, nothing else: no styles on the component.
 
 ## 4. Look once
@@ -60,8 +63,9 @@ Open the page once in the browser tool, if the project may run, and read it top 
 what visibly broke: "the name escapes the card's right edge", never "spacing feels tight". A
 scenario that shows nothing at all means the harness is broken, not the component: fix the page.
 
-No browser, or running is forbidden: hand over the address or the file, and say the look was not
-done. Never report a predicted break as seen.
+No browser, or running is forbidden: say the look was not done, and read the component for each
+scenario instead. What the code suggests goes under "To check, not seen", never in the table of
+what was observed.
 
 ## 5. Report
 
@@ -78,6 +82,9 @@ Kept: <scenarios> · Dropped: <axes and why>
 | 60-character file name | Overflows the card, no truncation | `references/typography.md` §2.8 |
 | 0 clips | Blank area, no message | `references/states.md`, Empty |
 | Error | Raw `Error: 500` text | `references/review-copy.md` |
+
+### To check, not seen
+- <scenario>: <what the code suggests> (`file:line`)
 ```
 
 "Nothing broke" is a complete report: list what was rendered. The page stays while the user looks

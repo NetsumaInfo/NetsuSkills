@@ -26,18 +26,23 @@ you can measure.
 
 ## 2. Measure every pair
 
-Pairs as `text background`, zero dependencies, Git Bash and PowerShell 7:
+The scanner's `contrast` mode reads hex, `rgb()`, `hsl()` and `oklch()`, and composites a
+translucent text colour over its background. Pairs as `text background`, quoted when they
+contain spaces:
 
 ```bash
-node -e 'const L=h=>{h=h.replace("#","");if(h.length<6)h=[...h].map(c=>c+c).join("");return[0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255).map(c=>c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4).reduce((s,c,i)=>s+c*[0.2126,0.7152,0.0722][i],0)};const a=process.argv.slice(1);for(let i=0;i<a.length;i+=2){const[x,y]=[L(a[i]),L(a[i+1])];console.log(a[i],"on",a[i+1],((Math.max(x,y)+0.05)/(Math.min(x,y)+0.05)).toFixed(2))}' '#000' '#fff' '#777' '#fff'
+node <skill dir>/scripts/scan.mjs contrast '#777' '#fff' '#ffffff' 'oklch(0.62 0.14 255)' 'rgb(0 0 0 / 60%)' '#fff'
 ```
 
-```text
-#000 on #fff 21.00
-#777 on #fff 4.48
-```
+A translucent background (`bg-destructive/20`, `oklch(1 0 0 / 9%)`) is composited first, over
+what it sits on, and measured as that colour.
 
-`#777` on white fails body text by 0.02. Thresholds, WCAG 2.2 (w3.org/TR/WCAG22, read
+Pairs to measure in each theme, at least: ink on page, surface and raised; ink-muted on each;
+accent-ink on accent; each status ink on its fill; status text on page; placeholder on the input
+surface; line-strong (input borders) on surface; the focus ring on page and surface. A 50%
+ring with a solid 1 px `border-ring` counts as the solid border.
+
+`#777` on white gives 4.48 and fails body text by 0.02. Thresholds, WCAG 2.2 (w3.org/TR/WCAG22, read
 2026-09-16):
 
 - text and placeholder 4.5:1 (SC 1.4.3); large text 3:1, from 24 px regular or 18.66 px bold;
@@ -128,7 +133,7 @@ a W3C standard, so it is not the pass line here.
 
 Severity follows `references/review-ui.md` §6: text under its threshold is P1 (P0 when it hides
 the main task); a colour with two meanings P2; drift from the tokens P3. Proof: the pairs table
-before and after, the `ui` scan with zero `block`, one capture per theme.
+before and after, the `ui` scan with zero `block`, one capture per theme (code-only: say so).
 
 ## Anti-patterns
 

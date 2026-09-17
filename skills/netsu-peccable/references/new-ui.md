@@ -95,7 +95,7 @@ Before sending, check every row:
   (grotesque, humanist, serif, mono), density.
 - No row matches a line of `references/ai-look.md` unless the product gives the reason.
 - The accent passes 4.5:1 against the background when it colours text, 3:1 when it only fills
-  a control. Run the contrast snippet from `references/colors.md` §2 and put the numbers under the
+  a control. Run the `contrast` mode of `references/colors.md` §2 and put the numbers under the
   table.
 - "Why" names the users or the place of use. A reason that fits any product is not a reason.
 

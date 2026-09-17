@@ -10,6 +10,7 @@ One entry per merged skill. Evidence that the three tests in rule 11 passed.
 | 2026-09-16 | `netsu-peccable` | 13/13 (rerun: 22/22 routed) | 12/12 | NetsuRush copy and UI reviews (read-only), a new screen built and rendered | three blind runs found 10 scanner bugs and 12 instruction defects, all fixed; lexicons for six languages |
 | 2026-09-17 | `netsu-peccable` | — | — | report-only reviews of five real projects in up to six languages | coverage audit of 20 design skills; catalog checks added; two reviews said not validated, all findings fixed |
 | 2026-09-17 | `netsu-peccable` | 17/17 (re-test 10/10) | 7/7 | not run yet on a project | sixteen framed children for impeccable's and Krehel's requests; one review said not validated, all fixed |
+| 2026-09-17 | `netsu-peccable` | — | — | NetsuRush, five framed requests, report-only and code-only | the frames held; the run found raw i18n keys on screen that the scan missed; 12 defects fixed, three scanner checks added |
 
 ---
 
@@ -682,6 +683,54 @@ steps that broke their own frame (emphasis, extract, performance, details); four
 severities). All fixed: `review-branch` sets one target and scans a copy of it; the dates are
 corrected everywhere; the frames and steps agree; one density table in `layout` §4.
 
+### NetsuRush, the framed children — 2026-09-17
+
+One agent, one project, five requests that each name a child: `review-branch` on
+`development`, `accessibility` on the Sharing panel and the Collaborate dialog, `colors` on the
+whole app, `typography` on the Sharing panel, `stress-test` on the Collaborate dialog. The
+project's `AGENTS.md` forbids running the app, so all five are code-only, and each report says
+so.
+
+The frames held: five reports, no project file changed, no fix applied, nothing rendered. The
+stress-test page was written outside the project. Two slips, both harmless: one `git status`
+ran without `GIT_OPTIONAL_LOCKS=0`, which may refresh the index's stat cache, and a temporary
+file was written to `/tmp`, then deleted.
+
+What the run found in NetsuRush:
+
+- P0: `SharingSettings.tsx` calls `t("collab.projects.confirmDelete")` inside the `collab`
+  namespace, so the confirmation and the button, including its accessible name, show the raw
+  key. The `copy` scan did not see it.
+- Colours: 18 pairs in each of the 11 themes, 198 in all; 38 fail. White on the `#4f86f7` accent
+  gives 3.45:1 (`#0a0a0c` gives 5.73:1); input and checkbox borders reach 1.24 to 1.61:1; red text
+  on its 20% red fill is below 4.5:1 in eight themes.
+- Icon-only buttons without a name; names cut by `truncate` with no way to read them in full;
+  selection disabled app-wide by a selector list split over lines (`index.css:1021`);
+  `font-family: "Inter"` while the package declares `Inter Variable`.
+
+Defects in the skill, all fixed:
+
+| Seen in the run | Fix |
+|---|---|
+| The P0 key was not flagged | `missing-key`: a key the code asks for (`t()`, `i18nKey=`, `getMessage()`, both branches of a ternary) that no catalog has; a key starting with its file's name gets its own hint |
+| The agent wrote its own contrast script for `oklch()` and translucent fills | `scan.mjs contrast`: hex, `rgb()`, `hsl()`, `oklch()`, alpha composited; `colors` §2 lists the pairs to measure |
+| Unnamed icon buttons went unflagged | `icon-button-name` in the `ui` scan |
+| The split selector list was missed | `root-no-select` reads a selector spread over several lines |
+| Overlapping paths scanned a file twice | Files deduplicated |
+| A plural « vous » counted as the formal address | Plural forms ignored (`vous êtes tous`, `ensemble`) |
+| The branch review mixed 14 commits with 241 uncommitted files, and the local `main` was behind | Committed range only, uncommitted work counted apart, base `origin/<name>`, quiet `git status`, `--changed` avoided on a dirty tree |
+| The dialog loads its own data and sits in a portal | Stress-test uses the project's test stub, one scenario per URL, and a "To check, not seen" list; no page in a project that forbids running |
+| No conformance claim in the project | Accessibility still measures WCAG 2.2 AA; the scan is a floor, not the proof |
+| `Inter` against `Inter Variable`; a desktop app captured at phone width | `typography` §1 and its proof |
+| Five report-only requests, five draft DESIGN.md files | One draft per session; fonts and colours are enough to cover the look |
+
+Checks after the fixes: the earlier fixtures give the same findings, plus the four
+`missing-key` they contain; lexicons 1,072 of 1,072; the five projects of the first round scan
+without error. NetsuRush again: 33,222 strings, 8 `missing-key`, all real; 678 UI files, 76
+`icon-button-name`, a sample all real.
+
+Netsuma decided to keep `impeccable` installed next to this skill (`docs/BACKLOG.md`).
+
 ### Merge checklist
 
 Passed. Umbrella: 25 entry points in the routing table, each opening with its frame, and nine
@@ -692,4 +741,4 @@ table, dated claims, and runnable commands. The scanner needs only Node, declare
 `Requirements`. English throughout, with French, Spanish, German, Japanese and Chinese strings
 only as examples and lexicon data.
 
-Not done here: the version bump in the two plugin manifests, which happens with the commit.
+The two plugin manifests went to 0.4.0 with the framed children; the fixes since keep it.

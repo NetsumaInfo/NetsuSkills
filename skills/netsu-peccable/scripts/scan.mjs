@@ -13,6 +13,7 @@ const SKILL_DIR = join(dirname(fileURLToPath(import.meta.url)), "..");
 const HELP = `Usage:
   node scan.mjs copy [paths...] [--lang <code>|auto] [--source <code>] [--address tu|vous] [--changed <git-ref>] [--list] [--json] [--strict]
   node scan.mjs ui   [paths...] [--changed <git-ref>] [--json] [--strict]
+  node scan.mjs contrast <text colour> <background> [<text colour> <background> ...]
 
 copy  extracts the strings a user reads (code, locale catalogs in JSON or TS, extension manifests,
       Markdown given by name) and checks words, buttons, typography and the form of "you".
@@ -20,6 +21,8 @@ copy  extracts the strings a user reads (code, locale catalogs in JSON or TS, ex
       in code, keys the code never names. Pass the code folder with the locale folder, and
       --source with the language the others are translated from.
       Lexicons: references/words-<code>.md for each language found (fr en es de ja zh ship).
+contrast  prints the WCAG 2 ratio of each pair: hex, rgb(), hsl() or oklch(), a translucent text
+      colour composited over its opaque background. Quote colours that contain spaces.
 ui    flags the generic AI look, focus, keyboard and transition mistakes, raw palette colors and
       font settings in markup, styles and icon SVGs.
 
@@ -52,7 +55,8 @@ function parseArgs(argv) {
     console.log(HELP);
     process.exit(0);
   }
-  if (opts.mode !== "copy" && opts.mode !== "ui") fail(`unknown mode "${opts.mode}"`);
+  if (!["copy", "ui", "contrast"].includes(opts.mode)) fail(`unknown mode "${opts.mode}"`);
+  if (opts.mode === "contrast") return { ...opts, paths: argv.slice(1) };
   const rest = argv.slice(1);
   const value = (i, name) => {
     if (i >= rest.length || rest[i].startsWith("--")) fail(`${name} needs a value`);
@@ -151,8 +155,16 @@ function isLocaleFile(file) {
 
 // A file passed by name is always read when its type is known, and reported when it is not.
 function selectFiles(opts, notes) {
-  const found = [];
-  for (const p of opts.paths) walk(p, true, found);
+  const walked = [];
+  for (const p of opts.paths) walk(p, true, walked);
+  // `src src/locales` names the catalogs twice: keep one entry per file.
+  const byPath = new Map();
+  for (const w of walked) {
+    const k = resolve(w.path);
+    if (!byPath.has(k)) byPath.set(k, w);
+    else if (w.explicit) byPath.get(k).explicit = true;
+  }
+  const found = [...byPath.values()];
   const changed = opts.changed ? changedFiles(opts.changed) : null;
   const keep = ({ path, explicit }) => {
     if (changed && !changed.has(resolve(path))) return false;
@@ -344,6 +356,7 @@ function extractLocaleCode(src, file) {
     if (/\?\s*$/.test(masked.slice(Math.max(0, m.index - 20), m.index))) continue;
     if (m[4]) { stack.push(key); continue; }
     const path = [...stack.filter((k) => k !== null), key].join(".");
+    addCatalogKey(path, file);
     const value = decodeJs(m[6]);
     const text = clean(value);
     if (!looksLikeText(text)) continue;
@@ -430,6 +443,37 @@ function extractCode(src, file) {
   });
 }
 
+// Every key of every catalog, whatever its value, to check the keys the code asks for.
+const CATALOG_KEYS = new Set();
+const RE_KEY_CALL = /(?<![\w$])(?:i18n\.|i18next\.|\$)?t\(\s*(["'])([^"'\n]{1,160})\1|\bi18nKey=(["'])([^"'\n]{1,160})\3|\bgetMessage\(\s*(["'])([^"'\n]{1,160})\5/g;
+
+const RE_KEY_TERNARY = /(?<![\w$])(?:i18n\.|i18next\.|\$)?t\(\s*[^()"'`\n]{1,80}\?\s*(["'])([^"'\n$]{1,160})\1\s*:\s*(["'])([^"'\n$]{1,160})\3/g;
+// The same keys behind the name of their file (`app.json` holds `files`: `app.files`), right only
+// where the app merges each file under its name.
+const FILE_KEYS = new Set();
+const addCatalogKey = (key, file) => {
+  CATALOG_KEYS.add(key);
+  FILE_KEYS.add(`${basename(file, extname(file))}.${key}`);
+};
+const keyPrefixes = new Map();
+function hasKey(keys, key) {
+  if (!keyPrefixes.has(keys)) {
+    const prefixes = new Set();
+    for (const k of keys) {
+      const parts = k.split(".");
+      for (let i = 1; i < parts.length; i++) prefixes.add(parts.slice(0, i).join("."));
+    }
+    keyPrefixes.set(keys, prefixes);
+  }
+  const prefixes = keyPrefixes.get(keys);
+  const bare = key.replace(/^[\w-]+:(?=[^\s])/, "");
+  for (const k of [key, bare]) {
+    if (keys.has(k) || prefixes.has(k)) return true;
+    for (const suffix of ["_one", "_other", "_zero", "_plural", "_many"]) if (keys.has(k + suffix)) return true;
+  }
+  return false;
+}
+
 // The fields of a browser extension manifest that a user reads when they are not `__MSG_` keys.
 const MANIFEST_TEXT = /^(name|short_name|description|(action|browser_action|page_action)\.default_title|commands\.[^.]+\.description)$/;
 
@@ -477,6 +521,7 @@ function extractJson(src, file) {
     if (manifest && !MANIFEST_TEXT.test(key)) continue;
     let text = unquote(raw);
     if (text === null) continue;
+    if (group) addCatalogKey(key, file);
     const edge = Boolean(group) && /^[ \t](?![ \t*•\-\d])|[^ \t][ \t]$/.test(text);
     text = clean(text);
     if (looksLikeText(text)) {
@@ -642,7 +687,10 @@ const TU_VERB = /(?:^|[.!?…:;]\s+|[—–]\s*)(ajoute|choisis|clique|connecte|
 const VOUS_VERB = /(?:^|[.!?…:;]\s+|[—–]\s*)(?!assez|rendez)(\p{L}{3,}ez|faites|dites)(?=$|[^\p{L}-]|-(?:les?|la|lui|leur|moi|nous|en|y)(?![\p{L}]))|(?<!rendez)-vous(?![\p{L}])/giu;
 const count = (re, t) => (t.match(re) || []).length;
 const usesTu = (t) => count(TU, t) + count(TU_VERB, t);
-const usesVous = (t) => count(VOUS, t) + count(VOUS_VERB, t);
+// "Vous êtes liés", "vous éditez à plusieurs": a plural vous is right in a tu product.
+const PLURAL_VOUS = /(?<!\p{L})vous\s+(?:êtes|étiez|serez|avez été)\s+(?:tous|toutes|\p{L}+(?:és|ées|s))(?!\p{L})|(?<!\p{L})(?:à plusieurs|ensemble)(?!\p{L})|(?<!\p{L})vous\s+(?:tous|toutes|deux|trois)(?!\p{L})/iu;
+
+const usesVous = (t) => (PLURAL_VOUS.test(t) ? 0 : count(VOUS, t)) + count(VOUS_VERB, t);
 
 // Formal and informal "you" in other languages, counted from pronouns only: a tally, and a
 // `check` on the strings that use the rarer form.
@@ -1000,6 +1048,25 @@ function scanUi(files) {
         const lib = ICON_LIBS.find((l) => m[1] === l || m[1].startsWith(`${l}/`));
         if (lib && !libs.has(lib)) libs.set(lib, { file: path, line, text });
       }
+      if (STYLE_EXT.has(ext) && /user-select\s*:\s*none/.test(text) && /(?:^|[\s,])(?:html|body|:root|\*|#root|#app)\s*(?:,[^{]*)?\{$/.test(selector.trim())) {
+        add(line, "root-no-select", "check", "no text can be selected: keep user-select: none for toolbars, tabs and drag regions", text);
+      }
+      // A button whose only child is an icon, with no name.
+      if ([".tsx", ".jsx", ".vue", ".svelte", ".html", ".htm"].includes(ext) && /<(?:button|Button|IconButton)\b/.test(text)) {
+        const from = offset - text.length - 1 + text.search(/<(?:button|Button|IconButton)\b/);
+        const tag = /^<(button|Button|IconButton)\b/.exec(src.slice(from))[1];
+        const end = src.slice(from, from + 1200).search(/(?<!=)>/);
+        const open = end > 0 ? src.slice(from, from + end + 1) : "";
+        let inner = "";
+        if (open && !open.endsWith("/>")) {
+          const close = src.indexOf(`</${tag}>`, from + open.length);
+          inner = close > 0 && close - from < 1200 ? src.slice(from + open.length, close).trim() : "\u0001";
+        }
+        const iconOnly = /^<[A-Z][\w.]*\b[^<>]*\/>$/.test(inner) || (tag === "IconButton" && !inner) || /\bsize=["']icon(?:-\w+)?["']/.test(open);
+        if (open && iconOnly && !/\{\s*\.\.\./.test(open) && !/aria-label|aria-labelledby|\btitle=|sr-only/.test(open + inner)) {
+          add(line, "icon-button-name", "block", "an icon-only button with no name: add aria-label with the action's verb (WCAG 2.2 SC 4.1.2)", text);
+        }
+      }
       if (STYLE_EXT.has(ext) && /outline:\s*(?:none|0)\b/.test(text) && !/:focus-visible/.test(src) && !/(border|box-shadow|background|text-decoration)[\w-]*\s*:/.test(cssBlock(src, offset - text.length - 1 + text.search(/outline:/)))) {
         add(line, "outline-none", "check", "focus outline removed and no :focus-visible style in this file", text);
       }
@@ -1145,6 +1212,75 @@ function keyUsed(key, code) {
   return code.prefixes.some((p) => p && bare.startsWith(p));
 }
 
+// ---------------------------------------------------------------- contrast
+
+// Colours as gamma-encoded sRGB in [0, 1] plus alpha. oklch() is converted through OKLab
+// (Björn Ottosson's matrices) and clipped to sRGB, as browsers do for display.
+function parseColour(input) {
+  const t = input.trim().toLowerCase();
+  const num = (v, scale = 1) => (v.endsWith("%") ? parseFloat(v) / 100 : parseFloat(v) / scale);
+  const alpha = (v) => (v === undefined ? 1 : v.endsWith("%") ? parseFloat(v) / 100 : parseFloat(v));
+  if (t === "white") return [1, 1, 1, 1];
+  if (t === "black") return [0, 0, 0, 1];
+  let m = /^#([0-9a-f]{3,8})$/.exec(t);
+  if (m) {
+    let h = m[1];
+    if (h.length === 3 || h.length === 4) h = [...h].map((c) => c + c).join("");
+    if (h.length !== 6 && h.length !== 8) return null;
+    const v = h.match(/../g).map((x) => parseInt(x, 16) / 255);
+    return [v[0], v[1], v[2], v[3] ?? 1];
+  }
+  m = /^rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?)(?:\s*[,/]\s*([\d.]+%?))?\s*\)$/.exec(t);
+  if (m) return [num(m[1], 255), num(m[2], 255), num(m[3], 255), alpha(m[4])];
+  m = /^hsla?\(\s*([\d.]+)(?:deg)?[\s,]+([\d.]+)%[\s,]+([\d.]+)%(?:\s*[,/]\s*([\d.]+%?))?\s*\)$/.exec(t);
+  if (m) {
+    const [h, sat, l] = [parseFloat(m[1]) / 360, parseFloat(m[2]) / 100, parseFloat(m[3]) / 100];
+    const f = (n) => {
+      const k = (n + h * 12) % 12;
+      return l - sat * Math.min(l, 1 - l) * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    };
+    return [f(0), f(8), f(4), alpha(m[4])];
+  }
+  m = /^oklch\(\s*([\d.]+%?)\s+([\d.]+%?|none)\s+([\d.]+|none)(?:deg)?(?:\s*\/\s*([\d.]+%?))?\s*\)$/.exec(t);
+  if (m) {
+    const L = num(m[1]);
+    const C = m[2] === "none" ? 0 : m[2].endsWith("%") ? (parseFloat(m[2]) / 100) * 0.4 : parseFloat(m[2]);
+    const H = m[3] === "none" ? 0 : (parseFloat(m[3]) * Math.PI) / 180;
+    const a = C * Math.cos(H), b = C * Math.sin(H);
+    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+    const mm = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+    const s2 = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+    const lin = [
+      4.0767416621 * l - 3.3077115913 * mm + 0.2309699292 * s2,
+      -1.2684380046 * l + 2.6097574011 * mm - 0.3413193965 * s2,
+      -0.0041960863 * l - 0.7034186147 * mm + 1.707614701 * s2,
+    ].map((x) => Math.min(1, Math.max(0, x)));
+    const enc = (x) => (x <= 0.0031308 ? 12.92 * x : 1.055 * x ** (1 / 2.4) - 0.055);
+    return [...lin.map(enc), alpha(m[4])];
+  }
+  return null;
+}
+
+function luminance([r, g, b]) {
+  const lin = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}
+
+function contrastMode(args) {
+  if (!args.length || args.length % 2) fail("contrast takes pairs: <text colour> <background>");
+  console.log("| text | background | ratio |\n|---|---|---|");
+  for (let i = 0; i < args.length; i += 2) {
+    const fg = parseColour(args[i]);
+    const bg = parseColour(args[i + 1]);
+    if (!fg || !bg) fail(`cannot read "${!fg ? args[i] : args[i + 1]}"`);
+    if (bg[3] < 1) fail(`the background "${args[i + 1]}" is translucent: give the colour it renders as`);
+    const mixed = fg.slice(0, 3).map((c, k) => c * fg[3] + bg[k] * (1 - fg[3]));
+    const [x, y] = [luminance(mixed), luminance(bg)];
+    const ratio = (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05);
+    console.log(`| ${args[i]} | ${args[i + 1]} | ${ratio.toFixed(2)} |`);
+  }
+}
+
 // ---------------------------------------------------------------- output
 
 const rel = (p) => relative(process.cwd(), p).split("\\").join("/") || p;
@@ -1185,12 +1321,17 @@ function report(opts, files, strings, findings, notes) {
   console.log(`Scanned ${scanned}. ${findings.length} findings: ${blocks} block, ${findings.length - blocks} check.`);
   for (const [k, v] of Object.entries(counts).sort((a, b) => b[1] - a[1])) console.log(`  ${k}: ${v}`);
   for (const n of notes) console.log(`Note: ${n}`);
-  console.log("Shown as ⍽ = U+00A0, · = U+202F. Heuristic: read each finding in context before changing anything.");
+  if (opts.mode === "copy") console.log("Shown as ⍽ = U+00A0, · = U+202F.");
+  console.log("Heuristic: read each finding in context before changing anything.");
 }
 
 // ---------------------------------------------------------------- main
 
 const opts = parseArgs(process.argv.slice(2));
+if (opts.mode === "contrast") {
+  contrastMode(opts.paths);
+  process.exit(0);
+}
 const notes = [];
 const files = selectFiles(opts, notes);
 let strings = null;
@@ -1201,6 +1342,7 @@ if (opts.mode === "ui") {
 } else {
   strings = [];
   const pinned = [];
+  const keyCalls = [];
   for (const { path } of files) {
     const src = readFileSync(path, "utf8");
     const ext = extname(path).toLowerCase();
@@ -1210,7 +1352,18 @@ if (opts.mode === "ui") {
     else {
       strings.push(...extractCode(src, path));
       const line = lineIndex(src);
-      for (const m of maskComments(src).matchAll(RE_PINNED_LOCALE)) pinned.push({ file: path, line: line(m.index), text: m[0], lang: null });
+      const masked = maskComments(src);
+      for (const m of masked.matchAll(RE_KEY_CALL)) {
+        const key = m[2] ?? m[4] ?? m[6];
+        // `t("key", "Text")` or `t("key", { defaultValue })` shows that text when the key is missing.
+        const fallback = m[2] != null && /^\s*,\s*(?:["'`]|\{\s*defaultValue\b)/.test(masked.slice(m.index + m[0].length, m.index + m[0].length + 40));
+        if (!/\$\{/.test(key)) keyCalls.push({ file: path, line: line(m.index), key, fallback });
+      }
+      // `t(own ? "a.delete" : "a.leave")` asks for two keys.
+      for (const m of masked.matchAll(RE_KEY_TERNARY)) {
+        for (const key of [m[2], m[4]]) keyCalls.push({ file: path, line: line(m.index), key });
+      }
+      for (const m of masked.matchAll(RE_PINNED_LOCALE)) pinned.push({ file: path, line: line(m.index), text: m[0], lang: null });
     }
   }
   strings.sort((a, b) => (a.file === b.file ? a.line - b.line : a.file < b.file ? -1 : 1));
@@ -1246,6 +1399,17 @@ if (opts.mode === "ui") {
     }
     if (catalogLangs.size > 1) {
       for (const p of pinned) findings.push({ ...p, rule: "pinned-locale", level: "check", hint: "dates and numbers follow the UI language: pass the current i18n language, not a fixed locale" });
+    }
+    if (catalogLangs.size) {
+      for (const c of keyCalls) {
+        if (hasKey(CATALOG_KEYS, c.key)) continue;
+        const hint = hasKey(FILE_KEYS, c.key)
+          ? "the key starts with its catalog's file name: right if the app merges each file under its name (next-intl, vue-i18n); with i18next namespaces the screen shows the key"
+          : c.fallback
+            ? "no catalog has this key: every language shows the default text written in the call"
+            : "no catalog has this key: the screen shows the key itself (a namespace written into the key?)";
+        findings.push({ file: c.file, line: c.line, text: c.key, lang: null, rule: "missing-key", level: "check", hint });
+      }
     }
     const code = catalogLangs.size ? codeLiterals(files) : null;
     if (code) {

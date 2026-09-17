@@ -211,7 +211,8 @@ Decided for design on 2026-09-16: one umbrella, `netsu-peccable`, and no separat
 The blind routing test (JOURNAL) shows these win sentences from it while they stay installed:
 `impeccable` on redesigns, `ui-ux-pro-max` on fonts, palettes and dark mode,
 `make-interfaces-feel-better` on animation and "feels off", `frontend-design` on landing pages.
-Adopting it means removing them.
+Adopting it means removing them. Decision of 2026-09-17: Netsuma keeps `impeccable` installed,
+so the two live side by side and requests can still reach either one.
 
 Since 2026-09-17 each impeccable command has a framed child: polish (`details.md`), bolder,
 quieter and distill (`emphasis.md`), harden (`stress-test.md`), onboard, delight, overdrive

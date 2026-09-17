@@ -31,7 +31,9 @@ The `ui` scan reports `default-font`, `font-tag`, `justify` and `root-no-select`
 
 Each line that fails is one finding, with every place it occurs.
 
-1. **Families.** Two at most; one is often right for product UI. Each comes from `## Look`.
+1. **Families.** Two at most; one is often right for product UI. Each comes from `## Look`, and
+   the name in `font-family` is the name the loaded face declares (`Inter` and `Inter Variable`
+   are two different names).
 2. **Scale.** A ratio of about 1.2 for dense UI, 1.25 to 1.333 for content pages. Values off the
    scale (`text-[13px]`) are findings.
 
@@ -112,7 +114,8 @@ Severity follows `references/review-ui.md` §6: text that cannot be read or cont
 be recovered is P1; a broken scale or hierarchy P2; the rest P3.
 
 Proof, proportionate to the change: the `ui` scan with zero `block` on the changed files; one
-capture at 375 px and one at desktop width with the French strings; 200% zoom when sizes
+capture at 375 px and one at desktop width (a desktop app: its smallest and default window, as
+`references/review-ui.md` §2 says) with the French strings; 200% zoom when sizes
 changed. Code-only: say so.
 
 ## Anti-patterns

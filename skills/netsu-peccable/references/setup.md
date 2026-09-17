@@ -36,8 +36,9 @@ core service, installer strings, setup scripts. Add those folders. `--include` g
 patterns: after `--`, grep reads it as a file name.
 
 A file covers the voice when it states the address form and the product's words for each UI
-language. It covers the look when it names the fonts, the colors and the radius. If an existing
-file covers both, stop here. Tell the user which file the skill will follow, then go to §4.
+language. It covers the look when it names the fonts and the colours; radius and density can wait
+for their own requests. If an existing file covers both, stop here. Tell the user which file the
+skill will follow, then go to §4.
 
 A `DESIGN.md` in another format (YAML tokens in its front matter, sections from `## Overview` to
 `## Do's and Don'ts`, as Stitch and Impeccable write it) covers the look through its colour,
@@ -46,10 +47,11 @@ typography, layout, elevation and shape sections. Wherever this skill says `## L
 When documents disagree (`PRODUCT.md`, the design file, the code), the newest decision wins.
 List every conflict in the report instead of picking one silently.
 
-**Report-only requests** ("just the report", « ne change rien »): nothing is written to the project.
+**Report-only requests** ("just the report", « ne change rien »): nothing is written to the project.
 §3 puts its draft at the end of the report, under "Proposed design file", and asks whether to save
-it; §4 is skipped. The review then states that it was measured against a draft. The §2 questions go
-under the draft, each with its recommended answer; the review does not wait for them.
+it; §4 is skipped. The review then states that it was measured against a draft. Several report-only
+requests in one session share one draft: the first report holds it, the others point to it. The §2
+questions go under the draft, each with its recommended answer; the review does not wait for them.
 
 ## 2. Ask what the code cannot answer
 

@@ -19,7 +19,7 @@ applies, where the rules for the language come from, and how to record them.
 | `title-case` | Every word capitalised | Latin, Cyrillic and Greek scripts; not German |
 | `placeholder-mismatch`, `locale-missing`, `not-translated`, `edge-space` | Broken placeholders, missing keys, text left in code, glued strings | Needs several locale files and the code in one scan |
 | `address-mixed`, and the `Note: address` tally | Formal and informal "you" mixed | Pronouns only; de, es, ru, uk, zh |
-| `paren-plural`, `pinned-locale`, `long-tooltip` | `fichier(s)` in fr, en, es, de, it, pt; a fixed locale in `Intl`; a tooltip over 80 characters (40 in CJK) | pinned-locale needs two UI languages |
+| `paren-plural`, `pinned-locale`, `long-tooltip`, `missing-key` | `fichier(s)` in fr, en, es, de, it, pt; a fixed locale in `Intl`; a tooltip over 80 characters (40 in CJK); a key the code asks for that no catalog has | pinned-locale needs two UI languages |
 | `cjk-punct` | A half-width `,` `.` `;` next to Chinese or Japanese text | `：` `？` `！` follow `DESIGN.md` |
 | `lexicon` | Nothing | Needs `words-<code>.md` |
 

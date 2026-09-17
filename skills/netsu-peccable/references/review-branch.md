@@ -23,21 +23,26 @@ concern once and move on.
 A target the user names wins: `pr 482`, a branch, a ref. Set it once and use it in every command
 below. Otherwise the target is `HEAD`, and the scope is the first that applies:
 
-1. The branch is ahead of its merge base with the default branch: that range, plus uncommitted
-   changes, each counted.
+1. The branch is ahead of its merge base with the default branch: that range. Uncommitted and
+   new files are counted and listed apart, and reviewed only when the user asks.
 2. The tree has uncommitted changes: those.
 3. Neither: there is nothing to review. Check for an open pull request on this branch and offer
    it first; otherwise offer the last commit (short hash and subject), a target to name, or a
    review of the screens as they are (`references/review-ui.md`). Then wait.
 
+The default branch is `origin/<name>` as last fetched; if the local branch of that name is behind,
+say so. Every command is read-only; `GIT_OPTIONAL_LOCKS=0` keeps `git status` from touching the
+index.
+
 ```bash
+export GIT_OPTIONAL_LOCKS=0
 default=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo origin/main)
 target=HEAD                                             # or a branch, a ref, or a pull request:
 git fetch origin pull/482/head:refs/remotes/pr/482 && target=refs/remotes/pr/482
 base=$(git merge-base "$default" "$target")
 git log --oneline "$base".."$target"
 git diff --name-only "$base" "$target"                  # the committed change
-git diff --name-only "$base"; git ls-files --others --exclude-standard   # target HEAD only: uncommitted and new files too
+git status --short 2>/dev/null | wc -l                  # target HEAD only: uncommitted and new files, counted
 ```
 
 Leave out lockfiles, snapshots, generated files, vendored code and binaries, and name them.
@@ -55,7 +60,8 @@ git grep -n -e '--color-accent' "$target" -- src | head
 
 ## 3. Read what was removed
 
-Regressions are invisible after the change. Read the removed side:
+Regressions are invisible after the change. Read every removed line in the surfaces of §2; for
+the rest of the change, the grep below is enough:
 
 ```bash
 git diff -U0 "$base" "$target" -- '*.tsx' '*.jsx' '*.vue' '*.svelte' '*.css' | grep -E '^-[^-]' | grep -E 'aria-|role=|alt=|focus|tabindex|prefers-|lang=|dir=|t\(|i18n'
@@ -70,8 +76,9 @@ Read the pull request title and body, the linked issue and the commit messages. 
 what is missing, not only what is there:
 
 - a new variant or theme applied to some states but not all (hover, focus, disabled, loading);
-- a new string without a key in every locale file (the `copy` scan reports `not-translated`,
-  `locale-missing`, `placeholder-mismatch`);
+- a new string without a key in every locale file, or a key the code asks for that no catalog
+  has (the `copy` scan reports `not-translated`, `locale-missing`, `placeholder-mismatch`,
+  `missing-key`);
 - a new component without empty, loading, error or narrow-width states;
 - a control added to one screen but not to its siblings.
 
@@ -79,8 +86,9 @@ Scope creep is not a finding here.
 
 ## 5. Scans on the change only
 
-Target `HEAD`: the scans take `--changed`, which works from the merge base, so files changed only
-on the default branch stay out.
+`--changed` works from the merge base, so files changed only on the default branch stay out, but
+it includes uncommitted files. With uncommitted work in the tree, scan the committed change as
+for another target (below).
 
 ```bash
 node <skill dir>/scripts/scan.mjs ui --changed "$default"
@@ -96,7 +104,8 @@ node <skill dir>/scripts/scan.mjs ui <scratch>/pr-482
 ```
 
 Then run the passes of `references/review-ui.md` §4 and §5 on the surfaces of §2, reading
-rather than rendering unless the project has a cheap preview or the user asks.
+rather than rendering unless the project has a cheap preview or the user asks. Load
+`references/ai-look.md` and `references/states.md` only for surfaces whose findings need them.
 
 ## 6. Report
 

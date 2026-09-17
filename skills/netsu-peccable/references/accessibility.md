@@ -11,7 +11,7 @@ what fails. Load this only when the user asks for an accessibility check or fix 
 |---|---|
 | Changes | Markup, ARIA, focus handling, keyboard handlers and the styles they need, on the screens named |
 | Never changes | The look, the wording beyond accessible names, the flows. A redesign is not a fix |
-| Asks first | Nothing. The standard is WCAG 2.2 AA unless the user names another (RGAA 4.1.2, §3) |
+| Asks first | Nothing. The standard is WCAG 2.2 AA unless the user names another (RGAA 4.1.2, §3), also when the project claims no conformance |
 | Stops when | Both walks of §2 pass on the named screens, or every failure is reported |
 | Returns | The findings table of §5, with the criterion for each, and the proof |
 
@@ -26,9 +26,9 @@ grep -rnE 'outline(-none|:\s*(none|0))|:focus[^-]' <files> | head
 grep -rnE 'user-scalable=no|maximum-scale=1' index.html src 2>/dev/null
 ```
 
-The scan reports `static-click`, `positive-tabindex`, `hidden-focusable`, `img-alt`,
-`late-live-region`, `outline-none` and `hover-only`; eslint-plugin-jsx-a11y has the same checks
-when the project uses it (read 2026-09-17). A scan hit is a lead, not a verdict.
+The scan reports `icon-button-name`, `static-click`, `positive-tabindex`, `hidden-focusable`,
+`img-alt`, `late-live-region`, `outline-none` and `hover-only`; eslint-plugin-jsx-a11y has the same
+checks when the project uses it (read 2026-09-17). A scan hit is a lead, not a verdict.
 
 ## 2. Two walks, on each named screen
 
@@ -104,8 +104,9 @@ Standard: WCAG 2.2 AA
 | P0 | `clip-row.tsx:18` | Delete shown on hover only, unreachable by keyboard | `group-focus-within:opacity-100` | SC 2.1.1 |
 ```
 
-Proof: the `ui` scan with zero `block` on the changed files; the keyboard walk written as steps
-(where focus went); a screen-reader transcript or "code-only". No score, no "100% accessible".
+Proof: the keyboard walk written as steps
+(where focus went); a screen-reader transcript or "code-only"; the `ui` scan with zero `block`
+on the changed files, which is a floor, not the proof. No score, no "100% accessible".
 
 ## Anti-patterns
 

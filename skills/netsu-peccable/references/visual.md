@@ -41,7 +41,7 @@ Edit the token file, then replace each instance with the token utility and delet
 value. A one-off value that no token covers is either a missing token or a mistake.
 
 Tailwind v4 token block. The values are the "shot log" example from `references/new-ui.md`; each
-pair was checked with the snippet in `references/colors.md` §2.
+pair was checked with the `contrast` mode of `references/colors.md` §2.
 
 ```css
 @import "tailwindcss";

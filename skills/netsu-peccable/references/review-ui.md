@@ -53,9 +53,9 @@ npx react-doctor@latest design --verbose              # optional; downloads the 
 ```
 
 Besides the AI look, the `ui` scan flags markup that fails keyboard and screen-reader users
-(`static-click`, `positive-tabindex`, `hidden-focusable`, `img-alt`, `late-live-region`), raw
-palette colours and fixed icon colours, and type settings (`font-tag`, `justify`,
-`root-no-select`); the same checks exist in eslint-plugin-jsx-a11y (read 2026-09-17).
+(`icon-button-name`, `static-click`, `positive-tabindex`, `hidden-focusable`, `img-alt`,
+`late-live-region`), raw palette colours and fixed icon colours, and type settings (`font-tag`,
+`justify`, `root-no-select`); the same checks exist in eslint-plugin-jsx-a11y (read 2026-09-17).
 
 A translated app keeps its text in locale files: add the screen's namespace for each language to
 the copy scan. The scan is a regex heuristic: it misses strings built at run time and can flag
