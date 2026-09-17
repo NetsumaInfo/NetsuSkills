@@ -168,6 +168,16 @@ It alone decides whether the skill fires. So:
 - States explicitly **when NOT to use it**, whenever it overlaps another skill.
 - 1024 characters max. Dense, no atmosphere.
 - It must pass this test: read alone, out of context, can you decide yes/no?
+- **A flag or keyword belongs here only if it can carry a request on its own.** If the skill takes
+  flags, most of them modify a request that already fires on its own words — listing those buys a
+  token match and nothing else, and it can contradict the exclusion clause four lines above it.
+  `netsu-implement` listed `--review` as a trigger while excluding review work, so
+  `--review this branch before I merge` matched it. Put a flag in the `description` only when
+  removing it would leave the sentence matching nothing.
+
+Test the description against the descriptions it competes with, not on its own. Show a fresh
+context **only** the descriptions — no bodies — and have it route real sentences. Both defects
+found this way so far were invisible to reading.
 
 ## 5. Never disable model invocation
 
@@ -214,6 +224,12 @@ Every skill ships at least one of:
 - a before/after example.
 
 A skill that is only advice is rejected.
+
+**Date any claim about model behaviour.** A rule tuned to how models failed in 2024 is tuned to a
+machine that no longer exists: package-hallucination rates fell from roughly 20% to between 4.6%
+and 6.1% in about a year, and a threshold calibrated on the old figure fires on nothing. Write the
+measurement date and the cohort next to the number, so the next reader can tell a live threshold
+from a fossil. The underlying mechanism usually outlives the rate — say which is which.
 
 ## 9. Anti-patterns section required
 

@@ -71,7 +71,9 @@ specializing in…". Exactly the filler rule 7 bans. Good case study for an anti
 
 ## Wave 1 — the core
 
-**Status: `netsu-readme` shipped as an umbrella. The other three are scoped, not started.**
+**Status: `netsu-readme` shipped. `netsu-implement` written and executed twice on the full path;
+the fast path and `--resume` still have no real run. `netsu-design-review`,
+`netsu-commit` and `netsu-code-review` are scoped, not started.**
 Writing begins on explicit request.
 
 | # | Skill | Trigger | Replaces |
@@ -80,6 +82,7 @@ Writing begins on explicit request.
 | 2 | `netsu-readme` | "write the README", "redo the README" | `create-readme`, `readme-blueprint-generator`, `readme-i18n` |
 | 3 | `netsu-commit` | "commit", "commit and push" | `commit`, `aiblueprint-git-commit`, `caveman-commit` |
 | 4 | `netsu-code-review` | "review my code", "review the PR" | `requesting-/receiving-code-review`, `thermo-nuclear-…`, `caveman-review` |
+| 5 | `netsu-implement` | "implement X", "add a button", "one shot this", "fix this bug" | `apex`, `oneshot` ×2, `epct` ×5, `executing-plans`, `subagent-driven-development` |
 
 Watch out on `code-review`: `/code-review` already exists natively. The skill is only justified
 if it encodes criteria the native one does not know. Decide when writing it, not before.
@@ -232,8 +235,43 @@ project-specific skill lives here without being offered to everyone.
 
 ---
 
+## What upstream decided, and why it matters here
+
+`Melvynx/aiblueprint` is where `apex`, `oneshot` and the `aiblueprint-*` duplicates come from.
+Checked 2026-09-15; last commit 2026-09-10. Two findings worth keeping.
+
+**The entry file got cut, the depth did not.** Commit `chore(skills): slim catalog to Apex style`
+(2026-09-06) took `apex/SKILL.md` from **124 lines to 28**. All seventeen `steps/*.md` are
+byte-identical to the installed copy. Nothing was deleted — the parent stopped teaching and went
+back to routing. That is rule 2, reached independently by somebody with a large installed base.
+The installed copy here dates from 9 August and still carries the fat entry file.
+
+**A skill can change meaning under a stable name.** `oneshot` is gone from the public catalog
+(12 skills) and now ships in the paid bundle, redefined as a *fixed* sequence explicitly opposed
+to `apex`: adaptive checkpoints on one side, fixed order on the other. The installed copy
+predates the split and describes a third thing — a narrow fast edit. Anyone reasoning about
+"the oneshot skill" is reasoning about whichever version they happen to have on disk.
+
+Consequence for the audit in wave 6: version drift is invisible. A skill directory carries no
+upstream reference, no version, and no date beyond its mtime. `skill-audit` should diff installed
+skills against their source repository where one is known, not just read what is on disk.
+
+### Invocation, measured again
+
+The earlier figure was 175 of 257 reachable `SKILL.md` (68%). Narrowed to the top level of
+`~/.claude/skills` — about 180 directories — the number is **two**: `impeccable` and
+`gpt-image-2-style-library` are the only ones the agent can select on its own. Everything else,
+including every skill worth keeping, is switched off.
+
+---
+
 ## Ideas (not yet qualified)
 
+- **Nothing owns "prove this works".** Surfaced by the `netsu-implement` routing test: `--proof
+  check the upscale output` routes nowhere. Every installed skill that verifies does so as the
+  tail of something else — implementing, reviewing, debugging. A standalone "run the real flow and
+  show me current evidence", with no change to make, has no home. Qualify it before writing:
+  is it a real repeated moment, or just the tail of `netsu-implement` asked out of order?
 - `design-system` — tokens, scales, themes
 - `debug` — would replace `systematic-debugging`
 - `prd` / `tasks` — check whether existing versions are good enough
@@ -242,8 +280,8 @@ project-specific skill lives here without being offered to everyone.
 
 1. **Where to start?** `skill-audit` (wave 6) pays off faster than wave 1: it is testable on the
    180 installed directories and it produces the material for the rest.
-2. **Anti-slop: separate skill or baked-in rule?** If `readme` already enforces anti-slop,
-   `deslop-prose` is redundant. Decide before writing either.
+2. **Anti-slop: separate skill or baked-in rule?** Answered for READMEs: baked in, reachable as an
+   entry point (`netsu-readme` voice.md).
 3. **The 175 disabled skills**: re-enable case by case, or bulk uninstall and keep only what
    gets rewritten here?
 4. **Blender**: which precise repeated task? Resolve and AE are justified by NetsuRush,

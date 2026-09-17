@@ -55,6 +55,16 @@ only what the repo cannot answer, agrees the structure with you, then writes. Au
 README claim by claim rather than editing around it, strips AI slop, and picks badges and images
 that carry real information. Nothing goes in the file that is not in the repository.
 
+### [`netsu-implement`](skills/netsu-implement) · umbrella, five children
+
+Takes a request from words to verified code. Weighs the job first and says which route it is
+taking — a narrow edit gets one sentence of acceptance and a cold re-read of its own diff, a
+feature gets a contract, a task graph and an independent review. Records what was already in
+your working tree so it never absorbs work that is not its own, and classifies every check it
+runs, so a suite that could not start is never reported as a suite that passed. Refuses to write a package name, symbol or config key it
+has not opened, and adds as little code as the change allows. It stops at the working tree and
+leaves git alone.
+
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in
 [`docs/BACKLOG.md`](docs/BACKLOG.md).
