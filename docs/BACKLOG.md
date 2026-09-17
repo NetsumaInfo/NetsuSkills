@@ -229,6 +229,9 @@ the skill, or every edit there fails.
 | `claude-design`, `chrome-extension-ui` | Covered: setup questions, extension popups and store listings |
 | `design-md`, `stitch-design`, `sleek-design-mobile-apps` | Vendor tools whose server or key is not configured here |
 
+Compared, not installed: `jakubkrehel/skills` (the `better-*` family). Its useful rules were
+added on 2026-09-18; see JOURNAL.
+
 Keep: `react-doctor` (a tool the skill calls as an optional check), `shadcn`,
 `tailwind-design-system`, `use-style` (named styles on request), `copy-editing` (blog and
 newsletter copy, which `netsu-peccable` excludes), `deslop` (code), `huashu-design` (HTML

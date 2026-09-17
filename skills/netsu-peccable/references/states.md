@@ -63,6 +63,9 @@ distracts; use it for 2 to 10 s, and a percent-done bar past 10 s.
 | Page | Replaces the page: what happened, what is safe, the way out | Cette page ne s'est pas ouverte. Vos projets ne sont pas touchés. [Recharger] [Retour aux projets] | This page didn't open. Your projects are safe. [Reload] [Back to projects] |
 | Background | A toast that stays until dismissed, plus a status marker on the item | 2 rushs n'ont pas été synchronisés. [Voir] | 2 clips didn't sync. [View] |
 
+- **Prevent**: the right `autocomplete` token on personal fields (WCAG 2.2 SC 1.3.5),
+  `spellcheck="false"` on emails and codes, spaces trimmed before validating, keystrokes never
+  filtered away.
 - **Say**: what failed, why when known, what to do now. Same words inline and in the summary
   (GOV.UK Design System, *Error message*). An error code goes in a details line, for support.
 - **Never**: « Une erreur est survenue » alone; « Oups »; color as the only signal; a cleared
@@ -89,7 +92,9 @@ distracts; use it for 2 to 10 s, and a percent-done bar past 10 s.
 
 - **Never**: « Succès ! », « avec succès », "successfully"; a modal for routine success;
   confetti on a save.
-- **A11y**: a `role="status"` region (`aria-live="polite"`); focus stays where it was. A toast
+- **A11y**: a `role="status"` region (`aria-live="polite"`) that is in the page, empty, before
+  its text changes: a region added together with its message is often not announced (MDN, *ARIA
+  live regions*, read 2026-09-18; scan `late-live-region`). Focus stays where it was. A toast
   with an action never dismisses on a timer: it stays until dismissed, and the action is
   reachable by keyboard.
 
@@ -218,6 +223,9 @@ Cancel   Annuler / Cancel          Annuler                              Cancel
   body. Escape cancels. For a destructive action, initial focus goes to the least destructive
   button (WAI-ARIA Authoring Practices, *Dialog (Modal) pattern*, read 2026-09-16). Focus
   returns to the trigger on close.
+
+A timed toast pauses while hovered or focused (WCAG 2.2 SC 2.2.1). A dialog or drawer whose body
+scrolls keeps its title and action row in place, with `overscroll-behavior: contain`.
 
 ## Toast or inline?
 

@@ -17,6 +17,11 @@ Keep an animation only if removing it would lose information.
 
 `## Look` says `minimal`: feedback and state change only.
 
+An action repeated many times a minute (typing, row hover, tab switching, arrow keys) changes at
+once, or with a colour transition of 100 ms at most. Every animated change leaves a static cue when
+it ends: a colour, an icon or a label (Krehel, github.com/jakubkrehel/skills, read 2026-09-18,
+`better-ui`).
+
 A landing page may have one entrance on the first view, 100 to 500 ms. Content is there without
 script: never start a section at `opacity: 0` and wait for JavaScript or a scroll observer.
 
@@ -195,6 +200,14 @@ the whole list.
   10% in Chrome DevTools (More tools, Animations) to catch the in-between frames.
 - Reduced motion emulated (DevTools, Rendering, "Emulate CSS media feature
   prefers-reduced-motion"): the same interaction fades, nothing travels.
+- Timing as it runs: paste this in the console right after the interaction. A CSS transition
+  carries its easing in `getTiming()`, a CSS animation in its keyframes (checked in Chromium,
+  2026-09-18). Durations and easings must match the `## Look` values.
+
+```js
+document.getAnimations().map((a) => ({ what: a.transitionProperty ?? a.animationName, ms: a.effect.getTiming().duration, easing: a.effect.getTiming().easing, keyframes: a.effect.getKeyframes().map((k) => k.easing).join(",") }))
+```
+
 - Layout shifts: record the interaction in the Performance panel; the Layout shifts track stays
   empty. Or paste this in the console, run the interaction, and expect no line:
 

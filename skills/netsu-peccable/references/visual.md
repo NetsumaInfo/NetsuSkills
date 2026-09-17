@@ -59,6 +59,10 @@ pair was checked with the snippet in §Colour.
   --color-danger: #B42318;
   --color-warning: #8A5A00;
   --color-success: #18794E;
+  --color-danger-ink: #FFFFFF;  /* text on danger: 6.57 */
+  --color-warning-ink: #FFFFFF; /* 5.93 */
+  --color-success-ink: #FFFFFF; /* 5.41 */
+  --color-focus: #1F6F5C;       /* ring 2px off the control: 5.49 on page, 6.02 on surface */
   --font-sans: "Source Sans 3", ui-sans-serif, system-ui, sans-serif;
   --radius-control: 4px;
   --radius-panel: 8px;
@@ -80,12 +84,17 @@ pair was checked with the snippet in §Colour.
     --color-danger: #F07A6E;
     --color-warning: #D9A441;
     --color-success: #4CC38A;
+    --color-danger-ink: #0E1512;  /* 6.80; white would be 2.72 */
+    --color-warning-ink: #0E1512; /* 8.23 */
+    --color-success-ink: #0E1512; /* 8.36 */
+    --color-focus: #5FB39B;       /* 7.04 on page, 6.46 on surface */
   }
 }
 ```
 
 Utilities follow the names: `bg-page`, `bg-surface`, `text-ink`, `text-ink-muted`,
-`border-line`, `bg-accent`, `text-accent-ink`, `rounded-control`, `rounded-panel`.
+`border-line`, `bg-accent`, `text-accent-ink`, `text-danger-ink`, `outline-focus`,
+`rounded-control`, `rounded-panel`.
 
 shadcn/ui projects keep their variable names; map instead of adding a second set:
 
@@ -124,13 +133,19 @@ React Native: the same roles as keys of one theme object per scheme, read throug
   when there is no package manager), with `font-display: swap`. A system stack is a valid choice
   for a tool that must match its host or work offline; record it in `## Look`.
 - Emphasis by weight or size. Not by gradient text, not by one italic serif word.
+- `font-weight` and `font-variant-numeric: tabular-nums slashed-zero`, not the raw
+  `font-variation-settings` or `font-feature-settings` tags (MDN, *font-feature-settings*, read
+  2026-09-18; scan `font-tag`). Load every weight and style the tokens use, or the browser fakes
+  them. Text aligns to the start, never justified (scan `justify`).
+- Long unbroken text (paths, URLs, IDs, German compounds) wraps with `overflow-wrap: anywhere` or
+  is truncated with the full value reachable; a flex child that holds it gets `min-width: 0`.
 - Never block zoom (`user-scalable=no`, `maximum-scale=1`). Sizes in `rem`, so text zoomed to
   200% still fits (WCAG 2.2 SC 1.4.4, read 2026-09-17). React Native keeps `allowFontScaling` on.
 
 ## Colour
 
 - Semantic tokens only: page, surface, ink, ink-muted, line, accent, danger, warning, success.
-  No `blue-500` in a component.
+  No `blue-500` in a component (scan `palette-color`).
 - Status colours and chart series also differ by label, icon or pattern. Check them with the
   colour-blindness emulation in the browser's rendering tools.
 - A landing page may let one colour own a whole region when `## Look` records it. Product UI
@@ -150,8 +165,16 @@ React Native: the same roles as keys of one theme object per scheme, read throug
   stock grey: `color-mix(in oklab, var(--color-ink) 65%, var(--color-surface))`, then check it.
 - Never colour alone: an error has an icon and a message, a chart series has a label or a
   shape, the current tab has a marker.
-- OKLCH is an option for ramps: keep hue and chroma, step lightness
-  (`oklch(0.52 0.08 170)`, hover `oklch(0.47 0.08 170)`). Check the resulting hex for contrast.
+- Every fill that carries text has its own ink token (`accent-ink`, `danger-ink`…), checked in
+  both themes: white on a light status colour fails in dark mode. A contrast fix changes the
+  lightness and keeps the hue. Text over an image or a translucent surface is measured on its
+  worst region, or gets a scrim.
+- Icons draw with `currentColor`, so hover, disabled and dark states follow (scan
+  `svg-fixed-color`).
+- OKLCH is an option for ramps: keep the hue, step the lightness, and lower the chroma toward both
+  ends so every step stays inside sRGB (`oklch(0.52 0.08 170)`, hover `oklch(0.47 0.08 170)`). Check
+  the gamut and then the contrast of each step (Krehel, github.com/jakubkrehel/skills, read
+  2026-09-18, `palette-generation.md`).
 
 Contrast proof, zero dependencies, pairs as `text background`. Works in Git Bash and PowerShell 7:
 
@@ -227,6 +250,12 @@ label on the accent included: white on a mid blue often fails.
   With no saved choice, listen to `matchMedia("(prefers-color-scheme: dark)")` changes and update
   `data-theme`.
 - Contrast is checked in both themes, with the snippet above.
+- Switching themes must not run every colour transition at once: add a style with
+  `*,*::before,*::after{transition:none!important}`, set `data-theme`, read
+  `document.body.offsetHeight`, and remove the style two animation frames later. Do the same in
+  the `matchMedia` listener (next-themes calls it `disableTransitionOnChange`, read 2026-09-18).
+- `@media (prefers-contrast: more)` moves `line`, `line-strong` and `ink-muted` toward `ink`,
+  checked again (MDN, *prefers-contrast*, read 2026-09-18). `forced-colors` keeps system colours.
 - React Native: `useColorScheme()`. Adobe CEP: follow the host skin, not the OS:
   `new CSInterface().getHostEnvironment().appSkinInfo`, refreshed on the
   `com.adobe.csxs.events.ThemeColorChanged` event.

@@ -141,6 +141,8 @@ question. A request to plan without building stops here, with the content sheet 
   a number.
 - Filters, the open tab and the selection live in the URL. Back restores the scroll position and
   what was typed. Breadcrumbs from three levels deep. A modal is never a page.
+- A component that lives in a side panel, a split view or a resizable window adapts to its
+  container (`@container`), not to the viewport; viewport breakpoints are for the page shell.
 - Structure: one `h1`, headings in order, landmarks (`header`, `nav`, `main`, `footer`), a title
   per page, and focus moved to the new page's heading after a route change. A meaningful image
   says what it shows in `alt`; a decorative one has `alt=""`.
@@ -165,14 +167,17 @@ large ones; `loading="lazy"` below the fold only, never on the hero; never an em
 Platform notes:
 
 - Tauri v2: the webview is WebView2 on Windows, WKWebView on macOS, WebKitGTK on Linux. Check
-  CSS support against the oldest one you ship.
+  CSS support against the oldest one you ship. `user-select: none` only on toolbars, tabs and
+  drag regions: file names, paths, errors and logs stay selectable (house rule; scan
+  `root-no-select`).
 - Adobe CEP panels run old Chromium (CEF 88 in CEP 11, 99 in CEP 12). Tailwind v4 needs
   Chromium 111 (tailwindcss.com/docs/compatibility, read 2026-09-16), so a CEP panel uses
   Tailwind v3 or plain CSS with hex values. Follow the host's panel colours.
 - Browser extension popups: set the width in CSS (Chrome caps a popup at 800×600 px) and keep
   the primary action visible without scrolling. A popup closes on the first click outside:
   it draws at once and saves every input as it changes. A side panel has no fixed width. UI
-  injected into a page lives in a shadow root and is removed on teardown. The toolbar button
+  injected into a page lives in a shadow root, with `translate="no"` on its host, and is removed
+  on teardown. The toolbar button
   has a title; its badge holds 4 characters at most. An options page saves as it changes.
 - React Native: no CSS. Tokens live in one theme object; the rules still apply.
 - Native mobile: the platform's navigation bars and back gesture, never blocked; safe areas

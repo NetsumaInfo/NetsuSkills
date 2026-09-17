@@ -9,8 +9,8 @@ Paths to `scripts/scan.mjs` are relative to this skill's folder. French examples
 
 ## 1. Load the voice
 
-1. Read `## Voice`, `### Words we use` and `### Examples` in `DESIGN.md` (or `VOICE.md`). No design file: run
-   `references/setup.md` first, then come back.
+1. Read `## Voice`, `### Words we use` and `### Examples` in `DESIGN.md` (or `VOICE.md`). No design
+   file: run `references/setup.md` first, then come back.
 2. Load `references/words-<lang>.md` for each UI language you write, or `references/words-any.md`
    when that language has no file.
 3. The string belongs to a state (empty, loading, error, success, disabled, offline, partial,
@@ -57,7 +57,7 @@ node <skill dir>/scripts/scan.mjs copy src --list
 | Loading | Name the operation and its object | Export de 3 rushs… | Exporting 3 clips… |
 | Success | Name the thing, and where it went | Timeline exportée dans Montage/Export | Timeline exported to Editing/Export |
 | Onboarding | One step, shown where it happens. The empty state is the first step; no tour of the interface | Glissez un dossier de rushs ici. | Drop a folder of clips here. |
-| Setting | Label: what happens when it is on. Description: the consequence | Ouvrir le dernier projet au démarrage / Sinon, l'app s'ouvre sur la liste des projets. | Open last project on startup / Otherwise the app opens on the project list. |
+| Setting | Label: what happens when it is on, never a negative ("Hide…", "Disable…"). Description: the consequence | Ouvrir le dernier projet au démarrage / Sinon, l'app s'ouvre sur la liste des projets. | Open last project on startup / Otherwise the app opens on the project list. |
 | Tooltip | What the label cannot hold: the target, the shortcut, the limit. Never the label again | Scinder à la tête de lecture (S) | Split at playhead (S) |
 | Push notification | What happened, then what to do. Two lines at most. No teaser | Export terminé : Montage_v3.mp4 / Ouvrez le dossier Export pour le récupérer. | Export finished: Edit_v3.mp4 / Open the Export folder to get it. |
 | Transactional email | Template below | | |
@@ -145,6 +145,10 @@ new Intl.NumberFormat("fr-FR", { style: "unit", unit: "gigabyte", maximumFractio
 new Intl.DateTimeFormat("fr-FR", { dateStyle: "long" }).format(date)                                     // "30 septembre 2026"
 new Intl.RelativeTimeFormat("fr", { numeric: "auto" }).format(-5, "minute")                             // "il y a 5 minutes"
 ```
+
+**Keep machine translation off what must not change.** Product names, file names, shortcuts,
+code and user content carry `translate="no"`; page translators such as Google Translate respect it
+(MDN, *translate*, read 2026-09-18).
 
 In a multilingual app, pass the current language (`i18n.language`), never a fixed `"fr-FR"`: a
 fixed locale shows French dates in every language.

@@ -48,6 +48,9 @@ Out of scope: <what it does not do>
 | Empty | `""`, `[]`, `null`, no avatar | An empty state, never a blank box |
 | Many | 1,000 rows, 50 options | Virtualized or paginated, the total shown, search above ~10 options |
 | Large numbers | `1234567.89` through `Intl.NumberFormat` | `tabular-nums`, no clipping, locale separators |
+| Unbreakable | A 60-character path, `Donaudampfschifffahrtsgesellschaft` | Wraps or truncates with the full value reachable; `min-w-0` on the flex child |
+| Scripts | An emoji, an Arabic name in a French sentence, Vietnamese or Thai marks | No clipped marks; user text in `<bdi>` or `dir="auto"` |
+| Width | The component in 320 px and 480 px boxes on the states page | Nothing overflows its box |
 
 ## 4. Semantics and keyboard
 

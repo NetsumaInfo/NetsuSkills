@@ -625,6 +625,34 @@ eight lines up; the German and Spanish address counts use pronouns only.
 Sizes after this pass: parent 84 of 100, children 137 to 298, scanner 1,260 lines, description
 747 characters.
 
+### Compared with jakubkrehel/skills — 2026-09-18
+
+Netsuma asked what the `better-*` skills of github.com/jakubkrehel/skills (MIT, commit 267330e1,
+2026-08-29) could add. One cold reader compared all 48 files with this skill; nothing was
+installed. Most of it was already covered, and most of its exact values are taste presets
+(motion numbers, shadow-as-border, icon stroke table, APCA as the default) that the "no default
+look" rule leaves out. Taken:
+
+- A scanner bug: `--changed <ref>` diffed against the ref itself, so files changed only on the
+  base branch were scanned. It now diffs from the merge base; checked in a throwaway repository.
+- Dark-theme text tokens: white on the example danger, warning and success fills measured 2.72,
+  2.25 and 2.22:1. Each fill now has its ink token, and a focus token, all measured.
+- Ten `ui` checks, mirroring eslint-plugin-jsx-a11y and MDN where they exist: `static-click`,
+  `positive-tabindex`, `hidden-focusable`, `img-alt`, `late-live-region`, `palette-color`
+  (one finding per file), `svg-fixed-color` (single-colour icons only), `root-no-select`,
+  `font-tag`, `justify`. On the five projects they add 0 to 105 findings each; the first
+  run's false positives (lucide's `<Image>` icon, logos and flags, a scraper selector) are
+  excluded.
+- Branch and pull-request review without checking anything out, removed lines read, a status
+  per finding; options built on request with a variant switcher; theme switches without a burst
+  of transitions; `prefers-contrast`; container queries; `translate="no"`; more stress cases;
+  a console snippet for animation timing, checked in Chromium (a transition keeps its easing in
+  `getTiming()`, an animation in its keyframes).
+
+Sources were read on 2026-09-18 before being cited (next-themes, MDN on `font-feature-settings`,
+`translate`, live regions and `prefers-contrast`, eslint-plugin-jsx-a11y). All 1,072 lexicon
+patterns still fire and the earlier fixtures give the same results.
+
 ### Merge checklist
 
 Passed. Umbrella: nine entry points in the routing table, nine resources named outside it with

@@ -14,6 +14,21 @@ report, nothing written. A design file drafted from this same code only shows ho
 from the rest of the app, not from a decision: say so in the report, and keep those findings at P3
 unless another rule applies.
 
+**A branch or a pull request.** Never check it out: `gh pr checkout`, `git switch` and
+`git stash` change the user's files. Fetch it (`git fetch origin pull/<n>/head:refs/remotes/pr/<n>`)
+and read it from there. `--changed` compares with the merge base, so only the branch's own
+files count. Read what the change removed as well:
+
+```bash
+git diff -U0 "$(git merge-base main HEAD)" -- '*.tsx' '*.jsx' '*.css' | grep -E '^-[^-]' | grep -E 'aria-|role=|alt=|focus|tabindex|prefers-|lang=|dir='
+```
+
+A removal with an equivalent replacement is not a finding (`aria-label` to `aria-labelledby`,
+`div role=button` to `<button>`). When a token, a theme file or a shared component changed, also
+check up to five screens that use it, and say how many were left out. Nothing changed: say so, and
+offer the last commit (hash and subject) or a review of the screen as it is (Krehel,
+github.com/jakubkrehel/skills, read 2026-09-18, `interface-review`).
+
 ## 2. See it
 
 Read `AGENTS.md` and `CLAUDE.md` before launching anything. Some projects forbid agents from
@@ -49,6 +64,11 @@ node <skill dir>/scripts/scan.mjs copy src/routes/exports.tsx src/components/exp
 node <skill dir>/scripts/scan.mjs ui --changed main   # branch review
 npx react-doctor@latest design --verbose              # optional; downloads the package, ask first
 ```
+
+Besides the AI look, the `ui` scan flags markup that fails keyboard and screen-reader users
+(`static-click`, `positive-tabindex`, `hidden-focusable`, `img-alt`, `late-live-region`), raw
+palette colours and fixed icon colours, and type settings (`font-tag`, `justify`,
+`root-no-select`); the same checks exist in eslint-plugin-jsx-a11y (read 2026-09-18).
 
 A translated app keeps its text in locale files: add the screen's namespace for each language to
 the copy scan. The scan is a regex heuristic: it misses strings built at run time and can flag
@@ -129,7 +149,9 @@ Test for the top two: **would a user contact support about this?** Yes means P0 
 Accessibility failures are P0 when they block the main task, P1 otherwise: no visible focus
 (WCAG 2.2 SC 2.4.7), text contrast under 4.5:1 or 3:1 for large text (SC 1.4.3), controls and
 focus rings under 3:1 (SC 1.4.11), a control with no accessible name (SC 4.1.2), a keyboard trap
-(SC 2.1.2), a target under 24×24 CSS px without spacing (SC 2.5.8). Read 2026-09-16.
+(SC 2.1.2), a target under 24×24 CSS px without spacing (SC 2.5.8). Read 2026-09-16. Also P1 at
+least: reduced motion ignored, content clipped at 320 px or 200% zoom, a truncated value with no
+way to read it, a destructive action with no confirmation or undo, a change shown only by motion.
 
 ## 7. Report
 
@@ -166,6 +188,9 @@ Verdict: <one line: the biggest problem, and whether the screen does its job>
 ### Not observed
 - <states, sizes, modes or devices not seen, and why>
 ```
+
+For a branch, add a Status column (Introduced, Regression, Pre-existing); at most three
+pre-existing findings, listed apart and left out of the verdict.
 
 Sort findings by severity. One root cause is one finding, with every place it occurs. The Rule
 cell names what the finding breaks: a `DESIGN.md` section, a scan rule, a React Doctor rule, a
@@ -205,6 +230,14 @@ These requests change one lever, through tokens, on the screen they name:
 
 Say which lever you changed, and show the same capture before and after. A request that changes
 the concept of the screen goes to `references/new-ui.md`.
+
+**Options to compare, only when the user asks to see some.** Build two or three versions on the real
+screen, selected with `?variant=<name>`, each at a different point on one lever (structure, density,
+emphasis, type or wording), all with the same accessibility and real content. A plain switcher
+outside the design system: arrow keys, `aria-current`, instant. Report
+`| Variant | Right when | Costs |` with no favourite. After the choice, build that one properly and
+delete the others and the switcher (Krehel, github.com/jakubkrehel/skills, read 2026-09-18,
+`variant`).
 
 ## 9. Do not over-fire
 

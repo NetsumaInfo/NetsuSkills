@@ -20,7 +20,8 @@ copy  extracts the strings a user reads (code, locale catalogs in JSON or TS, ex
       in code, keys the code never names. Pass the code folder with the locale folder, and
       --source with the language the others are translated from.
       Lexicons: references/words-<code>.md for each language found (fr en es de ja zh ship).
-ui    flags the generic AI look and focus/transition mistakes in markup and styles.
+ui    flags the generic AI look, focus, keyboard and transition mistakes, raw palette colors and
+      font settings in markup, styles and icon SVGs.
 
 Default path: src if it exists, else the current directory.
 Levels: block = wrong in any UI; check = often wrong, read it in context.
@@ -104,11 +105,13 @@ function changedFiles(ref) {
   } catch {
     fail("--changed needs a git repository");
   }
+  // What this branch changed: from the merge base, so files changed only on <ref> stay out.
   let names;
   try {
-    names = git(["diff", "--name-only", ref, "--"]) + git(["ls-files", "--others", "--exclude-standard"]);
+    const base = git(["merge-base", ref, "HEAD"]).trim();
+    names = git(["diff", "--name-only", base, "--"]) + git(["ls-files", "--others", "--exclude-standard"]);
   } catch {
-    fail(`git could not diff against "${ref}"`);
+    fail(`git found no common history with "${ref}"`);
   }
   return new Set(names.split("\n").filter(Boolean).map((n) => resolve(root, n)));
 }
@@ -155,7 +158,8 @@ function selectFiles(opts, notes) {
     if (changed && !changed.has(resolve(path))) return false;
     if (SKIP_FILE.test(path)) return false;
     const ext = extname(path).toLowerCase();
-    if (opts.mode === "ui") return CODE_EXT.has(ext) || STYLE_EXT.has(ext);
+    // Icon SVGs are read for their colors; logos and illustrations keep theirs.
+    if (opts.mode === "ui") return CODE_EXT.has(ext) || STYLE_EXT.has(ext) || (ext === ".svg" && /icon/i.test(path));
     if (CODE_EXT.has(ext)) return true;
     if (ext === ".json") return explicit || isLocaleFile(path) || basename(path) === "manifest.json";
     return TEXT_EXT.has(ext) && explicit;
@@ -890,6 +894,20 @@ const UI_RULES = [
   { id: "hover-only", level: "check", all: [/\bopacity-0\b/, /\bgroup-hover(?:\/[\w-]+)?:opacity-100\b/], none: [/\bpointer-events-none\b/, /aria-hidden/, /hover:none|hoverless|pointer-coarse|any-hover/], hint: "shown on hover and focus only: still invisible on touch screens; add a (hover: none) variant" },
   { id: "default-font", level: "check", any: [new RegExp(`font-family:[^;]*\\b(?:${FONT_NAMES})\\b`), new RegExp(`\\bfont-\\[['"]?(?:${FONT_NAMES.replace(/ /g, "_")})`), /@fontsource(?:-variable)?\/(?:inter|roboto|space-grotesk|geist|instrument-serif|poppins|montserrat|open-sans)\b/, new RegExp(`family=(?:${FONT_NAMES.replace(/ /g, "\\+")})\\b`)], hint: "a default AI font: fine only if DESIGN.md chose it" },
   { id: "centered-hero", level: "check", all: [/\b(?:min-)?h-(?:screen|dvh|svh|\[100vh\])/, /\bjustify-center\b/, /\bitems-center\b/, /\btext-center\b/], hint: "full-screen centred block: the template hero (fine for a loading or error screen)" },
+  // Accessibility the markup already shows; the same checks as eslint-plugin-jsx-a11y
+  // (no-static-element-interactions, tabindex-no-positive, no-aria-hidden-on-focusable, alt-text).
+  { id: "static-click", level: "check", any: [/<(?:div|span|li|p|td|tr|img|section|article)\b(?=[^>]*\bonClick=)(?![^>]*(?:\brole=|\bonKey(?:Down|Up|Press)=|\{\s*\.\.\.))[^>]*>/], hint: "a click on an element that is not interactive: use <button type=\"button\"> or <a href>" },
+  { id: "positive-tabindex", level: "block", any: [/\btab[iI]ndex\s*=\s*(?:\{\s*)?["']?\+?[1-9]/], hint: "a positive tabindex reorders the whole page: fix the order in the DOM" },
+  { id: "hidden-focusable", level: "block", any: [/<(?:button|a\s[^>]*\bhref|input|select|textarea)\b(?![^>]*tab[iI]ndex\s*=\s*\{?\s*["']?-1)[^>]*\baria-hidden(?:\s*=\s*(?:"true"|'true'|\{true\}))?(?=[\s/>])/], hint: "hidden from screen readers but still reachable with Tab" },
+  { id: "img-alt", level: "block", any: [/<(?:img|Image)\b(?=[^>]*\bsrc=)(?![^>]*(?:\balt=|\{\s*\.\.\.))[^>]*>/], hint: "an image with no alt: describe it, or alt=\"\" when it is decorative" },
+  // Tokens: components use roles, icons follow the text color.
+  { id: "palette-color", level: "check", any: [/(?<![\w-])(?:[a-z-]+:)*(?:bg|text|border(?:-[trblxyse])?|ring|outline|fill|stroke|divide|decoration|accent|caret|placeholder|from|via|to|shadow)-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|[1-9]00|950)(?:\/\d+)?(?![\w-])/], hint: "a palette color in a component: use the role token (bg-accent, text-ink-muted)" },
+  { id: "svg-fixed-color", level: "check", any: [/<(?:svg|path|circle|rect|g|line|polyline|polygon|ellipse)\b[^>]*\b(?:fill|stroke)=["']#[0-9a-fA-F]{3,8}["']/], hint: "icon color fixed inside the SVG: use currentColor so hover, disabled and dark states follow" },
+  // A status region rendered together with its message is often not announced (MDN, ARIA live regions).
+  { id: "late-live-region", level: "check", any: [/&&\s*\(?\s*<\w+\b[^>]*\b(?:role=["'](?:status|log)["']|aria-live=)/], hint: "a live region rendered with its message is often not announced: render it empty first, then change its text" },
+  { id: "root-no-select", level: "check", any: [/(?:^|[}\s,])(?:html|body|:root|\*|#root|#app)\s*\{[^}]*user-select\s*:\s*none/, /<(?:html|body)\b[^>]*\bselect-none\b/], hint: "no text can be selected: keep user-select: none for toolbars, tabs and drag regions" },
+  { id: "font-tag", level: "check", any: [/font-variation-settings\s*:[^;]*["'](?:wght|wdth|opsz|slnt|ital)["']|font-feature-settings\s*:[^;]*["'](?:tnum|pnum|lnum|onum|zero|smcp|c2sc|sups|subs|frac)["']|\[font-(?:variation|feature)-settings:/], hint: "use font-weight, font-stretch or font-variant-* rather than the raw tag (MDN, font-feature-settings)" },
+  { id: "justify", level: "check", any: [/(?<![.\w-])text-justify\b|text-align\s*:\s*justify\b/], hint: "justified text opens uneven gaps between words: align to the start" },
 ];
 
 // A class list often spans several lines inside cn()/clsx()/cva() or a template literal, so
@@ -987,6 +1005,15 @@ function scanUi(files) {
       }
     });
     if (radiusCount >= 3) add(radiusLine, "big-radius", "check", `${radiusCount} large radii (16px and up) in this file: one radius scale, from DESIGN.md`, radiusText);
+    const mine = findings.filter((x) => x.file === path);
+    const palette = mine.filter((x) => x.rule === "palette-color");
+    if (palette.length > 1) {
+      palette[0].hint = `${palette.length} palette colors in this file (lines ${palette.slice(0, 5).map((x) => x.line).join(", ")}${palette.length > 5 ? ", …" : ""}): use the role tokens (bg-accent, text-ink-muted)`;
+      for (const x of palette.slice(1)) findings.splice(findings.indexOf(x), 1);
+    }
+    const colours = new Set([...src.matchAll(/\b(?:fill|stroke)=["'](#[0-9a-fA-F]{3,8})["']/g)].map((m) => m[1].toLowerCase()));
+    const artwork = colours.size > 1 || ![".svg", ".tsx", ".jsx", ".vue", ".svelte", ".html", ".htm"].includes(ext);
+    if (artwork) for (const x of mine.filter((y) => y.rule === "svg-fixed-color")) findings.splice(findings.indexOf(x), 1);
   }
   if (libs.size > 1) {
     const names = [...libs.keys()];

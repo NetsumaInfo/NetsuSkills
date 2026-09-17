@@ -9,8 +9,8 @@ follow `## Voice`.
 
 ## 1. Facts before words
 
-Read `## Product`, `## Voice` and `### Words we use` in `DESIGN.md` (or `VOICE.md`). No design file: run
-`references/setup.md` first. Then collect facts from the repository, not from the conversation:
+Read `## Product`, `## Voice` and `### Words we use` in `DESIGN.md` (or `VOICE.md`). No design file:
+run `references/setup.md` first. Then collect facts from the repository, not from the conversation:
 
 | Fact | Where to look |
 |---|---|

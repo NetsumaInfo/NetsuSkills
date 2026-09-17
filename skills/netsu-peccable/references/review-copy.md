@@ -109,6 +109,7 @@ every "Never say" word from `DESIGN.md` against the inventory:
 | Settings | settings, preferences, options, configuration | réglages, paramètres, préférences, options |
 | Save | save, apply, update | enregistrer, sauvegarder, appliquer |
 | Add | add, create, new | ajouter, créer, nouveau |
+| Move forward | next, continue, proceed | suivant, continuer, poursuivre |
 | Main object | the product's noun and its rivals: project, workspace, file | projet, espace, dossier |
 
 These sets are a start. Build the real ones from the product's own nouns and verbs: read the
