@@ -8,7 +8,8 @@ One entry per merged skill. Evidence that the three tests in rule 11 passed.
 | 2026-09-16 | `netsu-implement` | 9/9 | 10/10 | NetsuRush, upscale target resolution | the run exposed a real defect: it stopped mid-implementation to ask |
 | 2026-09-16 | `netsu-implement` | — | — | NetsuRush, preview optimisation in the Adobe panel | questions stayed up front; review found a pre-existing blocker, then a flaw in its own fix |
 | 2026-09-16 | `netsu-peccable` | 13/13 (rerun: 22/22 routed) | 12/12 | NetsuRush copy and UI reviews (read-only), a new screen built and rendered | three blind runs found 10 scanner bugs and 12 instruction defects, all fixed; lexicons for six languages |
-| 2026-09-18 | `netsu-peccable` | — | — | report-only reviews of five real projects in up to six languages | coverage audit of 20 design skills; catalog checks added; two reviews said not validated, all findings fixed |
+| 2026-09-17 | `netsu-peccable` | — | — | report-only reviews of five real projects in up to six languages | coverage audit of 20 design skills; catalog checks added; two reviews said not validated, all findings fixed |
+| 2026-09-17 | `netsu-peccable` | 17/17 (re-test 10/10) | 7/7 | not run yet on a project | sixteen framed children for impeccable's and Krehel's requests; one review said not validated, all fixed |
 
 ---
 
@@ -435,7 +436,7 @@ Still without a real run: the fast path, and `--resume`.
 
 ### Merge checklist
 
-Everything except the execution test. Sizes on 2026-09-18, after the runs above: parent 88 lines
+Everything except the execution test. Sizes on 2026-09-17, after the runs above: parent 88 lines
 against a 100 ceiling, children 99 (fast), 195 (full), 166 (code), 148 (verify) and 99 (review)
 against 300. Description 571 characters, since it gained the exclusion for interface design and
 text. `fast.md` and `full.md` are entry points and sit in the routing table; `code.md`,
@@ -576,7 +577,7 @@ All fixed. The reviewer re-checked only those seven: **validated**. One side eff
 defect: in a file that mixes both languages, English words the scanner does not know now take the
 file's French; "Submit" is still caught by `vague-action`.
 
-### Real projects — 2026-09-17 and 2026-09-18
+### Real projects — 2026-09-17
 
 Asked by Netsuma: check that the skill covers what the design skills it replaces did, and test it
 on his projects. Every run was read-only and report-only; no app was built or started.
@@ -625,7 +626,7 @@ eight lines up; the German and Spanish address counts use pronouns only.
 Sizes after this pass: parent 84 of 100, children 137 to 298, scanner 1,260 lines, description
 747 characters.
 
-### Compared with jakubkrehel/skills — 2026-09-18
+### Compared with jakubkrehel/skills — 2026-09-17
 
 Netsuma asked what the `better-*` skills of github.com/jakubkrehel/skills (MIT, commit 267330e1,
 2026-08-29) could add. One cold reader compared all 48 files with this skill; nothing was
@@ -649,15 +650,44 @@ look" rule leaves out. Taken:
   a console snippet for animation timing, checked in Chromium (a transition keeps its easing in
   `getTiming()`, an animation in its keyframes).
 
-Sources were read on 2026-09-18 before being cited (next-themes, MDN on `font-feature-settings`,
+Sources were read on 2026-09-17 before being cited (next-themes, MDN on `font-feature-settings`,
 `translate`, live regions and `prefers-contrast`, eslint-plugin-jsx-a11y). All 1,072 lexicon
 patterns still fire and the earlier fixtures give the same results.
 
+### Framed children — 2026-09-17
+
+Netsuma asked for a child per request, loaded only when asked, and framed, because a model left
+free on design tends to do too much. Sixteen entry points were added, each opening with a frame
+(what it changes, what it never changes, what it asks, when it stops, what it returns):
+`typography`, `colors`, `layout` (split out of `visual`), `accessibility`, `details`, `emphasis`,
+`stress-test`, `variants`, `review-branch` (the last two moved out of `review-ui`), `extract`,
+`adapt`, `performance`, `onboarding`, `delight`, `effects` and `explain-ui`. They cover the
+commands of impeccable (polish, bolder, quieter, distill, harden, onboard, delight, overdrive,
+adapt, optimize, extract, audit, live) and the skills of jakubkrehel/skills (`break`, `variant`,
+`interface-review`, `explain-interface`, the `better-*` family), rewritten in this skill's
+stance and cited where a rule is theirs.
+
+Trigger and non-trigger, one fresh context with only the six competing descriptions: 24
+sentences, 0 wrong picks, 6 marginal and 1 tie with `copy-editing` (a newsletter). The
+description then gained the missing words (bolder, calmer, simpler, speed it up, extract,
+delight, pull request) and excluded newsletters. Re-test on the ten sentences at risk:
+10 of 10 right, 1 marginal ("the export dialog feels off, fix
+it" reads as a look problem or a bug; `netsu-implement` excluding restyling tips it). The 17 in-skill routes all matched the routing table; two ties (layout against
+adapt, layout against details) were resolved in the files' opening lines.
+
+Review, same context: **not validated**. A named pull request was reviewed against the working
+tree; source dates read "2026-09-18" on 2026-09-17 (also in the previous commit); four files had
+steps that broke their own frame (emphasis, extract, performance, details); four contradictions
+(density values, animated properties, the stress-test page's lifetime, accessibility
+severities). All fixed: `review-branch` sets one target and scans a copy of it; the dates are
+corrected everywhere; the frames and steps agree; one density table in `layout` §4.
+
 ### Merge checklist
 
-Passed. Umbrella: nine entry points in the routing table, nine resources named outside it with
-the step that loads them. Parent 84 of 100, children at most 298 of 300. Description 747
-characters, under the cap. `disable-model-invocation` not set. Every child has an anti-patterns
+Passed. Umbrella: 25 entry points in the routing table, each opening with its frame, and nine
+resources named outside it with the step that loads them. Parent 88 of 100, children 77 to 298
+of 300. Description 993 characters, under the 1,024 cap and well above the 300 to 500 aim: it
+has to name 25 cases in any language, and the routing runs above are what justify it. `disable-model-invocation` not set. Every child has an anti-patterns
 table, dated claims, and runnable commands. The scanner needs only Node, declared under
 `Requirements`. English throughout, with French, Spanish, German, Japanese and Chinese strings
 only as examples and lexicon data.

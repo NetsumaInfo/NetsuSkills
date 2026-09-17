@@ -94,7 +94,7 @@ distracts; use it for 2 to 10 s, and a percent-done bar past 10 s.
   confetti on a save.
 - **A11y**: a `role="status"` region (`aria-live="polite"`) that is in the page, empty, before
   its text changes: a region added together with its message is often not announced (MDN, *ARIA
-  live regions*, read 2026-09-18; scan `late-live-region`). Focus stays where it was. A toast
+  live regions*, read 2026-09-17; scan `late-live-region`). Focus stays where it was. A toast
   with an action never dismisses on a timer: it stays until dismissed, and the action is
   reachable by keyboard.
 
@@ -198,6 +198,8 @@ camera, notifications, an extension permission).
 French follows the same shape and `## Voice`: « Ce projet n'existe pas ou a été supprimé. »
 
 ## First use and hints
+
+A whole first-run flow is `references/onboarding.md`.
 
 - Offer a sample or a template next to the first-use empty state when the product has one.
 - A hint shows once, next to what it explains, and stays dismissed. A tour runs only when asked.

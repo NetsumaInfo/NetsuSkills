@@ -144,7 +144,7 @@ When `DESIGN.md` is silent, use these **fallbacks**, and write the value you pic
 
 | Property | Fallback |
 |---|---|
-| Control height | 32 to 40 px dense, 40 to 48 px comfortable; touch follows the target sizes above |
+| Control height | The density table of `references/layout.md` §4; touch follows the target sizes above |
 | Control radius | 8 to 10 px at most; panels and cards 12 px at most |
 | Shadow | None on inline surfaces; one level on overlays (menu, popover, dialog, toast) |
 | Border | 1 px, a neutral token |
@@ -254,8 +254,9 @@ alone (React Doctor `design-no-vague-button-label`).
 
 1. Render every state from the contract on one page: a fixture page, a story, or a temporary
    route such as `/_states/<component>`. Capture that page at 375 px and at desktop width, with
-   the long French label in it. Delete a temporary route afterwards unless the user wants to keep
-   it. Emulate the width rather than resizing a window (see `references/new-ui.md` §8).
+   the long French label in it (the full method: `references/stress-test.md`). Delete a temporary
+   route afterwards unless the user wants to keep it. Emulate the width rather than resizing a
+   window (see `references/new-ui.md` §8).
 2. Keyboard only: reach, activate, open, close. Write where focus went after each step.
 3. Scan the files you touched. Zero `block` findings. The scan is a regex heuristic: it misses
    strings built at run time and can flag code. Read each finding in context; never auto-fix

@@ -1,4 +1,4 @@
-# Review UI: critique or polish an existing screen
+# Review UI: critique an existing screen
 
 Judge a screen that already exists, report what is wrong in order of harm, and fix it only when
 asked. Script paths are relative to this skill's directory.
@@ -14,20 +14,8 @@ report, nothing written. A design file drafted from this same code only shows ho
 from the rest of the app, not from a decision: say so in the report, and keep those findings at P3
 unless another rule applies.
 
-**A branch or a pull request.** Never check it out: `gh pr checkout`, `git switch` and
-`git stash` change the user's files. Fetch it (`git fetch origin pull/<n>/head:refs/remotes/pr/<n>`)
-and read it from there. `--changed` compares with the merge base, so only the branch's own
-files count. Read what the change removed as well:
-
-```bash
-git diff -U0 "$(git merge-base main HEAD)" -- '*.tsx' '*.jsx' '*.css' | grep -E '^-[^-]' | grep -E 'aria-|role=|alt=|focus|tabindex|prefers-|lang=|dir='
-```
-
-A removal with an equivalent replacement is not a finding (`aria-label` to `aria-labelledby`,
-`div role=button` to `<button>`). When a token, a theme file or a shared component changed, also
-check up to five screens that use it, and say how many were left out. Nothing changed: say so, and
-offer the last commit (hash and subject) or a review of the screen as it is (Krehel,
-github.com/jakubkrehel/skills, read 2026-09-18, `interface-review`).
+A branch or a pull request is reviewed with `references/review-branch.md`, which resolves the
+scope and hands the surfaces back to this file.
 
 ## 2. See it
 
@@ -61,14 +49,13 @@ you see.
 ```bash
 node <skill dir>/scripts/scan.mjs ui src/routes/exports.tsx src/components/export-list.tsx
 node <skill dir>/scripts/scan.mjs copy src/routes/exports.tsx src/components/export-list.tsx src/locales
-node <skill dir>/scripts/scan.mjs ui --changed main   # branch review
 npx react-doctor@latest design --verbose              # optional; downloads the package, ask first
 ```
 
 Besides the AI look, the `ui` scan flags markup that fails keyboard and screen-reader users
 (`static-click`, `positive-tabindex`, `hidden-focusable`, `img-alt`, `late-live-region`), raw
 palette colours and fixed icon colours, and type settings (`font-tag`, `justify`,
-`root-no-select`); the same checks exist in eslint-plugin-jsx-a11y (read 2026-09-18).
+`root-no-select`); the same checks exist in eslint-plugin-jsx-a11y (read 2026-09-17).
 
 A translated app keeps its text in locale files: add the screen's namespace for each language to
 the copy scan. The scan is a regex heuristic: it misses strings built at run time and can flag
@@ -189,15 +176,12 @@ Verdict: <one line: the biggest problem, and whether the screen does its job>
 - <states, sizes, modes or devices not seen, and why>
 ```
 
-For a branch, add a Status column (Introduced, Regression, Pre-existing); at most three
-pre-existing findings, listed apart and left out of the verdict.
-
 Sort findings by severity. One root cause is one finding, with every place it occurs. The Rule
 cell names what the finding breaks: a `DESIGN.md` section, a scan rule, a React Doctor rule, a
 WCAG criterion, a heuristic, or a checklist in `references/components.md`. No score, no grade,
 no "8/10".
 
-## 8. Polish, only when asked to fix
+## 8. Fix, only when asked
 
 1. Fix P0, then P1, then P2. P3 only when the user asks.
 2. Tokens first. A wrong value repeated in twelve places is one token change. Classify each fix:
@@ -214,30 +198,12 @@ no "8/10".
 
 5. Re-run both scans and give the counts before and after. Screenshot again at the same sizes and
    schemes as §2.
-6. Share a pattern only when it is used three times or more for the same job. Move every use to
-   it and delete the old copies. Before reporting, read the diff for debug output and stray
-   changes.
+6. Before reporting, read the diff for debug output and stray changes.
 
-### Bolder, calmer, simpler
-
-These requests change one lever, through tokens, on the screen they name:
-
-| Request | Lever |
-|---|---|
-| Bolder | Size and contrast of the one primary element; a stronger type scale step |
-| Calmer | Fewer accent uses, lower saturation, fewer shadows and borders, less motion |
-| Simpler | Fewer elements, options and borders per region; secondary actions behind a menu |
-
-Say which lever you changed, and show the same capture before and after. A request that changes
-the concept of the screen goes to `references/new-ui.md`.
-
-**Options to compare, only when the user asks to see some.** Build two or three versions on the real
-screen, selected with `?variant=<name>`, each at a different point on one lever (structure, density,
-emphasis, type or wording), all with the same accessibility and real content. A plain switcher
-outside the design system: arrow keys, `aria-current`, instant. Report
-`| Variant | Right when | Costs |` with no favourite. After the choice, build that one properly and
-delete the others and the switcher (Krehel, github.com/jakubkrehel/skills, read 2026-09-18,
-`variant`).
+Other requests on an existing screen have their own file: extracting shared components
+(`references/extract.md`), bolder, calmer or simpler (`references/emphasis.md`), options to
+compare (`references/variants.md`), fine details (`references/details.md`), accessibility
+(`references/accessibility.md`), speed (`references/performance.md`).
 
 ## 9. Do not over-fire
 

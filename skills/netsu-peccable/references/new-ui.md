@@ -95,7 +95,7 @@ Before sending, check every row:
   (grotesque, humanist, serif, mono), density.
 - No row matches a line of `references/ai-look.md` unless the product gives the reason.
 - The accent passes 4.5:1 against the background when it colours text, 3:1 when it only fills
-  a control. Run the contrast snippet from `references/visual.md` and put the numbers under the
+  a control. Run the contrast snippet from `references/colors.md` §2 and put the numbers under the
   table.
 - "Why" names the users or the place of use. A reason that fits any product is not a reason.
 
@@ -153,8 +153,8 @@ question. A request to plan without building stops here, with the content sheet 
 
 ## 6. Build
 
-1. Tokens: add or complete them with `references/visual.md` (colour, type, spacing, radius,
-   themes). Instances use tokens only.
+1. Tokens: add or complete them with `references/visual.md` §3, then `references/colors.md`,
+   `references/typography.md` and `references/layout.md`. Instances use tokens only.
 2. The layout shell at 375 px and 1280 px.
 3. Components through `references/components.md`, each with its states from
    `references/states.md`.

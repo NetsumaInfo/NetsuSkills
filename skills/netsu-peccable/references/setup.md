@@ -70,7 +70,8 @@ undone, where the data comes from. Add them to the same message. Nothing is aske
 Use the question tool when there is one; otherwise send one message with numbered questions.
 
 Question 5 does not choose the look. Without a brand, the choice happens in
-`references/new-ui.md` (directions) or `references/visual.md`, and the result is written back
+`references/new-ui.md` (directions), `references/typography.md` or `references/colors.md`, and the
+result is written back
 into the file.
 
 ## 3. Write the file

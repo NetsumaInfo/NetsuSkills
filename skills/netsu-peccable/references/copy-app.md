@@ -148,7 +148,7 @@ new Intl.RelativeTimeFormat("fr", { numeric: "auto" }).format(-5, "minute")     
 
 **Keep machine translation off what must not change.** Product names, file names, shortcuts,
 code and user content carry `translate="no"`; page translators such as Google Translate respect it
-(MDN, *translate*, read 2026-09-18).
+(MDN, *translate*, read 2026-09-17).
 
 In a multilingual app, pass the current language (`i18n.language`), never a fixed `"fr-FR"`: a
 fixed locale shows French dates in every language.

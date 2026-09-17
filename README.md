@@ -65,14 +65,17 @@ runs, so a suite that could not start is never reported as a suite that passed. 
 has not opened, and adds as little code as the change allows. It stops at the working tree and
 leaves git alone.
 
-### [`netsu-peccable`](skills/netsu-peccable) · umbrella, eighteen children
+### [`netsu-peccable`](skills/netsu-peccable) · umbrella, thirty-four children
 
 Front-end work and the words in it: new screens, components, fonts and colors, motion, and
 every string a user reads, from a button label to a store listing or a release note. Writes a
 `DESIGN.md` per project first, with the address form, the product's own words and the look, and
 points every agent at it. Proposes visual directions instead of falling back on the model's house
 style, builds every state a component can reach, and reviews existing screens and text by
-severity. Lexicons and typography for French, English, Spanish, German, Japanese and Chinese,
+severity. Narrower requests each have their own framed procedure, loaded only when asked:
+typography, colours, layout, accessibility, details, bolder or calmer, stress tests, variants,
+shared components, other devices, performance, onboarding, delight, effects, branch reviews and
+explaining how an interface was built. Lexicons and typography for French, English, Spanish, German, Japanese and Chinese,
 and a method for any other language. A zero-dependency scanner pulls the strings out of
 components, tooltips and locale files and flags stock phrases, vague buttons, a mixed form of
 address, and the generic AI look. Across translations it catches broken placeholders, missing

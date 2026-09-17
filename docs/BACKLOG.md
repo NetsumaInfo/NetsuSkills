@@ -213,6 +213,11 @@ The blind routing test (JOURNAL) shows these win sentences from it while they st
 `make-interfaces-feel-better` on animation and "feels off", `frontend-design` on landing pages.
 Adopting it means removing them.
 
+Since 2026-09-17 each impeccable command has a framed child: polish (`details.md`), bolder,
+quieter and distill (`emphasis.md`), harden (`stress-test.md`), onboard, delight, overdrive
+(`effects.md`), adapt, optimize (`performance.md`), extract, audit (`accessibility.md` and
+`performance.md`), live (`variants.md`); the others map to existing children.
+
 Among the design skills on this machine, only `impeccable` is model-invocable (checked
 2026-09-17; three skills in all, with `react-doctor` and `gpt-image-2-style-library`). The rest
 carry `disable-model-invocation: true` and run only when typed. Removing `impeccable` is what
@@ -230,7 +235,7 @@ the skill, or every edit there fails.
 | `design-md`, `stitch-design`, `sleek-design-mobile-apps` | Vendor tools whose server or key is not configured here |
 
 Compared, not installed: `jakubkrehel/skills` (the `better-*` family). Its useful rules were
-added on 2026-09-18; see JOURNAL.
+added on 2026-09-17; see JOURNAL.
 
 Keep: `react-doctor` (a tool the skill calls as an optional check), `shadcn`,
 `tailwind-design-system`, `use-style` (named styles on request), `copy-editing` (blog and

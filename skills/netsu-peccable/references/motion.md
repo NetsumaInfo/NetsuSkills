@@ -19,11 +19,13 @@ Keep an animation only if removing it would lose information.
 
 An action repeated many times a minute (typing, row hover, tab switching, arrow keys) changes at
 once, or with a colour transition of 100 ms at most. Every animated change leaves a static cue when
-it ends: a colour, an icon or a label (Krehel, github.com/jakubkrehel/skills, read 2026-09-18,
+it ends: a colour, an icon or a label (Krehel, github.com/jakubkrehel/skills, read 2026-09-17,
 `better-ui`).
 
-A landing page may have one entrance on the first view, 100 to 500 ms. Content is there without
-script: never start a section at `opacity: 0` and wait for JavaScript or a scroll observer.
+A moment of delight or an ambitious effect is a request of its own: `references/delight.md`,
+`references/effects.md`. A landing page may have one entrance on the first view, 100 to 500 ms.
+Content is there without script: never start a section at `opacity: 0` and wait for JavaScript or a
+scroll observer.
 
 ## 2. Timing
 
@@ -202,7 +204,7 @@ the whole list.
   prefers-reduced-motion"): the same interaction fades, nothing travels.
 - Timing as it runs: paste this in the console right after the interaction. A CSS transition
   carries its easing in `getTiming()`, a CSS animation in its keyframes (checked in Chromium,
-  2026-09-18). Durations and easings must match the `## Look` values.
+  2026-09-17). Durations and easings must match the `## Look` values.
 
 ```js
 document.getAnimations().map((a) => ({ what: a.transitionProperty ?? a.animationName, ms: a.effect.getTiming().duration, easing: a.effect.getTiming().easing, keyframes: a.effect.getKeyframes().map((k) => k.easing).join(",") }))
