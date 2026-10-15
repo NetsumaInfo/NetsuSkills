@@ -1023,3 +1023,51 @@ that must reappear mid-picture. No lint tells that a part is visible outside the
 Application icons (view box 1024, fills and gradients) are outside the skill: never tried.
 No person has watched the result move. The source of the skill now lives in the NetsuIcon
 repository, under `skills/`; this folder is its published copy.
+
+## `netsu-app-icon` — 2026-10-15
+
+Designs an application icon in NetsuIcon. Method taken from `kaankiziltug/logo-design-skill`
+(MIT): brief, clichés of the category, eight one-line concepts, three built and proved, the user
+chooses, then refine and export. NetsuIcon gained what the method needs: full-bleed icons cut per
+platform, `proof`, `search_library` over that repository's 1,432 logos (trademarks, downloaded,
+never committed), a likeness score, and `export_app`.
+
+### Trigger and non-trigger
+
+Method: a Sonnet subagent with one tool was shown **only** the descriptions of the five skills
+(`netsu-app-icon`, `netsu-icon-motion`, `netsu-implement`, `netsu-peccable`, `netsu-readme`) and
+asked to route ten sentences, French and English.
+
+Result: **4/4 trigger, 6/6 non-trigger, no wrong pick.** Animating an app icon went to
+`netsu-icon-motion`, as meant; a 24 px toolbar icon and a wordmark went nowhere.
+
+### Execution: three blind runs
+
+Sonnet subagents with only the skill folder and the shell form of the tools; the user's answer
+at the checkpoint was given in advance ("choose for me").
+
+| Run | Skill text | Result | Cost |
+|---|---|---|---|
+| Brindille (plant watering, FR) | first | A "b" whose stem is a twig, with a leaf. Reads at 16 px; looks like a peach. Contrast 2.4:1, unseen then | 21 shell calls, 100k tokens |
+| Relaypost (mail client for developers) | first | An R with a detached amber leg. Closest logo remix-icon, itself an R, at 0.21 | 32 MCP calls, 101k tokens |
+| Ondes (science podcasts, FR) | corrected | A disc cut by a wave, cream over amber on indigo. Contrast 6.7:1, closest logo 0.38 | 32 MCP calls (4 failed), 104k tokens |
+
+**What the runs taught, fixed in the skill or the tools.**
+
+- The two-tone cell went blank when mark and background were close in value. `proof` now gives
+  the contrast of the mark (WCAG ratio) and its measures; the skill asks for 3:1.
+- The safe-circle advice did not say where: it now names the point.
+- An empty application icon got "no background" advice: gone.
+- The likeness score sees shapes, not ideas (an R against an R: 0.21). Said in the skill, with
+  a glance test: name what the blurred cell looks like.
+- `edit_icon` arguments were guessed (`icon` for `name`): an example call is in step 4.
+- Copying the chosen icon retyped JSON: the build's arguments are kept in a file and reused.
+- Fit for a rectangle, strokes past their line, arc flags, a disc cut by a curve, how to pick an
+  accent: in `references/construction.md`. Every recipe there was rendered and checked.
+- `search_library` matches words as written, the picture order was unsaid, an industry example
+  did not exist, the pnpm banner polluted answers (`pnpm -s`): fixed.
+
+**Not done.** The corrected text ran once. No user has answered a real checkpoint. Nobody has
+loaded the exported `.icns`, `.ico` or Android layers into Xcode, Windows or Android Studio; `file`
+recognises them. The source of the skill lives in the NetsuIcon repository, under `skills/`; this
+folder is its published copy.

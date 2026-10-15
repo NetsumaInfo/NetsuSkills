@@ -94,6 +94,16 @@ stays). Two manners: subtle, one small idea; expressive, the same idea as a shor
 only when asked for. Budget: one read, one edit, one look per icon. Needs the `netsuicon` MCP
 server; the skill's source lives in the NetsuIcon repository.
 
+### [`netsu-app-icon`](skills/netsu-app-icon) · atomic, one reference
+
+Designs an application icon in NetsuIcon. A six-line brief, then the category seen in a library of
+1,432 real logos and its clichés written down and set aside. Eight concepts in one sentence each,
+over several kinds of mark, scored; three built as separate icons and put to `proof`: cut by iOS,
+macOS and Android, on a dark screen, without colour, blurred, at 16 pixels, and beside the logos it
+looks most like. The user chooses before anything is polished; then an optical pass and the files
+of every platform. Needs the `netsuicon` MCP server; the skill's source lives in the NetsuIcon
+repository.
+
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in
 [`docs/BACKLOG.md`](docs/BACKLOG.md).
