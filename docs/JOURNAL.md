@@ -11,6 +11,12 @@ One entry per merged skill. Evidence that the three tests in rule 11 passed.
 | 2026-09-17 | `netsu-peccable` | — | — | report-only reviews of five real projects in up to six languages | coverage audit of 20 design skills; catalog checks added; two reviews said not validated, all findings fixed |
 | 2026-09-17 | `netsu-peccable` | 17/17 (re-test 10/10) | 7/7 | not run yet on a project | sixteen framed children for impeccable's and Krehel's requests; one review said not validated, all fixed |
 | 2026-09-17 | `netsu-peccable` | — | — | NetsuRush, five framed requests, report-only and code-only | the frames held; the run found raw i18n keys on screen that the scan missed; 12 defects fixed, three scanner checks added |
+| 2026-10-07 | `netsu-icon-motion` | 10/10 | 11/11 | NetsuIcon, eight still icons of one pack animated by an agent that had only the skill | the blind run reported 18 defects in the skill and in the tool's guide, all fixed; the fixed text has not been run blind again |
+| 2026-10-07 | `netsu-icon-motion` | — | — | NetsuIcon, two packs, sixteen icons, a hover and a click each, by two agents that had only the skill | the skill now asks for two reactions; the two blind runs reported 24 more defects, all fixed; three icons were retouched by hand afterwards |
+| 2026-10-07 | `netsu-icon-motion` | not run | not run | not run | third rewrite, after the user saw the result: types (action, switch, state), phases of a press, named props, lines that run; **untested**, by decision, until NetsuIcon's switches have been tried |
+| 2026-10-07 | `netsu-icon-motion` | not run | not run | NetsuIcon, the same two packs redone by two agents that had only the third rewrite | two switches that stay, a sheet of paper for the bin, wind that runs; 24 more defects reported, all fixed; an envelope and a larger sheet added by hand; the description is still unrouted |
+| 2026-10-07 | `netsu-icon-motion` | not run | not run | NetsuIcon, an expressive manner added to the same sixteen icons by two agents that had only the trimmed skill | 33 and 34 tool calls for eight icons, against 39 to 76 before; 20 more defects reported, all fixed; the description, which gained "subtler or more expressive", is still unrouted |
+| 2026-10-07 | `netsu-icon-motion` | not run | not run | NetsuIcon, the same sixteen icons reviewed by two agents that had only the fifth rewrite: say how the thing works, keep the clips that follow it, rewrite the others | 5 icons kept, 11 retouched; 26 and 32 tool calls for eight icons; 46 defects reported, fixed in the text except three; seven of the rewritten clips had followed their verb row to the letter, so the rows were wrong; the description is still unrouted |
 
 ---
 
@@ -742,3 +748,278 @@ table, dated claims, and runnable commands. The scanner needs only Node, declare
 only as examples and lexicon data.
 
 The two plugin manifests went to 0.4.0 with the framed children; the fixes since keep it.
+
+---
+
+## `netsu-icon-motion` — 2026-10-07
+
+### Trigger and non-trigger
+
+Method: a subagent with no tools was shown **only** the descriptions of five skills —
+`netsu-icon-motion`, `netsu-peccable`, `netsu-implement`, `netsu-readme`, `impeccable` — and asked
+which one fires for each of 21 sentences, French and English, marking a pick MARGINAL when it was
+reachable only by inference.
+
+Result: **10/10 trigger, 11/11 non-trigger, no wrong pick.** Three marginal:
+
+| Case | Why marginal |
+|---|---|
+| `the gear's animation feels generic, redo it` | No word "icon", and the description listed only verbs of creation |
+| `fais bouger le soleil quand on passe la souris dessus` | Names the subject, not "icon"; fires on the project's context |
+| `the button should scale down when pressed` | Correctly sent to `netsu-peccable`, but `impeccable` and `netsu-implement` match as well |
+
+Changed afterwards: "redo, fix or retime an icon's animation" added to the triggers; "recolouring
+an icon or a pack" and "spinners" added to the exclusions (`change the palette of the pack` and
+`add an animated loading spinner component to the dashboard` were near-misses); "the icons of an
+app" removed, since it also reads as the icons inside a product's interface. The changed
+description has not been routed again.
+
+### Execution
+
+One blind run. A subagent received the skill, a shell form of the NetsuIcon tools, and the
+sentence "Anime les icônes du pack courrier": eight still icons (bell, bin, lock, inbox, paper
+plane, magnifier, gear, heart) in a pack with its own limits of motion. It could not read
+NetsuIcon's source. About 70 tool calls, 7.5 per icon.
+
+What it produced, judged on strips of six frames, not on motion: the bell swings from its top and
+its clapper follows; the bin was split in two nodes and its lid lifts on its hinge; the shackle
+of the lock rises; the arrow drops into the tray, which gives; the plane leaves on click; the
+magnifier sweeps around its grip; only the teeth of the gear turn, an eighth of a turn; the heart
+beats twice. No icon got the same clip as another, and none got a pulse it did not call for.
+
+It reported 18 defects. The ones that changed the skill:
+
+- **The angles of the table pushed wide parts out of the view box.** A bell at 14 degrees and a
+  lid at 20 both left it. The skill's own example would have. Added: the rule of reach (the far
+  end travels about angle × distance / 57 units), and every range now reads "by reach".
+- **The magnifier row failed the skill's own swap test**: a free wander fits any icon. Replaced
+  by a sweep around the grip.
+- **LEAVE contradicted the check "no frame is empty"**, and faded before it had moved. The
+  opacity now holds until `t` .2, and the one blink is named as allowed.
+- **The echo of a swinging part had the wrong sign** when written literally. §0 now says which
+  way a part below its pivot goes.
+- **"From `t` x" did not say shift or squeeze**, and a shifted echo ran past `t` 1. Defined once.
+- **"It takes something in" named no shape.** DROP added.
+- **A thing sits under several verbs** (lock, heart). One line now settles it by meaning.
+- **Easing in a pack was a guess.** The skill now says which eases to write and which to leave out.
+- **A switch is a third exception** to "ends where it starts", and its filled twin is the one
+  node the skill lets you add.
+- **The trigger table could not decide an action icon.** Hover is now the default for every icon.
+- **Check 2 only made sense for a rotation.** A sliding mover now has its own wording.
+- **Six frames miss the peak of a BEAT.** Step 7 now asks for the `t` of the largest key.
+
+Defects on NetsuIcon's side, fixed there the same day: the guide gave no sign for `rotate`, did
+not say what a track holds outside its keys, nor how to group; a strip of frames carried no `t`;
+the picture of a pack showed icons at rest only, so "same movement" could not be judged from it.
+
+Not done: a second blind run on the corrected text, and a run through a real MCP connection
+rather than the shell form.
+
+### Second execution: two reactions
+
+The skill was rewritten the same day around a pair: a hover that hints, a click that does. Two
+blind runs, one agent per pack (a mail app, a weather app), eight icons each, every icon ending
+with both clips. About 60 and 76 tool calls.
+
+What they produced, judged on frames: a bin whose lid lifts a little on hover and, on click,
+opens while a pellet of paper drops in and the body gives; a bell that sways once, then rings
+with its clapper following; a plane that edges forward, then leaves; rain that dips, then falls
+away and comes back from under its cloud; a thermometer whose mercury dips, then empties and
+climbs back to its reading. Three icons were retouched by hand afterwards: the bin's pellet now
+comes in through the opening instead of behind the lid, the heart's fill fades back, the plane
+got its hover.
+
+The defects that changed the skill:
+
+- **The size rule contradicted itself** once reach had cut the click: "the low end of the row"
+  against "a third to a half". The click is now sized first; the hover is a share of it.
+- **Several rows produced the skill's own anti-pattern**, a click that is the hover played larger
+  (lock, gear, magnifier). The rule now names what makes a click another shape, and those rows
+  got an echo.
+- **LEAVE did not keep its promise** on a part near the edge: half seen at the corner. The fade
+  is now tied to the room the part has.
+- **A switch had no way back**: NetsuIcon keeps no on or off. The row now says so, and the click
+  shows the passage, holds, and returns.
+- **"Draw 0 → 1" on click broke the rule "ends where it starts"** and was no listed exception.
+  REDRAW (1, 0, 1) replaces it. TRACE pulled back so far that a short stroke stopped reading.
+- **The example broke the limit of the pack it was run in** and hid its own prop behind the lid.
+- **Half the weather icons had no row.** Two verbs added: it floats or drifts, it shows a level.
+- **Nothing said what to do with clips already there**, nor which wins of a pack's feel and a
+  verb. Both are now written.
+- The echo's size was given twice in different units; a size on a diagonal was undefined;
+  stagger could be read two ways.
+
+Defects on NetsuIcon's side, fixed there: the picture of a pack could not show a click; a stroke
+drawn at 0 left a dot at its end; a strip of evenly spread frames missed the keys that matter,
+so `look` now takes the moments of the keys and draws the edge of the view box.
+
+Not done: a blind run of this last text; a new routing of the description, to which "react" was
+added.
+
+### Third rewrite: types, phases, props. Not tested
+
+The user watched the sixteen icons move and named three faults that frames had not shown. A
+pellet falling into a bin is not a thing anyone recognises. Lines of wind that fade in and out do
+not move like wind. And a lock or a heart that springs back after the press is wrong: it should
+stay open, stay full, and be undone by the next press.
+
+What changed in the skill:
+
+- **A type, decided first**: action, switch or state. A switch gets an `on` clip that ends in its
+  other state; NetsuIcon, which gained `on` and `off` triggers the same day, runs it backwards
+  for the way off.
+- **A press in phases**: anticipation, action, overshoot, settle. The key shapes PRESS, STAY,
+  LEAVE and TURN carry them; a hover has none.
+- **Props with a name**: a table of seven drawn objects (sheet, envelope, box, coin, drop,
+  spark, check), thrown along a curve and turning. "Never a dot" is now a rule and a check.
+- **Lines that run**: a new verb, it flows, on NetsuIcon's new `trim` property, and the shape RUN.
+- A sixth check: the on state, looked at alone, must read as the thing in its other state.
+
+**None of this has been run.** No routing of the new description (it gained "on/off" and
+"switch on and off"), no blind execution, and the sixteen icons of the two packs still carry
+the clips of the second rewrite: no icon is a switch yet, no prop is a named object yet. The
+numbers in the new shapes are reasoned, not observed. The next entry in this journal is that run.
+
+### Third execution: the third rewrite, run
+
+Two blind runs on the same two packs, each icon already carrying the clips of the second rewrite.
+About 53 and 39 tool calls.
+
+What they produced, judged on frames. Mail: six actions and two switches. The padlock's shackle
+lifts, swings open on one leg and stays, its keyhole turned a quarter; the heart beats once,
+fills, and stays full; the bin's lid winds up, opens past its stop and settles while a sheet of
+paper tumbles in. Weather: all eight read as actions; the wind's three lines run off along their
+curls and come in again from the left, one after the other; the cloud floats with a bob; the bolt
+withdraws into the cloud, then strikes in a tenth of the clip. Retouched by hand afterwards: a
+larger sheet for the bin, and an envelope dropping into the inbox where the agent, following the
+row, had kept a fading arrow.
+
+The defects that changed the skill:
+
+- **The example failed on the very bin it describes**: the sheet went behind the lid, left
+  through the top, and broke the pack's limit. Redone from the values that worked; a prop is now
+  painted over the icon and starts in the clear.
+- **"A tenth of the size" gave an anticipation nobody can see** (0.15 unit, 0.7 degree). A floor
+  is set, and a phase the property cannot show is dropped.
+- **The pack-easing rule broke RUN**: without its `ease-out` the line crept back in. The rule now
+  names the shapes whose easing may be left to the pack.
+- **TURN's overshoot crossed the pack's limit**, and nothing said whether it counts.
+- **RUN in a hover contradicted two other lines.** One line among several may run.
+- **LEAVE had no answer for an icon that fills the box.** It now shrinks toward its nose.
+- **The lock row left the view box**; the heart's filled twin drifted from its outline; the echo
+  of a clapper had two sizes.
+- **"Open" sat in the list of switches**, so a bell or a gear that opens a panel looked like one.
+- **Props were too small to name** at a quarter of the stroke and 4.5 units. The table is redrawn
+  larger, and the inbox row now prefers an envelope to an arrow.
+- Light things fell like heavy ones; a slide had no rule of reach; the pack's feel and an echo
+  had no rule between them; a weather pictogram had no type.
+
+Defects on NetsuIcon's side, fixed there: `draw` above 1 was accepted in silence; a strip at the
+key moments held nine frames and dropped the rest without a word.
+
+Not done: a run of this last text; the routing of the description. And no person has yet watched
+these sixteen icons move and said whether the phases read.
+
+### Fourth rewrite: trimmed, and a second manner
+
+Two asks from the user after watching the icons: keep the subtle animations but add ones that
+"really move", and stop spending tokens on what is useless.
+
+**Trimmed.** What loads on every run went from 31,276 characters (SKILL.md and verbs.md) to
+19,797. Where it went:
+
+- Everything NetsuIcon's `guide` already tells the agent (types, hover and press, phases, what a
+  prop is) is no longer repeated: the skill says how to choose and how to check.
+- The verb table lost its prose: one bold line of things, then mover, hover, press.
+- The checklist duplicated the checks and went; the anti-patterns table kept the rows that a
+  run had actually produced.
+- The expressive manner lives in its own reference, 7,724 characters, loaded only when asked.
+- A budget is now part of the skill: one `get_icon`, one `edit_icon`, one `look` per icon, the
+  look showing every clip at once (`clip: "*"`, added to NetsuIcon for this).
+
+**Measured on the fourth execution**, two blind runs adding the expressive clips: 33 and 34
+tool calls for eight icons each. The three runs before took 39 to 76. The agents' token totals
+did not fall (about 157k and 178k): each expressive icon carries twice the clips, and every
+image still costs.
+
+**What the expressive manner produced**, judged on strips of twelve frames: a plane that pulls
+back, shoots out of the frame with a trail and speed lines, and another that glides in; a bin
+that crouches, flips its lid, takes a sheet arriving from outside, and puffs; rain that falls
+out the bottom of the frame and splashes; wind in two gusts carrying leaves; a cloud that
+sails out one side and in by the other.
+
+The defects that changed the reference:
+
+- **"Crosses the edge" contradicted check 3**, and a return from the other side passed through
+  the middle of the picture: both agents hid it with a fade. NetsuIcon gained a `hold` easing;
+  the reference now uses it.
+- **Reach cancels "larger"** on an icon that fills its box. The reference now says so: more
+  beats where there is no room, larger only where there is.
+- **Expressive hovers came out barely above the subtle ones**, and two pages gave two rules for
+  a hover. One rule now: the expressive hover is the subtle press without its prop.
+- **A spark read as "zoom" or "add"**; "never sparkles" sat next to three rows asking for
+  sparks. Sparks are gone from the lens and the lock; a like gets a burst of short strokes.
+- **The splash was a V that read as a check**; the puff was too small to name; the sound arc
+  existed for one side; speed lines only ran horizontally. Redrawn.
+- **Two manners on one node**: a second pivot changed the first manner's tracks. A group, now.
+- **A switch with props needs an `off`**, or its sparks fly back in.
+- Nothing said who wins between a calm pack and a request for more; nothing gave an easing
+  inside a travel, so the pack's curve stopped at each key.
+
+Not done: a run of this corrected reference; the sixteen expressive clips still hide their
+returns with a fade instead of `hold`; no person has watched them move.
+
+### Fifth rewrite: how the thing works
+
+The user's ask, after watching both manners: the bin is right, other icons less so; the agent
+should understand how the object works and animate from that. And trim again.
+
+**What changed.** Step 2 used to ask for six lines (thing, verb, meaning, mover, hover, press).
+It now asks for eight, and the new ones are mechanical: the parts, where the mover is **held**,
+what **drives** it, what it is **made of**. Three tables turn those into keys: held gives the
+kind of movement and the pivot; driven gives the start and the end (a hand, gravity, a spring,
+a motor, wind, a living thing, light, a slow change, nothing); made of gives the size and the
+settle. The eight lines win over the verb row: the row gives sizes and a shape, the tables say
+which of its pull back, overshoot and settle survive. A seventh check asks that the frames show
+what drives the thing.
+
+**Fifth execution**, two blind runs, one pack each, reviewing clips that already existed.
+
+- `courrier`: four icons kept, the bin among them, four retouched. The padlock's keyhole now
+  turns before the shackle springs (the rows called it an echo; it is the cause). The plane
+  leaves by one edge and returns by the other with `hold`. A gear ramps down instead of
+  hitting its stop.
+- `meteo`: one kept, seven retouched. The sun lost a gear's pull back and overshoot. The
+  thermometer's column no longer bounces past its level. Lightning withdraws, holds and
+  strikes at once instead of redrawing softly. Drops and flakes no longer rise before falling.
+- Measured: 26 and 32 tool calls for eight icons (33 and 34 the run before); 163k and 184k
+  tokens, not lower, with 33 clips a pack to judge.
+
+**What the runs taught.**
+
+- The method beat the reference: seven clips matched their row to the letter and were still
+  wrong. TURN carried a pull back and an overshoot for every wheel; the thermometer row
+  described a fairground striker; the lightning hover was a soft TRACE. Rows fixed.
+- Two rows were missing from the Driven table: a slow change (heat, a liquid) and a thing
+  nothing drives (sun, moon). Added.
+- "Your lines win" did not say how far. It now does.
+- Cause and effect were in the wrong order for the lock. A rule, "cause first", is in step 5.
+- Reviewing existing clips had no path: one look with `clip: "*"` before editing is now in
+  the procedure and in the budget.
+- The Spark prop was a plus sign, which the expressive page forbids. It is a star now; the
+  Burst has a path.
+- The shell form gave no argument names: `mcp` alone now lists the tools and their arguments.
+- NetsuIcon changed with it: `list_icons` takes a pack, `get_icon` can leave the tracks out,
+  a single moment of a clip is drawn with the edge of the view box, and the guide says how
+  transforms compose and that a path of several strokes runs them all at once.
+
+**Cost, measured.** What loads on every run went from 19,797 characters to 23,424 (+18%). The
+tool answers went the other way: listing one pack 3,486 characters instead of 9,785 for all,
+an icon without its tracks 1,168 instead of 8,765.
+
+**Not done.** This text has not been run blind. Both agents read the two references whole for
+five rows each: the reference wants splitting by family. Nothing says what to do with a drop
+that must reappear mid-picture. No lint tells that a part is visible outside the view box.
+Application icons (view box 1024, fills and gradients) are outside the skill: never tried.
+No person has watched the result move. The source of the skill now lives in the NetsuIcon
+repository, under `skills/`; this folder is its published copy.

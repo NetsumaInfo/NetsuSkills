@@ -81,6 +81,19 @@ components, tooltips and locale files and flags stock phrases, vague buttons, a 
 address, and the generic AI look. Across translations it catches broken placeholders, missing
 keys and text left in code.
 
+### [`netsu-icon-motion`](skills/netsu-icon-motion) · atomic, two references
+
+Animates an icon in NetsuIcon, an editor of animated icons driven by an agent, after how the thing
+it draws really works. Eight lines are written before any edit: the thing, its parts, where the
+moving part is held, what drives it, what it is made of, what it means, the hover, the press. Three
+tables turn them into movement: a hinge turns and a rail slides; a hand, gravity, a spring, a motor,
+wind or light each start and stop their own way; steel moves little, paper swings past, a cloud
+squashes. So a padlock's keyhole turns before its shackle springs, and a gear stops clean where a
+lid would swing back. A press is an action (it plays and comes back) or a switch (it goes on and
+stays). Two manners: subtle, one small idea; expressive, the same idea as a short scene, loaded
+only when asked for. Budget: one read, one edit, one look per icon. Needs the `netsuicon` MCP
+server; the skill's source lives in the NetsuIcon repository.
+
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in
 [`docs/BACKLOG.md`](docs/BACKLOG.md).
