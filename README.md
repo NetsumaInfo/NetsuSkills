@@ -104,6 +104,16 @@ looks most like. The user chooses before anything is polished; then an optical p
 of every platform. Needs the `netsuicon` MCP server; the skill's source lives in the NetsuIcon
 repository.
 
+### [`netsu-type-design`](skills/netsu-type-design) · atomic, two references
+
+Draws a font in NetsuFont. A brief, then a style sheet in numbers (stems, contrast, widths,
+x-height, terminals) that every glyph takes its numbers from. Five control glyphs (H O n o v)
+built from shape recipes that were drawn and proofed, then a checkpoint, then the font family by
+family, spaced in words, kerned only where it still looks wrong. Languages are counted, not
+assumed: 23 of them, accents placed by `compose`, Greek and Cyrillic, Hebrew, and plain words on
+what cannot be done yet (Arabic, Indic). Ends with an installable .otf. Needs the `netsufont` MCP
+server; the skill's source lives in the NetsuFont repository.
+
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in
 [`docs/BACKLOG.md`](docs/BACKLOG.md).

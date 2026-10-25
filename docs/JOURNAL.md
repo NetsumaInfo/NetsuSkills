@@ -1071,3 +1071,67 @@ at the checkpoint was given in advance ("choose for me").
 loaded the exported `.icns`, `.ico` or Android layers into Xcode, Windows or Android Studio; `file`
 recognises them. The source of the skill lives in the NetsuIcon repository, under `skills/`; this
 folder is its published copy.
+
+## `netsu-type-design` — 2026-10-25
+
+Atomic, two references (`construction.md`, `languages.md`). Written for NetsuFont; its source
+lives in the NetsuFont repository, under `skills/`; this folder is its published copy.
+
+### Trigger and non-trigger
+
+Method: a Sonnet subagent with one tool was shown **only** the descriptions of the six skills and
+asked to route ten sentences, French and English.
+
+Result: **5/5 trigger, 5/5 non-trigger, no wrong pick.** A new font, a serif font capitals first,
+Vietnamese and Cyrillic for an existing font, a bold condensed version of an imported OFL font,
+a kerning fix with export: all to `netsu-type-design`. Pairing Google Fonts, a logo with a name in
+a nice typeface, a rounder font-family in CSS, a bell animation, a README: not to it.
+
+### Execution: one blind run
+
+A Sonnet subagent with only the skill folder and the shell form of the tools; the user's request
+said not to wait at the checkpoint.
+
+| Run | Skill text | Result | Cost |
+|---|---|---|---|
+| Galet (soft round sans, fr + pl) | first | a–z, A–Z, figures, punctuation, 76 kerning pairs; `languages` fr 113/113, pl 101/101; .otf 31 kB. Even colour, legible at 12 px; & a blob, a notch in 2, short hooks on J j | ~95 shell calls (7 failed), 199k tokens |
+
+**What the run taught, fixed in the skill or the tools.**
+
+- Three calls failed with ECONNRESET: the server restarted under `node --watch` while nobody
+  edited code. The watch is now limited to the source folders.
+- Inline JSON broke on `"` and `&`: the skill now says to always pass arguments as a file.
+- `proof` took no newline, 200 characters, and cut lines at 1200 px: it now takes `
+`, 600
+  characters, grows to 2400 px and says when a line is cut.
+- Round ends existed for nothing but stems: `"ends":"round"` on lines and arcs; unknown `ends`
+  values are refused instead of ignored.
+- The s recipe left a step in the spine: the two arcs now share one band, with the formula.
+- `compose` centred the ogonek: it now hangs at the right of the foot.
+- Accents of capitals were flagged above the ascender: the check now allows a quarter em above
+  the cap height.
+- Tabular figures had no op: `center`. The reply to a big `set_spacing` batch said only "56
+  glyphs": it now lists up to 80.
+- The E sentence contradicted its own numbers; the budget of 60 calls was not reachable (now 90).
+
+### Execution: second blind run, Cyrillic and Greek
+
+Same method, on the text corrected after the first run.
+
+| Run | Skill text | Result | Cost |
+|---|---|---|---|
+| Rivet (condensed grotesque, en + ru + el) | corrected | 230 glyphs, 90 kerning pairs; `languages` en 82/82, ru 93/93, el 91/91; .otf 23 kB. Even colour, legible at 12 px; ζ ξ ς and З the weakest | ~61 shell calls (2 failed: an argument file written in cp1252), 209k tokens |
+
+**What the second run taught, fixed.**
+
+- The bar of Θ and θ was flagged as a filled hole. The check now counts the winding at the middle
+  of an enclosed contour: twice in one direction is a filled hole, once is ink on purpose.
+- Marks drawn around x 0 were flagged as outside their advance: marks are left out of that check.
+- Kerning took glyph names only, guessed for `uni0431` and `period`: it now takes characters too.
+- `look_glyphs` labelled non-Latin glyphs `uni0431` alone: the character follows the name.
+- A mirrored glyph (N into И) had no way: `transform` with a negative x scale now mirrors in the
+  advance. Arcs past 360°, the consent of "choose for me", a budget per new script, a minimum
+  counter, and a table of how to build Cyrillic and Greek letters from Latin parts were added.
+
+**Not done.** The text corrected after the second run has not run blind. No user has answered a
+real checkpoint. Nobody has installed Galet, Rivet or Netsu Pixel in Windows, Word or Figma.
