@@ -326,6 +326,14 @@ including every skill worth keeping, is switched off. Counted again on 2026-09-1
   as a local page the human annotates and the agent reads back. Own annotation loop, built from
   `lavish-axi`'s ideas (MIT) rather than depending on it. Blocked on one thing: no stable project
   to prove it on.
+- **`netsu-memory-audit`** — scoped and written on 2026-10-29, see
+  [`scoping/netsu-memory-audit.md`](scoping/netsu-memory-audit.md). Umbrella, three levels
+  (memory, docs, comments). Rates what is stale by the strength of the evidence, not by age.
+  **Replaces nothing installed** — the two references Netsuma had in mind, `neural-memory` and
+  `agent-memory-kit`, were read, not adopted: the first publishes no formula for its decay or
+  its A–F grade, the second contributes `stale-refs` (= rung 1) and the caps-as-trigger idea.
+  Open question for wave 6: `skill-audit` rates installed skills, this rates memory and docs —
+  same output shape, different subject. Kept separate for now.
 - `design-system` — tokens, scales, themes
 - `debug` — would replace `systematic-debugging`
 - `prd` / `tasks` — check whether existing versions are good enough

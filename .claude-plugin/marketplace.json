@@ -11,7 +11,7 @@
       "name": "netsuskills",
       "source": "./",
       "description": "Curated, hand-written skills: design, workflow, review, and creative-tool automation.",
-      "version": "0.8.0",
+      "version": "0.9.0",
       "author": {
         "name": "Netsuma",
         "url": "https://github.com/NetsumaInfo"

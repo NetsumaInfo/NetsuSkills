@@ -114,6 +114,19 @@ assumed: 23 of them, accents placed by `compose`, Greek and Cyrillic, Hebrew, an
 what cannot be done yet (Arabic, Indic). Ends with an installable .otf. Needs the `netsufont` MCP
 server; the skill's source lives in the NetsuFont repository.
 
+### [`netsu-memory-audit`](skills/netsu-memory-audit) · umbrella, three children
+
+Finds the lines in memory and documentation that are confidently wrong. Three levels — agent
+memory (`CLAUDE.md`, `AGENTS.md`, `MEMORY.md`, `.claude/rules/`), project documentation, and
+comments that describe code that moved — composable in one run. Every finding sits on an evidence
+rung, and the rung caps the verdict: a dead path proven by `git ls-files` can be critical, a
+reading of the code cannot. Recency never becomes a finding on its own, which is what the usual
+doc-drift tools get wrong. A script runs the mechanical rungs before any agent is spawned, so the
+reading pass is small, batched and on the cheapest model. Reports first, repairs only after an
+explicit go, and confirms deletions separately. First real run, on a repository that had just
+lost 44 668 lines: 48 findings, and the file nobody had touched in 91 days came back almost
+clean — which is the whole argument for ranking by evidence instead of by date.
+
 Every skill here is named `netsu-<domain>`, so one of these is identifiable at a glance among the
 couple of hundred you already have installed. What gets built next lives in
 [`docs/BACKLOG.md`](docs/BACKLOG.md).

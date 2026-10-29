@@ -1135,3 +1135,129 @@ Same method, on the text corrected after the first run.
 
 **Not done.** The text corrected after the second run has not run blind. No user has answered a
 real checkpoint. Nobody has installed Galet, Rivet or Netsu Pixel in Windows, Word or Figma.
+
+## `netsu-memory-audit` — 2026-10-29
+
+Umbrella, three children (`memory`, `docs`, `comments`), one shared resource (`evidence.md`),
+one script (`scripts/mechanical.py`). Scoped in `docs/scoping/netsu-memory-audit.md` the same
+day; written on Netsuma's go.
+
+### Trigger — blind routing, 11 sentences
+
+A fresh context was shown six competing descriptions only (`netsu-memory-audit`,
+`netsu-readme`, `claude-memory`, `cleanup-context`, `deslop-prose`, `skill-audit`) and asked to
+route. **11/11 correct.**
+
+| Fires | Does not fire |
+|---|---|
+| "audit ma mémoire, je pense qu'il y a des trucs obsolètes dedans" | "écris-moi un README" → `netsu-readme` |
+| "la doc est plus à jour avec le code, tu peux vérifier ?" | "add a line to CLAUDE.md about the commit convention" → `claude-memory` |
+| "check if CLAUDE.md still matches what the project actually does" | "this README is way too verbose, trim it" → `deslop-prose` |
+| "clean up my memory files, prune what's dead" | "which of my installed skills never fire?" → `skill-audit` |
+| "what's out of date in docs/ ? rate it critical / moderate / minor" | "refactor the auth middleware" → NONE |
+| "les commentaires du code décrivent une fonction qui a été renommée" | |
+
+The pair worth watching: "clean up my memory files" against `cleanup-context`, whose
+description ("optimize memory bank files … archiving obsolete documentation") overlaps almost
+exactly. It routed here, but that is the one sentence that could flip.
+
+### Execution: the script, on this repository and on a real memory directory
+
+Three runs during writing, each of which changed the code.
+
+| Run | Result | What it taught |
+|---|---|---|
+| `--level memory` on NetsuSkills | 5 rung-1 "dead references", all false: bare `` `SKILL.md` `` in `AGENTS.md` | A bare filename is a *kind* of file, not a location. Pass it |
+| `--level docs` | 42 rung-1 hits, ~40 false: `owner/repo`, `skills.sh/docs`, `/plugin`, `references/voice.md` discussing another skill's internals | Only check a reference whose first path segment exists at the repo root. Dropped recall on purpose |
+| `--level docs`, after the fix | **2 rung-1 hits, both real** (`skills/netsu-brief/` and `docs/audit/` — directories the scoping docs describe but that do not exist yet), 11 rung-3 counts to verify, 1 rung-6 | Precision holds. The two hits are exactly the class the skill exists to catch |
+
+On the real user memory directory (8 files, no git index): the script degraded correctly, warned
+about the missing index, and found 5 rung-3 count claims. Index integrity checked by hand —
+7 pointers, 7 files, **zero orphans and zero dangling pointers**.
+
+**The measurement that shaped the skill:** a naive resolver produced ~95% false positives on
+`docs/` (40 of 42). This is the argument for the evidence ladder in executable form — a rung-1
+finding is only worth its verdict ceiling if it is nearly always right. The rule that bought the
+precision is *first path segment must exist at the repo root*; everything else is passed
+unchecked, and the skill says so in the docstring.
+
+**Not done.** No full run with spawned reading agents (rungs 2 and 5) on a real repository. The
+fix pass has never been exercised — nothing has been repaired by this skill yet. The `comments`
+level has not been run at all.
+
+### Execution: first real run — `S:\projet_app\site web de la fufu` (Fulguria V3), 2026-10-29
+
+Levels `memory` + `docs`, 9 documents, 2 463 lines. Three reading agents on `haiku`, batched by
+subject. Report written to that project's `docs/audit/memory-2026-10-29.md`. Nothing repaired —
+the run stopped at the report, as designed.
+
+**Why this repository was the right test.** Commit `3b4af96` (2026-10-28) removed the game
+engine, the map editor and the LPC assets: **44 668 deletions across 356 files**, including five
+documents totalling 2 910 lines. The documentation did not follow. Three more commits the next
+day replaced the art direction the docs still describe.
+
+**Result: 48 findings — 8 critical, 9 moderate, 2 minor, 29 obsolete.** Spot-checked by hand:
+every claim verified, no false positive found in the reading output.
+
+| What it caught | Why it matters |
+|---|---|
+| `public/fonts/README.md:3` states "Aucune police n'est chargée depuis un CDN" while `src/styles.css:16` imports five families from `fonts.googleapis.com` | Rung 2, a document asserting the exact opposite of its code. Three documents chain off it into a pre-launch task with no object |
+| `content/style/CREDITS.md` credits **445 asset packs** (CC-BY-SA, GPL 3.0) of which none still ships | A licence file, not documentation. The agent kept line 32 because `palette-lpc.gpl` still ships, and flagged that builds distributed before `3b4af96` remain under licence — a decision, not a fix |
+| `PRODUCT.md:22-24` presents the map editor as "le travail en cours" | Deleted the day before |
+| `docs/DA.md` typography section names Departure Mono, Silkscreen and Anton; two referenced CSS tokens (`--font-mono-pixel`, `--font-silkscreen`) do not exist | Rung 1 on a token name, which is as checkable as a path |
+
+**The result that validated the central rule.** `AGENTS.md` had not been touched in 91 days — by
+recency it was the most suspect file in the repository. It came back with **one minor finding**
+(`convex/lib/guards.ts` listed as pure logic while it reads and writes `ctx.db`). Commands,
+generated paths, Convex function names: all correct. A tool ranking by staleness-as-age would
+have led with it and missed `PRODUCT.md`, recently edited and describing abandoned work as
+current. Rung 6 did its job: it set the reading order and produced no finding.
+
+`docs/audit-da.md` (514 lines, dated) was correctly treated as a record of a past state and
+produced no findings — the rule about dated records held without being restated to the agent.
+
+**Mechanical pass: 4 findings, 4 real, 0 false positives**, for two commands — one rung-1 dead
+path (`recovered/anciens-membres/`) and three rung-4 dead links to documents deleted in
+`3b4af96`.
+
+**Defect found and fixed.** One of the three briefs omitted the four verdict words while keeping
+the rungs. That agent returned 22 rows graded `stale`, a word not in the scale, and they had to
+be re-graded by hand. `references/docs.md` step 3 and `references/evidence.md` now require the
+vocabulary in every brief, with the date and the measurement.
+
+**Still not done.** The fix pass has never run: nothing has been repaired by this skill. The
+`comments` level has still not been exercised — one finding from it surfaced by accident
+(`src/routes/credits.tsx:10-17`, a docstring about LPC licensing and a character creator that
+no longer exist) and is recorded in the report as out of scope.
+
+#### Fix pass on the same repository, same day
+
+Netsuma gave the go for the repair. 9 files, +325 / −350, `npm run typecheck` green, rung-1
+findings down from 4 to 0. The held items (`CREDITS.md`, 445 credited packs) stayed held.
+
+**Two defects, both found by running the skill rather than by reading it.**
+
+**1. Deleted code read as an abandoned plan.** The reading pass graded the PRD's whole game
+section `obsolete` and it was deleted, because `3b4af96` had removed the engine. Netsuma
+corrected mid-pass: the engine had moved to two sibling applications (NetsuKodo composes a
+Phaser 4 game, NetsuDotto draws the pixel art), and the section needed **rewriting, not
+deleting**. The rule that would have caught it was already in the brief — *a section describing
+something not yet built is a plan, not drift* — and it was applied backwards: absent code was
+read as a cancelled plan. **Code disappearing says nothing about intent.** `references/docs.md`
+now caps a section describing deleted code at moderate/rung 5, phrased as a question, and says
+to ask before cutting. The original section had been saved with `git show HEAD:` before any
+rewrite, so nothing was lost.
+
+**2. Rung 6 reads committed dates against a working tree.** `AGENTS.md` reported "91 days" while
+the file had just been fully rewritten and not committed. Harmless here — rung 6 never produces
+a finding — but the age is wrong on any dirty file. Noted in `references/evidence.md`.
+
+**What the pass also produced, which an audit normally does not.** Netsuma asked for the new
+work to be *documented*, not just for the stale lines to go: the custom font, the WebGL2 portal
+shader, the five-step page transition, the smoke backdrop, the Système frame, the four-piece
+glitching logo. `docs/DA.md` gained a section (§5.2) that had never existed. This is worth
+recording because it is outside what the skill claims to do — the skill finds and repairs wrong
+lines; writing the missing ones was a separate request, and the audit report was only the
+starting point for it.
+
+**Still not done.** The `comments` level has still never run.
