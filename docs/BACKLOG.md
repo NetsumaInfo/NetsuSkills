@@ -320,6 +320,12 @@ including every skill worth keeping, is switched off. Counted again on 2026-09-1
   tail of something else — implementing, reviewing, debugging. A standalone "run the real flow and
   show me current evidence", with no change to make, has no home. Qualify it before writing:
   is it a real repeated moment, or just the tail of `netsu-implement` asked out of order?
+- **`netsu-brief`** — scoped in full on 2026-10-28, see
+  [`scoping/netsu-brief.md`](scoping/netsu-brief.md). Umbrella, two children: a work-in-progress
+  brief per feature and a browsable inventory of the project's components and style, both rendered
+  as a local page the human annotates and the agent reads back. Own annotation loop, built from
+  `lavish-axi`'s ideas (MIT) rather than depending on it. Blocked on one thing: no stable project
+  to prove it on.
 - `design-system` — tokens, scales, themes
 - `debug` — would replace `systematic-debugging`
 - `prd` / `tasks` — check whether existing versions are good enough
