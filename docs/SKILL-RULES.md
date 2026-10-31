@@ -57,6 +57,11 @@ Rules specific to this shape:
 - Children are full procedures, same quality bar as an atomic skill.
 - The parent's `description` must cover the union of the children's triggers, or the whole
   skill never fires.
+- **The parent owns the output contract** — severity scale, ranking, how many findings, report
+  format. Children own principles and checks, nothing else. Two children that each define a
+  severity scale disagree the moment both load. Keep the contract in the parent's body, not in a
+  `references/format.md` the parent has to go read: a format the parent does not hold is a
+  format the parent cannot enforce.
 
 Why this shape matters: a skill cannot call another skill, and cannot force one to load. A
 "router" skill that dispatches to other installed skills does not work. The umbrella is the
@@ -78,6 +83,16 @@ skills/resolve-scripting/
 
 Requirements on external tools (an app running, an MCP server connected, a binary on PATH) go
 in a `Requirements` section at the top, and the skill checks them before acting.
+
+**Any shape**, not only this one: declare `argument-hint` in the frontmatter whenever the skill
+takes an operation, a flag or a target:
+
+```yaml
+argument-hint: "[install|remove|update|list] [skill name or link]"
+```
+
+It shows the shape of the call at the prompt. It is not a trigger — rule 4 still decides what
+goes in the `description`.
 
 ## 2. Do not pollute the context
 
@@ -253,12 +268,75 @@ Before committing a skill, verify all three:
 
 Results go in [`JOURNAL.md`](JOURNAL.md).
 
-## 12. Language
+### Proof layers
+
+"It works" is a claim with a layer attached. Keep the layers distinct, and never let a cheap one
+stand in for an expensive one:
+
+| Layer | What it proves |
+|---|---|
+| Static / local | typecheck, lint, build, unit tests pass |
+| Read-back | the external system actually holds the state — query the API, DB or provider back |
+| Deployed artifact | the thing exists where users reach it: public URL, installed location |
+| Live authenticated | a real signed-in path works end to end |
+
+Static checks **support** runtime proof; they never replace it. A green build is not a working
+feature, and reading the code is not reading the system.
+
+For a skill in this repo the four layers are: frontmatter parses → the agent lists the skill →
+the trigger sentence fires it → it produces the right result. That is rule 11's three tests with
+the install step in front of them.
+
+Mark each criterion `PASS` or `NOT PROVEN`. If anything is `NOT PROVEN`, the verdict is
+`BLOCKED: NOT PROVEN` plus the exact blocker — never a summary verdict that averages the two,
+and never `PASS` on a criterion checked at a lower layer than it needs.
+
+## 12. Output discipline
+
+A skill that produces findings, a report or a review states its own limits, or the agent fills
+whatever space it was given.
+
+- **Cap the output, and name the number in the skill.** 15 findings is a workable default for a
+  review. No cap means the agent keeps going until it runs out of ideas, and the last third is
+  invented to look thorough.
+- **Never pad to reach the cap.** Three real findings is a three-finding report. Say so.
+- **Rank, then cut.** Highest severity first, cut from the bottom. Never the first 15 it
+  happened to notice.
+- **One severity scale, defined in the skill**, with the literal conditions that make something
+  HIGH. An undefined scale gets reinvented every run, and two runs stop being comparable.
+
+## 13. Evidence, or `Not verified`
+
+Every claim a skill makes about the user's code or system carries its source, or it is marked
+unproven. Models do not draw that line on their own.
+
+- **Cite the location**: `path/to/file:line`. A finding without one cannot be checked — and that
+  is exactly the shape a hallucinated finding takes.
+- **Never report what the skill did not observe.** If the check needs a running app, a
+  screenshot or a provider call the skill never made, output `Not verified` and name what is
+  missing. Do not infer it from the code and present it as seen.
+- **Keep observed and inferred on separate lines.** Blended into one paragraph, the reader
+  cannot tell which is which, so both get trusted.
+
+## 14. One mutation path for destructive work
+
+A skill that deletes, moves, overwrites or installs does it through `scripts/`, never by telling
+the agent which ad-hoc command to type.
+
+- One script owns the operation. `SKILL.md` says which script and which guard, not which `rm`.
+  An ad-hoc command differs every run; a script is identical every run and can be read before it
+  is trusted.
+- **Make it reversible.** "Remove" means move to a recoverable location
+  (`~/.cache/<thing>-removed/`), not delete. "Overwrite" means back up first.
+- The script checks its `Requirements` (rule 10) and fails loudly before touching anything.
+- Confirm with the user before the first destructive run, stating exactly what will change.
+
+## 15. Language
 
 Everything committed to this repo is written in **English** — skills, references, scripts,
 docs, README, commit messages. Only `.private/` is exempt.
 
-## 13. Git
+## 16. Git
 
 - Commit messages in English, imperative, scoped:
   `add(skill): design-critique`, `fix(skill): commit trigger too broad`, `docs: rules v2`.
@@ -280,9 +358,14 @@ docs, README, commit messages. Only `.private/` is exempt.
 - [ ] `SKILL.md` within the rule 2 limits, detail in `references/`
 - [ ] Nothing restating what the model already knows; every paragraph changes behaviour
 - [ ] Umbrella only: every child referenced from the parent with a "when to load it" line
+- [ ] Umbrella only: output contract (severity, ranking, cap, format) held in the parent
+- [ ] Takes an operation, a flag or a target: `argument-hint` set
 - [ ] Imperative voice, zero filler
 - [ ] At least one concrete artifact (command / template / checklist / before-after)
 - [ ] Anti-patterns section present
+- [ ] Reporting skills: output capped, ranked, one defined severity scale
+- [ ] Claims cite `path:line`; anything unobserved marked `Not verified`
+- [ ] Destructive work goes through `scripts/`, reversible, confirmed before the first run
 - [ ] No undeclared machine dependency
-- [ ] Three tests passed and recorded in `JOURNAL.md`
+- [ ] Three tests passed and recorded in `JOURNAL.md`, no static check standing in for runtime proof
 - [ ] English throughout, commit without `Co-Authored-By`
