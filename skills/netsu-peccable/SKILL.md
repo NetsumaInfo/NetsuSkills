@@ -1,12 +1,10 @@
 ---
 name: netsu-peccable
 description: Use when the user wants to design, build, redesign, critique or polish a front-end interface (page, screen, landing page, dashboard, settings, form, dialog, component), change its fonts, colors, spacing, dark mode or animations, make it bolder, calmer or simpler, check its accessibility, speed it up or fit it to other devices, stress-test its states, compare variants, extract shared components, add a moment of delight, review a branch's or pull request's UI, or learn how an interface was built; or write, rewrite, translate or review text people read in or about a product, in any language: buttons, labels, tooltips, errors, empty states, onboarding, notifications, emails, landing copy, store listings, release notes. Also sets up the project's DESIGN.md (tu or vous, the words to use, the look). Catches AI-sounding copy and the generic AI look. Do NOT use for a README, a blog post, article or newsletter, backend-only work, or feature logic that changes nothing a user sees or reads.
+argument-hint: "<screen, component, branch or text to work on>"
 ---
 
 # NetsuPeccable
-
-Interfaces and interface text that read like a person made them for these users: everyday
-words, deliberate visual choices, every state handled.
 
 This is an index. Load the one file the request asks for and follow its frame: what it changes,
 what it never touches, when it stops, what it returns. No file loads unless its case is asked.
@@ -84,5 +82,17 @@ does not state.
 **Stay in the frame.** Change what the request names, reuse the project's components and tokens,
 and stop where the loaded file says.
 
-**Show it, once.** A screenshot of the real render or the scan before and after; one proof per
-change. If the project forbids running the app, say what was not observed.
+**Show it, once.** A screenshot of the real render or the scan, before and after; one proof per
+change. What the skill could not observe — the app not run, the scan not covering it — is
+reported as `Not verified` with what is missing, never inferred from the code and written as seen.
+
+## The report
+
+This page owns the output; the loaded file owns the checks. Same scale, same cap, same table.
+
+`P0` the task cannot be completed, data is lost, or the screen shows raw internals or a false
+claim · `P1` the task is hard or unclear · `P2` annoying, with a workaround · `P3` polish.
+
+Findings carry `path/to/file:line`. One root cause is one finding, with every place it occurs
+listed. Sort by severity, then cut from the bottom at **15** and say how many were cut. Three
+real findings is a three-finding report — never padded to reach the cap.

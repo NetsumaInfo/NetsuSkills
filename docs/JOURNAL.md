@@ -17,6 +17,9 @@ One entry per merged skill. Evidence that the three tests in rule 11 passed.
 | 2026-10-07 | `netsu-icon-motion` | not run | not run | NetsuIcon, the same two packs redone by two agents that had only the third rewrite | two switches that stay, a sheet of paper for the bin, wind that runs; 24 more defects reported, all fixed; an envelope and a larger sheet added by hand; the description is still unrouted |
 | 2026-10-07 | `netsu-icon-motion` | not run | not run | NetsuIcon, an expressive manner added to the same sixteen icons by two agents that had only the trimmed skill | 33 and 34 tool calls for eight icons, against 39 to 76 before; 20 more defects reported, all fixed; the description, which gained "subtler or more expressive", is still unrouted |
 | 2026-10-07 | `netsu-icon-motion` | not run | not run | NetsuIcon, the same sixteen icons reviewed by two agents that had only the fifth rewrite: say how the thing works, keep the clips that follow it, rewrite the others | 5 icons kept, 11 retouched; 26 and 32 tool calls for eight icons; 46 defects reported, fixed in the text except three; seven of the rewritten clips had followed their verb row to the letter, so the rows were wrong; the description is still unrouted |
+| 2026-10-31 | `netsu-peccable` | unchanged | unchanged | not run | the P0–P3 scale and a 15-finding cap moved into the parent, where three children had each redefined the scale; **untested** |
+| 2026-10-31 | `netsu-implement` | unchanged | unchanged | not run | both verdict scales named in the parent, `argument-hint` added; **untested** |
+| 2026-10-31 | `netsu-memory-audit` | unchanged | unchanged | not run | the verdict scale moved out of `references/evidence.md` into the parent; **untested** |
 
 ---
 
@@ -1261,3 +1264,50 @@ lines; writing the missing ones was a separate request, and the audit report was
 starting point for it.
 
 **Still not done.** The `comments` level has still never run.
+
+---
+
+## Output contract — 2026-10-31
+
+Not a skill. Recorded here because it changed three merged skills and the rules they were merged
+under.
+
+**Where it came from.** `github.com/Melvynx/ai-maxxing-skills`, read on 2026-10-31. Its skills
+are weaker than this repo's on structure — no headings, no anti-patterns section, no namespace,
+37 flat descriptions always loaded — but stronger on one axis this repo had never written down:
+what a skill *returns*. `verify` names four proof layers and refuses to let a static check stand
+in for a runtime one. `better` states that the entry point owns severity, ranking and the cap
+while the guides own the checks, and caps a review at 15 findings.
+
+**What the rules gained.** `SKILL-RULES.md` 289 → 371 lines: rule 1 now says the umbrella parent
+owns the output contract; rule 11 gained a proof-layer table and the `BLOCKED: NOT PROVEN`
+verdict; rules 12 (output discipline), 13 (evidence or `Not verified`) and 14 (one mutation path)
+are new; Language and Git moved to 15 and 16. `argument-hint` is documented for any shape.
+
+**What the audit found.** Four of the six imports caught nothing — no skill here deletes
+anything (rule 14 is purely preventive), and `netsu-implement` already required `file:line` and a
+failure scenario per finding. Two bit:
+
+1. **Three severity scales where there should be one.** `netsu-peccable` had P0–P3 redefined in
+   `review-ui.md`, `review-copy.md` and `accessibility.md`, with different wording in each. They
+   were still compatible, which is exactly why it had gone unnoticed. The scale and the cap now
+   live in the parent; the children keep only their own examples.
+2. **`netsu-memory-audit` delegated its contract to a child.** The parent said in so many words
+   that `references/evidence.md` held "the verdict scale and the report format" — the pattern
+   rule 1 now forbids, written down before the rule existed. The four verdicts and the caps moved
+   up; the rungs and the output file stayed down.
+
+**What it cost.** Both large parents were already near the 100-line ceiling, so the contract had
+to displace something. `netsu-peccable` lost its opening tagline (motivation, restated by the
+global rules below it) and sits at 98. `netsu-implement` lost one anti-pattern that duplicated a
+rule two sections above it and sits at 99. Rule 2 says hitting the limit is a signal to split:
+`netsu-peccable` routes 26 cases to 34 children from one page, and the next case added forces
+that split.
+
+**One deliberate deviation.** `netsu-implement` states that acceptance criteria and `CONFIRMED`
+findings are never capped, and caps only its notes, at five. Rule 12 asks for a named number, not
+for a cut on principle; capping proven bugs would be worse than not capping.
+
+**Not tested.** No `description` changed, so trigger and non-trigger still hold from the entries
+above. The new output contract was verified by reading only — no review, implementation or audit
+has been run end to end since the change.

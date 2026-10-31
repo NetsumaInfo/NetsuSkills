@@ -124,12 +124,14 @@ Load `references/ai-look.md`.
 
 ## 6. Severity
 
-| Level | Meaning | Example |
-|---|---|---|
-| P0 | The task cannot be completed, data is lost, or the screen shows raw internals or a false claim | Save button unreachable by keyboard; form clears on error; a stack trace on screen |
-| P1 | The task is hard or unclear | Error says "Invalid input"; no loading state on a 3 s action |
-| P2 | Annoying, with a workaround | Hover-only row actions on desktop; inconsistent button labels |
-| P3 | Polish | Radius off by 2 px from `## Look`; numbers not in `tabular-nums` |
+The scale and the cap are in `SKILL.md`. What each level looks like on a screen:
+
+| Level | Here |
+|---|---|
+| P0 | Save button unreachable by keyboard; form clears on error; a stack trace on screen |
+| P1 | Error says "Invalid input"; no loading state on a 3 s action |
+| P2 | Hover-only row actions on desktop; inconsistent button labels |
+| P3 | Radius off by 2 px from `## Look`; numbers not in `tabular-nums` |
 
 Test for the top two: **would a user contact support about this?** Yes means P0 or P1.
 
@@ -176,10 +178,10 @@ Verdict: <one line: the biggest problem, and whether the screen does its job>
 - <states, sizes, modes or devices not seen, and why>
 ```
 
-Sort findings by severity. One root cause is one finding, with every place it occurs. The Rule
-cell names what the finding breaks: a `DESIGN.md` section, a scan rule, a React Doctor rule, a
-WCAG criterion, a heuristic, or a checklist in `references/components.md`. No score, no grade,
-no "8/10".
+Sorting, root causes and the 15-finding cap are in `SKILL.md`. The Rule cell names what the
+finding breaks: a `DESIGN.md` section, a scan rule, a React Doctor rule, a WCAG criterion, a
+heuristic, or a checklist in `references/components.md`. Findings cut by the cap are counted
+under "Scan hits dropped". No score, no grade, no "8/10".
 
 ## 8. Fix, only when asked
 

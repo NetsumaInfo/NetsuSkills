@@ -133,12 +133,15 @@ node -e 'const [f,w,l]=process.argv.slice(1);const s=JSON.parse(require("fs").re
 
 ## 6. Severity
 
-| Level | Means | Examples |
-|---|---|---|
-| P0 | Misleading, broken, blaming, or leaking internals | A raw `error.message`, a stack trace or a bare error code on screen; "Saved" shown when the save failed; a claim the product does not keep; a broken placeholder; "You entered it wrong" |
-| P1 | Blocks understanding | "OK" on a destructive dialog; an error with no fix; `tu` and `vous` mixed; an English string in the French UI; keys missing in a language; drift on a main concept |
-| P2 | Slop, hype, filler, typography | A lexicon `block` hit; "avec succès", "successfully"; missing French non-breaking spaces; Title Case |
-| P3 | Polish | A word that could be shorter; a `check` hit that could be plainer; straight and curly apostrophes mixed |
+The scale and the cap are in `SKILL.md`. What each level looks like in text — a false claim or a
+leaked internal is P0, text that blocks understanding is P1, slop is P2:
+
+| Level | Here |
+|---|---|
+| P0 | A raw `error.message`, a stack trace or a bare error code on screen; "Saved" shown when the save failed; a claim the product does not keep; a broken placeholder; "You entered it wrong" |
+| P1 | "OK" on a destructive dialog; an error with no fix; `tu` and `vous` mixed; an English string in the French UI; keys missing in a language; drift on a main concept |
+| P2 | A lexicon `block` hit; "avec succès", "successfully"; missing French non-breaking spaces; Title Case |
+| P3 | A word that could be shorter; a `check` hit that could be plainer; straight and curly apostrophes mixed |
 
 ## 7. Report
 

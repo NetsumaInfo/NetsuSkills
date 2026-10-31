@@ -72,12 +72,15 @@ never the only signal (SC 1.4.1).
 
 ## 3. Severity
 
-| Level | Means | Examples |
-|---|---|---|
-| P0 | A task cannot be done with a keyboard or a screen reader | Save unreachable by Tab; a dialog that traps focus with no way out |
-| P1 | Possible but misleading or very hard | Unnamed icon buttons; errors not announced; focus invisible |
-| P2 | A barrier with a workaround | Wrong tab order in a secondary panel; a missing `autocomplete` |
-| P3 | Polish | A redundant `role`; a heading level skipped in a footer |
+The scale and the cap are in `SKILL.md`; "the task cannot be completed" means with a keyboard or
+a screen reader. What each level looks like here:
+
+| Level | Here |
+|---|---|
+| P0 | Save unreachable by Tab; a dialog that traps focus with no way out |
+| P1 | Unnamed icon buttons; errors not announced; focus invisible |
+| P2 | Wrong tab order in a secondary panel; a missing `autocomplete` |
+| P3 | A redundant `role`; a heading level skipped in a footer |
 
 The failures listed in `references/review-ui.md` §6 are never below P1. WCAG 2.2 criteria are
 cited by number (w3.org/TR/WCAG22, read 2026-09-17). RGAA 4.1.2, the French

@@ -1,6 +1,7 @@
 ---
 name: netsu-memory-audit
 description: Use when the user asks to audit the memory, audit the documentation, check whether CLAUDE.md, AGENTS.md, MEMORY.md or the docs are still accurate, find out what is out of date or obsolete in the docs, clean up or prune memory files, check the docs against the code, or rate what is stale as critical, moderate or minor. Covers agent memory files, project documentation, and code comments that describe code that moved. Do NOT use for writing a README from scratch, for auditing installed skills, or for editing prose style.
+argument-hint: "[memory|docs|comments|everything] [path or scope]"
 ---
 
 # NetsuMemoryAudit
@@ -23,8 +24,8 @@ Levels compose. "audit everything" loads all three; "audit my memory" with no ot
 `memory.md` only. Each level is a full pass with the same verdict scale — only the file set
 changes. Run them in the order listed and write one report.
 
-Always loaded, by every level, before its first finding: `references/evidence.md` — the
-evidence ladder, the verdict scale, and the report format. It is not an entry point.
+Always loaded, by every level, before its first finding: `references/evidence.md` — the evidence
+ladder and the report file. It is not an entry point.
 
 ## Requirements
 
@@ -51,3 +52,24 @@ evidence ladder, the verdict scale, and the report format. It is not an entry po
   the agent count before spawning.
 - **The audit never invents a replacement.** A proposed fix either comes from the code or says
   "delete"; it does not describe what the doc should have said.
+
+## The report
+
+This page owns the output; the loaded level owns the checks. One report per run, whichever
+levels ran, on one scale:
+
+| Verdict | Means | Typical rung |
+|---|---|---|
+| **critical** | Will actively mislead whoever reads it. Mechanically proven wrong | 1–2 |
+| **moderate** | Probably wrong; a human has to read the code to settle it | 3–5 |
+| **minor** | True, but stale in shape: duplicated, superseded, too vague to act on | 3–6 |
+| **obsolete** | The subject no longer exists at all. Proposed for **deletion**, never edited | 1 |
+
+`critical` and `obsolete` are not the same thing. A critical line says something false about
+something that exists. An obsolete line is about a thing that is gone — editing it is pointless,
+so it is only ever proposed for deletion, and deletion is confirmed on its own.
+
+Every row carries `file:line` and the command or reference that proves it. Rows sort by verdict,
+then rung. `critical` and `obsolete` are never capped; `minor` stops at **15 per level**, with
+the count dropped stated. A run with four findings reports four — the table is never padded.
+`references/evidence.md` holds the rungs and the file layout.

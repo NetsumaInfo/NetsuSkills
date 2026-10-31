@@ -1,6 +1,7 @@
 ---
 name: netsu-implement
 description: Use when the user asks to implement, build, add, wire up, hook up, finish, fix, change or migrate something in the code — a feature, a bug fix, an endpoint, a button, a setting, a schema change — or says "one shot this", "just make it work", or hands over a plan, an issue or a task file to execute. Also fires on the flags --fast, --full, --plan and --resume. Do NOT use for reviewing or debugging without changing code, writing a README or docs, designing, restyling or critiquing an interface or writing its text, or for committing, pushing and opening a pull request.
+argument-hint: "[--fast|--full|--plan|--review|--proof|--resume <run-id>] <what to implement>"
 ---
 
 # NetsuImplement
@@ -52,7 +53,7 @@ and escalates to full; it does not keep improvising.
 ## Flags
 
 Five overrides, and nothing else. A flag states intent; it never grants authority the user has
-not given, and it never turns an unrun check into a passed one.
+not given.
 
 | Flag | Effect |
 |---|---|
@@ -76,6 +77,17 @@ Three more children are **resources**, never entry points. Both paths load
 `references/code.md` before they edit and `references/verify.md` at their validation step. The
 full path loads `references/review.md` after validation and before its report.
 
+## The report
+
+This page owns the output; the loaded file owns the work. One report per run:
+
+- Proof rows on the `references/verify.md` scale: `PASS` · `UNAVAILABLE` · `NOT_RUN`.
+- Every review finding on the `references/review.md` scale (`CONFIRMED` · `NOISE` ·
+  `PREEXISTING` · `OUT_OF_SCOPE` · `UNCERTAIN`), carrying `file:line`. Only `CONFIRMED` blocks.
+- Skipped controls and reversible defaults taken, named rather than implied.
+
+Criteria and `CONFIRMED` findings are never capped. Notes stop at five.
+
 ## Anti-patterns
 
 ❌ Runs the full ceremony on a one-line fix → ✅ Step 0 exists to avoid exactly that.
@@ -85,4 +97,3 @@ full path loads `references/review.md` after validation and before its report.
 ❌ Ends with "want me to commit and push?" → ✅ Ends with the report. Committing is another skill.
 ❌ Stops at 60% to ask which default to use → ✅ Reversible default, finish, say so in the report.
 ❌ Reports success because the code looks right → ✅ Success is the behaviour, observed.
-❌ Validates by volume → ✅ One proof per criterion, the touched suites once, then stop.

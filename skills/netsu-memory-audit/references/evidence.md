@@ -1,6 +1,7 @@
-# Evidence ladder, verdicts, report
+# Evidence ladder and report file
 
-Loaded by every level before its first finding. Nothing here is level-specific.
+Loaded by every level before its first finding. Nothing here is level-specific. The verdict scale
+and the caps are in `SKILL.md`; this file holds what earns a verdict and where the report goes.
 
 ## The ladder
 
@@ -30,16 +31,9 @@ table costs more trust than ten real findings buy.
 
 ## Verdicts
 
-| Verdict | Means | Typical rung |
-|---|---|---|
-| **critical** | Will actively mislead whoever reads it. Mechanically proven wrong | 1–2 |
-| **moderate** | Probably wrong; a human has to read the code to settle it | 3–5 |
-| **minor** | True, but stale in shape: duplicated, superseded, too vague to act on | 3–6 |
-| **obsolete** | The subject no longer exists at all. Proposed for **deletion**, never edited | 1 |
-
-`critical` and `obsolete` are not the same thing. A critical line says something false about
-something that exists. An obsolete line is about a thing that is gone — editing it is pointless,
-so it is only ever proposed for deletion, and deletion is confirmed on its own.
+The four verdict words, what they mean and the cap on each are in `SKILL.md`. The rung ceiling
+above is what binds them here: a rung never promotes, so a rung-5 reading cannot become a
+`critical` however sure the agent sounds.
 
 ## Report format
 
