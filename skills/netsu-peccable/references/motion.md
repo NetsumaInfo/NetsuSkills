@@ -93,8 +93,7 @@ Sources, read 2026-09-16: NN/g, nngroup.com/articles/animation-duration (2020-02
 }
 ```
 
-Extend the project's tokens; never add a parallel set. Tailwind v4:
-`duration-(--dur-enter) ease-(--ease-out)`.
+Extend the project's tokens; never add a parallel set. Tailwind v4: `duration-(--dur-enter) ease-(--ease-out)`.
 
 ## 3. Easing
 
@@ -138,9 +137,9 @@ Extend the project's tokens; never add a parallel set. Tailwind v4:
 
 ## 5. Press and hover
 
-- Press: `scale(0.96)` to `0.98`, never below 0.95, 100 to 160 ms. `scale()` carries the label and
-  icons with it, which is why it reads as a press. Buttons, icon buttons, chips, list items that
-  act like buttons.
+- Press: `scale(0.96)` to `0.98`, never below 0.95, 100 to 160 ms, on buttons, icon buttons, chips
+  and list items that act like buttons. `scale()` carries the label and icons with it, which is
+  why it reads as a press.
 - **Feedback starts on pointer-down, not on `click` or release.** Waiting for the release reads as
   lag. `:active` is a real press on touch, so it needs no gating.
 - No press scale on text links, table rows or large cards: scaling a big surface looks like a
@@ -184,9 +183,9 @@ drop travel, scale, parallax and overshoot.
 
 ## 7. Stagger
 
-- Only when a list arrives as a list: a first load, a search response, content the user is waiting
-  on. Never on re-render, re-sort, filter, or on every scrolled section. A list scrolled past all
-  day is already there.
+- Only when a list arrives as a list: a first load, a search response, content the user waits on.
+  Never on re-render, re-sort, filter, or every scrolled section — a list scrolled past all day is
+  already there.
 - 30 to 80 ms a step, **300 ms for the whole group** at most. Past that, the items left over
   arrive with the last staggered one, or the group fades as one.
 - Stagger is decorative: it never blocks interaction while it plays.

@@ -1383,3 +1383,75 @@ execution test of their own. No code written against these files has run in a re
 `ai-look.md` recorded its retired design rules; the note now says the match at that version is
 `Not verified`. The tool stays called, never copied — `npx react-doctor@latest design --verbose`
 in four files, with the ask-before-download guard.
+
+## `netsu-peccable` — a Compose chapter — 2026-11-01
+
+**Why.** The NetsuRush Mobile session found the gap: a grep of `Compose|Kotlin|SwiftUI|Flutter`
+over the whole skill returned one hit, and it was the English verb "compose" in `new-ui.md`.
+`mobile.md` §12–§21 were entirely Reanimated and Expo, and `scan.mjs` could not even open a `.kt`
+file. The skill had no way to say anything about a Kotlin screen.
+
+**The stack is not settled, and the file says so.** Compose Multiplatform, Android first, iOS once
+there is a Mac, is the current proposal for that project — not a decision. Netsuma has not
+validated keeping Compose over React Native, and a comparison prototype was offered with no answer
+yet. `compose.md` opens by refusing to be a vote: if the project has not settled, say so and stop.
+No design decision from that repo is encoded either, because none is validated: there is no
+DESIGN.md there, and Material 3 against a house theme is still open.
+
+**`references/compose.md`, 274 lines, an entry point.** It does not restate `motion.md` §1: the
+frequency gate and the named purpose hold in Kotlin unchanged. What it replaces is everything
+below that.
+
+- **Durations become schemes.** Material 3 Expressive motion is springs with no duration, read
+  from `MaterialTheme.motionScheme`. So the millisecond table in `motion.md` §2 does not transfer,
+  and the chapter says to stop copying it.
+- **Spatial against effects** is the section that earns the file. Spatial springs damp below 1 and
+  overshoot by design; colour and alpha clamp, so a spatial spec on a fade shows as a flash, not a
+  bounce. Token values came from `ExpressiveMotionTokens.kt` in the JetBrains fork, cited as source
+  rather than published docs, because the numbers circulating in community posts contradict it.
+- **Properties become phases.** The web rule bans animating layout properties; Compose's version
+  is that a state read in composition recomposes every frame, and the fix is which lambda holds the
+  read: `offset { }`, `graphicsLayer { }`, `drawBehind`.
+- **The hard case is named and marked as synthesis.** A grid that scrolls vertically whose
+  thumbnails also drag horizontally, plus long press and double tap. No official recipe exists, so
+  the four-step pattern is built from the documented pass and consumption rules and labelled as
+  needing verification on hardware, with the four documented failure modes.
+- **Gesture numbers do not cross over.** The 45 px and 0.11 px/ms in `gestures.md` are read from
+  web libraries. The chapter says so and tells the reader to measure on the device instead, because
+  `VelocityTracker`'s unit and the decay APIs could not be verified.
+
+**Honesty about what is unknown.** Roughly a dozen points are written `Not verified` on purpose:
+the package of `anchoredDraggable`, whether `swipeable` is formally deprecated, the nested-scroll
+callback names, the fling and decay APIs, `WindowInsets` on iOS, whether Compose honours
+`ANIMATOR_DURATION_SCALE` on its own, and the whole iOS reduce-motion question. Two circulating
+claims were kept out because the research could not confirm them: `computedStateOf` as a rename of
+`derivedStateOf`, and `MotionScheme.expressive()` being `MaterialTheme`'s default.
+
+**One correction carried in.** `CupertinoScrollDecayAnimationSpec` and `CupertinoOverscrollEffect`
+were removed from the public API (PR #1806, merged 2025-01-29, CMP-6775). Cupertino overscroll is
+the default and is not configurable, so an earlier note in this session that named the class was
+stale. iOS facts otherwise come from the release notes read 2026-11-01, with the version beside
+each one, and most of them are still in a 1.13.0 pre-release.
+
+**`scan.mjs` now reads Kotlin.** A `COMPOSE_EXT` set, and one gate in the rule loop: a rule with
+`ext` runs only on those extensions, and a rule without one never runs on Kotlin. So the web rules
+do not quietly return zero findings on a Compose screen, which would be worse than not being
+asked. Seven rules added, all `check` except the Wear OS one: an eagerly read `offset`, a spatial
+spec on a colour or alpha, a hand-set `tween`, a hardcoded `Color(0xFF…)`, a lazy item with no
+`key`, an interactive target under 48 dp, and `LocalReduceMotion` (Wear OS only, so `block`).
+A Kotlin `Modifier` chain spans lines, so two of those needed a new `allNear` field that requires
+both halves inside the context window.
+
+**Tested.** All seven rules fire on a deliberately bad fixture; a correct fixture of the same
+screen returns zero findings; `transition-all` still fires on a `.tsx`, so the web path did not
+regress. Routing was re-checked for the new trigger after the `description` changed.
+
+**Not proven.** No Compose code has been built or run — there is no Kotlin in any project yet. The
+chapter is verified against documentation and source, not against a screen. Every iOS claim needs
+a Mac, and the §5 gesture pattern needs a phone.
+
+**Also decided, and not done.** A separate skill for the Android system layer (SAF, foreground
+services, WorkManager, NNAPI, MediaStore) was considered and refused: the UI-facing half belongs
+here, the rest is either generic Android knowledge the model already has or project documentation
+that already exists in `docs/stack.md`. One mobile project does not justify a skill; a second one
+would.

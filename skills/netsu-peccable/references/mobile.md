@@ -4,6 +4,7 @@ Make a web app feel native on a phone, and build native motion in React Native a
 `references/adapt.md` owns the layout and responsive decisions; this file owns the platform layer
 under them: viewport, touch, scroll, safe areas, then Reanimated. Web motion rules stay in
 `references/motion.md`, pointer rules in `references/gestures.md`; both are cited, not restated.
+A Kotlin interface goes to `references/compose.md` instead: nothing in Part B applies to it.
 
 ## Requirements
 

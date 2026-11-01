@@ -37,6 +37,10 @@ const SKIP_DIRS = new Set([
 ]);
 const SKIP_FILE = /\.(test|spec|stories|story)\.[cm]?[jt]sx?$|\.d\.ts$|\.min\.[cm]?js$/;
 const CODE_EXT = new Set([".tsx", ".jsx", ".ts", ".js", ".mjs", ".cjs", ".vue", ".svelte", ".html", ".htm"]);
+// Compose (Kotlin). Only rules carrying `ext: COMPOSE_EXT` run on these, and those rules run
+// nowhere else: the web rules look for Tailwind and CSS and would find nothing here anyway, but a
+// silent zero is worse than not being asked.
+const COMPOSE_EXT = new Set([".kt", ".kts"]);
 const STYLE_EXT = new Set([".css", ".scss", ".sass", ".less"]);
 const TEXT_EXT = new Set([".md", ".txt"]);
 const LOCALE_DIR = /^_?(locales?|i18n|l10n|langs?|languages|translations?|messages)$/i;
@@ -171,7 +175,7 @@ function selectFiles(opts, notes) {
     if (SKIP_FILE.test(path)) return false;
     const ext = extname(path).toLowerCase();
     // Icon SVGs are read for their colors; logos and illustrations keep theirs.
-    if (opts.mode === "ui") return CODE_EXT.has(ext) || STYLE_EXT.has(ext) || (ext === ".svg" && /icon/i.test(path));
+    if (opts.mode === "ui") return CODE_EXT.has(ext) || COMPOSE_EXT.has(ext) || STYLE_EXT.has(ext) || (ext === ".svg" && /icon/i.test(path));
     if (CODE_EXT.has(ext)) return true;
     if (ext === ".json") return explicit || isLocaleFile(path) || basename(path) === "manifest.json";
     return TEXT_EXT.has(ext) && explicit;
@@ -923,6 +927,16 @@ const ICON_LIBS = ["lucide-react", "lucide-vue-next", "lucide-svelte", "react-ic
 const FONT_NAMES = "Inter|Roboto|Arial|Open Sans|Space Grotesk|Geist|Instrument Serif|Poppins|Montserrat";
 
 const UI_RULES = [
+  // Compose (Kotlin) only. Verified against the Compose docs and the Material 3 token source,
+  // 2026-11-01; see references/compose.md for each rule's reasoning.
+  { id: "compose-eager-offset", ext: COMPOSE_EXT, level: "check", all: [/\.offset\s*\(\s*(?:[xy]\s*=)?[^){]*\.dp/, /\b(?:animate\w*AsState|Animatable|requireOffset|\.value\b|\.get\(\))/], hint: "an animated value read in composition recomposes every frame: Modifier.offset { } or graphicsLayer { }" },
+  { id: "compose-spatial-on-effect", ext: COMPOSE_EXT, level: "check", any: [/(?:default|fast|slow)SpatialSpec/], allNear: [/\b(?:\.alpha\(|animateColorAsState|\w*[Cc]olor\s*=|tint\s*=)/], hint: "a spatial spring overshoots and colour and alpha clamp: use the matching EffectsSpec" },
+  { id: "compose-hardcoded-tween", ext: COMPOSE_EXT, level: "check", any: [/\btween\s*\(\s*(?:durationMillis\s*=\s*)?\d+/], hint: "a hand-set duration: read MaterialTheme.motionScheme, and keep tween for a progress fill or a marquee" },
+  { id: "compose-hardcoded-color", ext: COMPOSE_EXT, level: "check", any: [/\bColor\(\s*0x[0-9a-fA-F]{6,8}/], hint: "a colour fixed in a composable: use the theme's role token so dark mode and states follow" },
+  { id: "compose-lazy-no-key", ext: COMPOSE_EXT, level: "check", all: [/\bitems(?:Indexed)?\s*\(/], none: [/\bkey\s*=/], hint: "a lazy item with no key: state follows the position, not the item, so a reorder moves the wrong selection" },
+  { id: "compose-small-target", ext: COMPOSE_EXT, level: "check", any: [/\.size\(\s*(?:[1-9]|[1-3]\d)\.dp/], allNear: [/\b(?:clickable|combinedClickable|toggleable|selectable)\b/], none: [/minimumInteractiveComponentSize/], hint: "an interactive target under 48 dp: minimumInteractiveComponentSize() before size, or sizeIn" },
+  { id: "compose-wear-reduce-motion", ext: COMPOSE_EXT, level: "block", any: [/\bLocalReduceMotion\b/], hint: "LocalReduceMotion is Wear OS only: read Settings.Global.ANIMATOR_DURATION_SCALE on a phone" },
+
   { id: "gradient-text", level: "check", all: [/\bbg-clip-text\b/, /\btext-transparent\b/], hint: "gradient text: a stock AI choice unless DESIGN.md picked it" },
   { id: "gradient-text", level: "check", any: [/background-clip:\s*text/], hint: "gradient text: a stock AI choice unless DESIGN.md picked it" },
   { id: "purple-gradient", level: "check", any: [/\b(?:from|via|to)-(?:purple|violet|indigo|fuchsia)-\d{2,3}\b/, /gradient\([^)]*(?:purple|violet|indigo|#(?:8b5cf6|7c3aed|6366f1|a855f7|9333ea|4f46e5|6d28d9))/i], hint: "purple or indigo gradient: the most common AI default" },
@@ -1024,11 +1038,14 @@ function scanUi(files) {
       const selector = STYLE_EXT.has(ext) ? src.slice(src.lastIndexOf("}", offset) + 1, src.lastIndexOf("{", offset + text.length) + 1) : "";
       offset += text.length + 1;
       for (const r of UI_RULES) {
+        if (r.ext ? !r.ext.has(ext) : COMPOSE_EXT.has(ext)) continue;
         if (r.any && !r.any.some((re) => re.test(text))) continue;
         if (r.all && !r.all[0].test(text)) continue;
         const hit = ctxs.some((ctx) => (!r.all || r.all.every((re) => re.test(ctx))) && !(r.none && r.none.some((re) => re.test(ctx) || (r.id === "outline-none" && re.test(after)))));
         if (!hit) continue;
         if (r.near && r.near.some((re) => re.test(near))) continue;
+        // A Kotlin Modifier chain spans lines, so some rules need both halves within the window.
+        if (r.allNear && !r.allNear.every((re) => re.test(`${above}\n${after}`))) continue;
         if (r.id === "outline-none" && /:focus/.test(selector)) continue;
         add(line, r.id, r.level, r.hint, text);
       }
