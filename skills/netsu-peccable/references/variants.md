@@ -30,10 +30,16 @@ one axis and give each variant a different position on it:
 | Emphasis | Where the accent goes, what recedes | `references/emphasis.md` |
 | Type | Scale steps, weight contrast, measure | `references/typography.md` |
 | Wording | Labels, tone, how much text | `references/copy-app.md` |
+| Personality | Playful, austere, warm, technical | `## Look` and `## Voice` |
+| Motion | None, subtle, expressive | `references/motion.md` |
+| Interaction model | Click, drag, keyboard-first, inline edit | `references/gestures.md` |
 
 Three variants by default, five at most. Name each by its direction ("Compact", "Editorial",
-"Quiet"), never "Option A". Variants that differ only by accent colour teach nothing: change the
-axis.
+"Quiet"), never "Option A".
+
+Divergence test: two directions that differ only in accent colour are one direction, so replace
+one. If two converge while building, cut one and say so: two truly distinct directions beat three
+padded ones.
 
 ## 2. Build on the real page
 
@@ -51,13 +57,17 @@ axis.
 
 Every variant has accessible names, full keyboard access, visible focus, the contrast of
 `references/colors.md` §2, no clipping at the supported widths, and the states of
-`references/states.md`. A direction that only works by breaking this floor is dropped, and the
+`references/states.md`. Each one meets the craft bar of `references/motion.md` on its own and is
+fully working: real interactions, real motion, product-shaped copy, plausible names and numbers.
+No lorem ipsum, no dead buttons. A direction that only works by breaking this floor is dropped, and the
 report says why.
 
 ## 4. Look once
 
-Open each link once in the browser tool, if the project may run, at one mobile and one desktop
-width. Code-only: hand over the links and say they were not opened.
+Open each link in the browser tool, if the project may run, at one mobile and one desktop width.
+Judge one variant at a time at full size in realistic surroundings: a toast needs a page behind
+it, a card needs siblings. Flip through every variant yourself and keep the console clean.
+Code-only: hand over the links and say they were not opened.
 
 ## 5. Report
 
@@ -66,14 +76,15 @@ width. Code-only: hand over the links and say they were not opened.
 
 Axis: density · Page: http://localhost:5173/exports?variant=compact
 
-| Variant | Right when | Costs |
-|---|---|---|
-| Compact | Editors scanning 200 clips a day | Smaller targets; 13 px text |
-| Comfortable | Occasional use, touch screens | 40% fewer rows per screen |
-| Split | Details needed while scrolling | Needs 1,100 px or more |
+| Variant | Axis position | Right when | Costs |
+|---|---|---|---|
+| Compact | Dense | Editors scanning 200 clips a day | Smaller targets; 13 px text |
+| Comfortable | Roomy | Occasional use, touch screens | 40% fewer rows per screen |
+| Split | Two panes | Details needed while scrolling | Needs 1,100 px or more |
 ```
 
-No favourite, no score. The user picks.
+No favourite, no score. The user picks. Asked which you would pick, answer from the product's
+personality and how often the piece is used, never from aesthetics.
 
 ## 6. After the choice
 
@@ -82,11 +93,15 @@ No favourite, no score. The user picks.
 3. Record the decision in `## Look` when it changes the look (density, emphasis).
 4. Show the final capture and the diff that removed the rest.
 
+`riff <variant>` keeps the harness and the switcher and diverges around that one direction.
+
 ## Anti-patterns
 
 | ❌ Default behaviour | ✅ What we want |
 |---|---|
 | Three variants in three accent colours | Three positions on one axis |
+| Variants that only pass the craft bar as a set | Each one clears it alone, fully working |
+| Judging from thumbnails or a screenshot grid | One at a time, full size, with context around it |
 | Variants varying on everything at once | One axis, so the choice teaches something |
 | Thumbnails side by side | One full-size variant at a time, on the real page |
 | Lorem ipsum and three rows | Real content, real quantities |

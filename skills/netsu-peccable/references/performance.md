@@ -47,9 +47,24 @@ Record the conditions: device, throttling, build (production, never dev).
 6. **Re-renders.** In React, a parent state that re-renders a whole table on each keystroke;
    React DevTools Profiler shows it. React Doctor (`references/review-ui.md` §3) flags common
    cases; it downloads a package, ask first.
-7. **Animation.** Movement uses only `transform` and `opacity`; colour transitions follow
-   `references/motion.md` §4; `will-change` only while the
-   animation runs (`references/motion.md` §4). No `transition: all`.
+7. **Animation.** Movement uses only `transform` and `opacity` (`references/motion.md` §4); no
+   `transition: all`. When the symptom is dropped frames, write the inventory of §6.1 first, then
+   work down this list, ordered by how often each is the cause. Name the one that explains the
+   recording and stop there:
+   1. Which properties animate? Layout ones first (`width`, `height`, `padding`, `margin`, `top`,
+      `left`), then `box-shadow` and `border-radius`, which do not look like layout and are missed.
+   2. Does the jank coincide with a busy page: navigation, a fetch, hydration, a long task? Then
+      the driver is the cause (§6.3): move the motion to CSS or WAAPI.
+   3. Is React re-rendering every frame from a `requestAnimationFrame`, `pointermove` or `scroll`
+      handler (§6.4)?
+   4. Does it get worse as content grows? That points at an inherited custom property (§6.4) or
+      too many nodes animating at once.
+   5. Is a CSS variable animated at all, directly or through a motion library's shorthand? Check
+      the installed Motion version before reporting `x`/`y` (§6.3).
+   6. Any animated `blur()` over 20 px? Safari pays most.
+   7. Only now, `will-change` (`references/motion.md` §4): a 1 px shift at the start or end of a
+      composited animation, or a measured paint cost on a large filtered element. It fixes
+      neither a wrong property nor a busy thread.
 8. **Bundle.** A heavy library loaded for one screen is split to that screen; an unused one is
    reported, not removed silently.
 
@@ -83,8 +98,110 @@ Cause: the 3.2 MB hero image loaded lazily and without dimensions.
 Other causes found, not fixed: <list with sizes>
 ```
 
+Dropped frames: one block per finding, severity from the scale in `SKILL.md`, ordered by cost:
+layout before paint, busy-main-thread before idle.
+
+```markdown
+**<Element>**: `path/file.tsx:42`
+Cause: <the §2 step 7 cause it addresses, by number and name>
+Before: `transition: all 200ms` (animates `padding`, triggers layout)
+After: `transition: transform 200ms` with `scale(0.97)`
+Verified: from code / needs a device recording
+```
+
 Proof: the numbers, measured twice under the same conditions; the Performance panel capture
 before and after.
+
+## 6. Motion that drops frames
+
+### 6.1 Inventory first
+
+List every animation in scope before diagnosing. Expand `transition: all` and any library
+shorthand into what it really animates.
+
+| Element | Driver | Properties | Plays during |
+|---|---|---|---|
+| Tab indicator | `motion/react` `layoutId` | layout | route change |
+| Drawer | CSS transition | `transform` | user drag |
+| Card hover | CSS transition | `all` → `padding`, `box-shadow` | hover |
+
+### 6.2 Budget and cost tiers
+
+A frame is 16.7 ms at 60 fps and about 8 ms on a 120 Hz screen: design against the smaller. A
+layout recalculation on a complex page can pass 100 ms, a dozen missed frames, not one.
+
+| Tier | Properties | Cost |
+|---|---|---|
+| Composite only | `transform`, `opacity`; also `filter`, `clip-path`, `background-color` in current Chrome and Firefox, unevenly (test across browsers) | Cheapest |
+| Paint + composite | `box-shadow`, `border-radius`, `color` | A redraw every frame |
+| Layout + paint + composite | `width`, `height`, `padding`, `margin`, `top`, `left`, `border-width` | Moves the neighbours too |
+
+Swap down a tier, the look unchanged: grow with `scale()`, move with `translate()`, show and hide
+with `opacity`, shadow with `filter: drop-shadow()`. A layout animation on an absolutely
+positioned element may show no cost, but only the swap cannot regress on a slower device.
+
+### 6.3 Where it runs
+
+| Driver | Thread |
+|---|---|
+| `requestAnimationFrame` loop (GSAP, `motion/react` components) | Main thread, always |
+| WAAPI (`element.animate()`) and CSS transitions or keyframes | Can be composited |
+
+"JS" and "main thread" are not synonyms: a library that hands off to WAAPI is accelerated, a rAF
+loop is not. Acceleration is progressive enhancement; browsers decline it silently, for example
+for percentage transforms in some versions. Keep `translateY(100%)` for elements of unknown size:
+correctness first, the optimisation second.
+
+The case to look for is motion that plays while the page works hard: a tab indicator during
+navigation, anything alongside a fetch or hydration. Move that motion to a CSS animation.
+
+Motion `x`/`y`/`scale` shorthands: accelerated from Motion 14.2.0 (changelog 2026-10-13, read
+2026-11-01; see `references/motion.md` §9). Below it, or when the path declines, they are
+main-thread and the fix is `animate={{ transform: "translateX(100px)" }}`. Read the version in
+`package.json` before reporting a finding.
+
+### 6.4 The two React traps
+
+```tsx
+// drops frames: a re-render per frame
+setY(nextY);
+// smooth: no re-render (or a motion value: y.set(nextY))
+ref.current.style.transform = `translateY(${nextY}px)`;
+```
+
+```js
+// drag slows as the list grows: styles recalculated for every descendant, every frame
+style = { "--swipe-amount": `${draggedDistance}px` };
+// only this element is touched
+style = { transform: `translateY(${draggedDistance}px)` };
+```
+
+Both use `transform` and still drop frames. Look for `setState` inside rAF, `pointermove`,
+`scroll` and drag handlers. The second is the cause whenever a `transform` animation degrades as
+content grows (`references/motion.md` §4, parent custom properties).
+
+### 6.5 Symptom to fix
+
+| Symptom | Fix |
+|---|---|
+| Stutters on a plain animation | Animate `transform` and `opacity`, not `width`, `height`, `top`, `margin` |
+| Shadow animation is choppy | `filter: drop-shadow()` |
+| Jank only during navigation or loading | CSS or WAAPI, off the main thread |
+| Motion `x`/`y` drops frames | Check the version (§6.3); below 14.2.0, the full `transform` string |
+| Hand-rolled animation drops frames in React | Write `ref.current.style`, not state |
+| Drag gets slower as the list grows | Stop animating a custom property on the parent; `transform` on the element |
+| Blur transition lags, Safari first | Animated `blur()` under 20 px |
+| Properties nobody meant animate | Replace `transition: all` with the listed properties |
+| Element shifts 1 px as motion starts or ends | `will-change: transform`, once the shift is seen |
+
+### 6.6 Evidence
+
+- Every fix names the cause it addresses. "Added `will-change`, seems smoother" is not a
+  diagnosis.
+- Never conclude "it's fine" from a fast machine. The bar is a mid-range phone over remote
+  debugging; desktop CPU throttling models a slow CPU, not a weak GPU or a small memory budget.
+- Say which findings were read from code and which need a device recording. A recording of
+  dropped frames and long tasks, not feel, confirms the fix (`references/motion.md` §11).
 
 ## Anti-patterns
 
@@ -96,3 +213,9 @@ before and after.
 | A rewrite to another framework | One cause, one fix, measured |
 | "It feels faster now" | Before and after, with the target |
 | A library removed because it looked heavy | Reported with its size; removed on a yes |
+| `will-change` added first, "seems smoother" | The cause named from §2 step 7; `will-change` last |
+| "Smooth on my laptop" | A mid-range phone recording, or `Not verified` |
+| Animating a shadow with `box-shadow` | `filter: drop-shadow()` |
+| `setState` per frame in a drag or scroll handler | A ref write or a motion value |
+| Drag distance in a parent custom property | `transform` on the element itself |
+| Motion `x`/`y` flagged without a version check | Installed version read first |

@@ -28,12 +28,12 @@ read 2026-09-17).
 
 | From → to | Check |
 |---|---|
-| Desktop → phone | Multi-column layouts, hover-only actions, small targets, tables, fixed widths, modals taller than the screen, inputs under 16 px (iOS zoom) |
+| Desktop → phone | Multi-column layouts, hover-only actions, small targets, tables, fixed widths, modals taller than the screen, inputs under 16 px (iOS zoom); the platform fixes are in `references/mobile.md` §2 to §8 |
 | Mouse → touch | Hover states, right-click menus, drag without an alternative (`references/components.md` §4), targets under 44 pt or 48 dp |
 | Phone → desktop | Stretched single columns, oversized controls, bottom sheets where a menu fits, missing keyboard shortcuts |
 | Web → extension popup or side panel | A fixed 800×600 popup limit, a panel of variable width, state lost when the popup closes (`references/new-ui.md` §6) |
 | Web → desktop app (Tauri, Electron) | Window resizing from a small minimum, native title bar or drag region, text selection, offline use |
-| Web → native mobile | Platform navigation and back gesture, safe areas, system text size, platform pickers (`references/new-ui.md` §6) |
+| Web → native mobile | Platform navigation and back gesture, safe areas, system text size, platform pickers (`references/new-ui.md` §6); native motion and Expo Router in `references/mobile.md` §12 to §21 |
 
 ## 3. Adapt
 
@@ -45,8 +45,8 @@ read 2026-09-17).
   the main task.
 - **Navigation**: the pattern users expect on that platform (`references/new-ui.md` §5); the
   destinations stay the same.
-- **Input**: the right keyboard (`type`, `inputmode`), no required keyboard shortcut on touch,
-  shortcuts kept on desktop.
+- **Input**: the right keyboard (`type`, `inputmode`, `enterkeyhint`: `references/mobile.md` §5),
+  no required keyboard shortcut on touch, shortcuts kept on desktop.
 - **Text**: the same strings in every context. A shorter label for a small screen is a new
   string, written through `references/copy-app.md` in every language.
 
@@ -54,6 +54,11 @@ read 2026-09-17).
 
 Emulated size and touch in the browser tool (`references/new-ui.md` §8), the desktop app window
 at its minimum and default sizes, a simulator for native. The main task, start to end, in each.
+
+Emulation settles layout, not touch behaviour. Sticky hover, the tap delay, the tap highlight, the
+URL bar's effect on `vh`, input zoom, rubber-banding, safe areas and the software keyboard appear
+only on hardware (`references/mobile.md` Requirements). Anything about those that was checked only
+in the browser tool is reported `Not verified`, naming the device check it needs.
 
 ## 5. Report and proof
 

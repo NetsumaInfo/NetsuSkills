@@ -69,7 +69,8 @@ distracts; use it for 2 to 10 s, and a percent-done bar past 10 s.
 - **Say**: what failed, why when known, what to do now. Same words inline and in the summary
   (GOV.UK Design System, *Error message*). An error code goes in a details line, for support.
 - **Never**: « Une erreur est survenue » alone; « Oups »; color as the only signal; a cleared
-  form; an error toast that fades out; a failure the user must fix shown only in a toast.
+  form; a raw exception string (`TypeError: Cannot read properties of undefined`); an error toast
+  that fades out; a failure the user must fix shown only in a toast.
 - **A11y**: field: `aria-invalid="true"` and `aria-describedby` pointing at the message. Summary:
   `role="alert"`, `tabindex="-1"`, focused on submit, each link jumps to its field. Background
   and page errors: `role="alert"`. Do not make every inline error an alert when the summary
@@ -218,7 +219,8 @@ Cancel   Annuler / Cancel          Annuler                              Cancel
 ```
 
 - The title names the action and the object. The primary button repeats the verb.
-- Irreversible and large (a project, an account): the user types the object's name to confirm.
+- Irreversible and large (a project, an account): the user types the object's name to confirm, or
+  holds the button to confirm (`references/gestures.md` §7).
 - **Never**: « Êtes-vous sûr ? », "Are you sure?"; Oui / Non, Yes / No, OK; a confirmation for
   a reversible action.
 - **A11y**: `role="alertdialog"` with `aria-labelledby` on the title and `aria-describedby` on the
@@ -253,4 +255,5 @@ scrolls keeps its title and action row in place, with `overscroll-behavior: cont
 | A grey button with no reason | The reason in text beside it |
 | A success toast for a change already on screen | The change itself |
 | "Are you sure?" before every deletion | Delete at once, offer Undo |
+| A stack trace or `TypeError: ...` in the error state | What failed and what to do; the code in a details line |
 | "Export complete" when 2 of 14 failed | "Exported 12 of 14 clips. 2 files not found." |

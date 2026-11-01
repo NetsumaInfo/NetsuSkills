@@ -127,6 +127,35 @@ React Native: the same roles as keys of one theme object per scheme, read throug
   A hairline under a wide soft shadow is two systems at once: pick one. Some guides prefer
   shadows, others borders; `## Look` records the choice.
 
+### Translucent layers
+
+Only when `## Look` allows glass and content scrolls or moves behind the surface: the `glass`
+tell of `references/ai-look.md` is blur over a static background, which stays a finding. A bar or
+sheet over scrolling content is the case that earns it, instead of an opaque strip that eats a
+fixed band of the screen.
+
+```css
+.bar {
+  background: color-mix(in srgb, var(--color-surface) 60%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  border-top: 1px solid rgb(255 255 255 / 0.4); /* a brighter top edge: light catching the material */
+}
+```
+
+- **Weight carries hierarchy.** Heavier materials separate structural regions (sidebar, bar);
+  lighter ones draw the eye to interactive elements. A light translucent surface never sits on
+  another: legibility collapses. Stack a solid one instead.
+- **Bigger reads thicker.** A sheet gets a stronger blur and a deeper shadow than a chip. The
+  shadow follows context: heavier over busy content, lighter over a plain background.
+- **Dim to focus, separate to keep flow.** A modal task dims the page and pushes it back. A
+  parallel panel that does not block uses translucency and an offset, no scrim. Stacked sheets
+  dim each parent in turn.
+- **Text on glass** gets more contrast and weight (`references/typography.md` §2.15) and colour
+  stays on a solid layer (`references/colors.md` §4).
+- **Fallbacks.** `prefers-reduced-transparency` and `prefers-contrast: more` make it solid
+  (`references/colors.md` §5). The blur value stays fixed in motion
+  (`references/motion-recipes.md` §4).
+
 ## 5. Where the rest lives
 
 | Part of the look | File |
@@ -167,4 +196,6 @@ Tauri renders with the system webview: check against the oldest one you ship.
 | `rounded-2xl` on everything, card and button alike | Two or three radii; outer = inner + padding |
 | A 1 px border plus a 40 px soft shadow on in-flow cards | Border or tone for in-flow, one shadow for overlays |
 | `text-[13px] p-[13px] rounded-[20px]` | The scale steps |
+| Blurred panel over a static background, or glass stacked on glass | Translucency only over moving content; a solid layer under a second one |
+| The same blur and shadow on a chip and on a sheet | Stronger blur and deeper shadow as the surface grows |
 | Tailwind v4 and `oklch()` in a CEP panel | Hex values and plain CSS, checked in the host |

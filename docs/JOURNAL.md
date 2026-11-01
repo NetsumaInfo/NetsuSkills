@@ -1311,3 +1311,75 @@ for a cut on principle; capping proven bugs would be worse than not capping.
 **Not tested.** No `description` changed, so trigger and non-trigger still hold from the entries
 above. The new output contract was verified by reading only — no review, implementation or audit
 has been run end to end since the change.
+
+## `netsu-peccable` — Emil Kowalski's rules folded in — 2026-11-01
+
+**What came in.** The 16 skills of `github.com/emilkowalski/skills` (MIT, last commit 2026-10-28),
+read in full and merged into `netsu-peccable` rather than installed beside it: a second motion
+skill would have meant two routers and two severity scales for one theme, which rule 1 forbids.
+
+Three new children: `gestures.md` (an entry point — drag, swipe, sheets, hold-to-confirm, which
+the skill had nothing on), `mobile.md` (an entry point — the phone platform layer and React
+Native/Expo), `motion-recipes.md` and `motion-words.md` (resources loaded by `motion.md`).
+`motion.md` was rewritten. Eleven files absorbed the rest: `stress-test.md` (109 → 277, the
+19-row failure-signature table and the plausibility rule), `performance.md` (98 → 221, the frame
+budget and a seven-step diagnosis order), `components.md`, `variants.md`, `visual.md`,
+`typography.md`, `colors.md`, `details.md`, `layout.md`, `adapt.md`, `states.md`.
+
+**How contradictions were settled.** Netsuma's call: Emil wins, because the rules carry field
+experience the skill's secondary sources do not. So `ease-in` is now banned on UI (an exit reads
+as leaving because it is shorter, not because it accelerates — NN/g concedes the same risk),
+Material's tokens gave way to his stronger curves, the four-tier frequency gate replaced a vague
+"many times a minute", and `clip-path` and bounded `blur()` joined the allowed properties.
+
+Two classes of exception, both written down in the arbitration note:
+
+1. **The repo's own contract outranks him.** Rule 12 keeps `P0`–`P3` and the cap of 15 in the
+   parent; his HIGH/MEDIUM/LOW and his 5–7 caps are mapped, not adopted. "No default look" holds,
+   so his system-font and neutral-palette defaults became options the user picks.
+2. **Rule 8 outranks him where a dated source moved.** His "Motion's `x`/`y` shorthands are not
+   hardware-accelerated" was true until Motion 14.2.0 (changelog 2026-10-13); the rule is now
+   version-gated. And the gesture thresholds were read from Sonner and Vaul directly rather than
+   from his summary: 45 px, 0.11 px/ms, `8 * (log(v+1) - 2)`, `cubic-bezier(0.32,0.72,0,1)` at
+   500 ms.
+
+**Rule 11, test 1 and 2 — trigger and non-trigger: PASS, after two fixes.** Fifteen sentences
+routed by a fresh context holding only the competing descriptions, no bodies. Thirteen landed
+right. Two defects, both real:
+
+- "Anime cette bottom sheet en React Native" routed to NONE. The description said "feel native",
+  which is a different idea from React Native being in scope. `mobile.md` covers it, so the
+  description now says so.
+- Bug-shaped UI complaints ("le bouton passe sous la barre d'URL", "le swipe ne marche pas au
+  doigt") pulled toward `netsu-implement`, which claims "fix something in the code". Both
+  descriptions changed: peccable gained "or fix a layout or touch bug there", implement gained
+  "or fixing how it looks, fits a screen or responds to touch".
+
+Also fixed on the way: "speed it up" was too vague against `react-doctor` and is now "speed up its
+loading, scrolling or animations". Peccable's description is at 1016 of 1024 characters, which is
+the real constraint — four trigger phrases had to be shortened to buy the room.
+
+**Rule 11, test 3 — execution: PASS with defects found, now fixed.** A fresh agent built a
+five-row swipe-to-dismiss list from `gestures.md` alone and ran the file's own §9 proof list. Six
+of eight checks PASS with browser evidence. It found two internal contradictions and eleven gaps:
+
+- The release snippet computed velocity over the whole gesture while the prose said to keep a
+  sample window — a slow drag ending in a flick would have been missed. Fixed.
+- The snippet took `Math.abs(velocity)` while the prose said the sign decides direction. Both
+  could not be implemented. Fixed: magnitude tests the threshold, sign picks the side.
+- The snippets were vertical while §6 described a horizontal row swipe, and used `start`,
+  `history` and `isDragging` without declaring them. Rewritten as one axis-neutral block.
+- `THRESHOLD` was undefined; `dampen(0)` returns about −16 and was presented as if it took a raw
+  position; there was no velocity handoff without a motion library; the exit had no duration;
+  focus after a dismissed row, `pointercancel`, and the click a swipe fires on release were all
+  unaddressed. All added, and six rows joined the anti-patterns table.
+
+**Not proven.** Everything in the execution test is desktop mouse and synthetic events: by the
+file's own standard that is emulation, so the flick, multi-touch, and grabbing an element
+mid-settle are `Not verified` and need a phone. `motion-recipes.md` and `mobile.md` have had no
+execution test of their own. No code written against these files has run in a real project yet.
+
+**Also refreshed.** `react-doctor` is at 0.9.21 on npm (published 2026-11-01), against 0.9.14 when
+`ai-look.md` recorded its retired design rules; the note now says the match at that version is
+`Not verified`. The tool stays called, never copied — `npx react-doctor@latest design --verbose`
+in four files, with the ask-before-download guard.

@@ -82,6 +82,8 @@ a W3C standard, so it is not the pass line here.
 - **Secondary text on a tinted surface** is mixed from ink and that surface:
   `color-mix(in oklab, var(--color-ink) 65%, var(--color-surface))`, then measured.
 - **Fix contrast with lightness**, keep the hue.
+- **Colour on a solid layer**, never on a translucent foreground: an accent over blur shifts
+  with whatever moves behind it, and its ratio cannot be measured once.
 - **Icons** draw with `currentColor` (scan `svg-fixed-color`).
 - **Hierarchy** by order, grouping, size, weight and grey value before hue (interface-craft,
   github.com/deanayoung3-droid, checked 2026-09-16).
@@ -112,8 +114,12 @@ a W3C standard, so it is not the pass line here.
   `document.body.offsetHeight`, remove the style two animation frames later; the same in the
   `matchMedia` listener (next-themes calls it `disableTransitionOnChange`, read 2026-09-17).
 - `@media (prefers-contrast: more)` moves `line`, `line-strong` and `ink-muted` toward `ink`,
-  measured again (MDN, *prefers-contrast*, read 2026-09-17). `forced-colors` keeps the system
+  measured again (MDN, *prefers-contrast*, read 2026-09-17), and makes backgrounds near-solid
+  with a defined, contrasting border. `@media (prefers-reduced-transparency: reduce)` makes
+  translucent surfaces solid with `backdrop-filter: none`. `forced-colors` keeps the system
   colours; the focus outline rule is in `references/components.md` §5.
+- Browser chrome: `theme-color` per colour scheme matches the colour at the very top of the
+  page, not the brand colour; the tags are in `references/mobile.md`.
 - React Native: `useColorScheme()`. Adobe CEP: follow the host skin,
   `new CSInterface().getHostEnvironment().appSkinInfo`, refreshed on
   `com.adobe.csxs.events.ThemeColorChanged`.
@@ -147,4 +153,6 @@ before and after, the `ui` scan with zero `block`, one capture per theme (code-o
 | A darker hue to fix contrast | The same hue, another lightness |
 | `oklch()` dropped into a hex codebase | The project's notation |
 | Colour as the only error signal | Colour, icon and message |
+| Accent text over a blurred bar | A solid layer under it, measured |
+| Translucent surfaces unchanged under high contrast or reduced transparency | Near-solid, bordered, `backdrop-filter: none` |
 | Picks a trendy palette unasked | The direction question, once |

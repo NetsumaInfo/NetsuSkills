@@ -1,6 +1,6 @@
 ---
 name: netsu-peccable
-description: Use when the user wants to design, build, redesign, critique or polish a front-end interface (page, screen, landing page, dashboard, settings, form, dialog, component), change its fonts, colors, spacing, dark mode or animations, make it bolder, calmer or simpler, check its accessibility, speed it up or fit it to other devices, stress-test its states, compare variants, extract shared components, add a moment of delight, review a branch's or pull request's UI, or learn how an interface was built; or write, rewrite, translate or review text people read in or about a product, in any language: buttons, labels, tooltips, errors, empty states, onboarding, notifications, emails, landing copy, store listings, release notes. Also sets up the project's DESIGN.md (tu or vous, the words to use, the look). Catches AI-sounding copy and the generic AI look. Do NOT use for a README, a blog post, article or newsletter, backend-only work, or feature logic that changes nothing a user sees or reads.
+description: Use when the user wants to design, build, redesign, critique or polish a front-end interface (page, screen, dashboard, form, dialog, component), change its fonts, colors, spacing, dark mode or animations, make it bolder, calmer or simpler, check its accessibility, speed up its loading, scrolling or animations, fit it to phones or other devices or fix a layout or touch bug there, including React Native, add a swipe or drag, stress-test it, compare variants, extract components, add delight, review a branch or pull request, or learn how an interface was built; or write, rewrite, translate or review text people read in or about a product, in any language: buttons, labels, tooltips, errors, empty states, onboarding, notifications, emails, landing copy, store listings, release notes. Also sets up the project's DESIGN.md. Catches AI-sounding copy and the generic AI look. Do NOT use for a README, a blog post, article or newsletter, backend-only work, or feature logic that changes nothing a user sees or reads.
 argument-hint: "<screen, component, branch or text to work on>"
 ---
 
@@ -21,6 +21,8 @@ what it never touches, when it stops, what it returns. No file loads unless its 
 | Colours, contrast, a palette, dark mode | `references/colors.md` |
 | Spacing, alignment, grouping, density | `references/layout.md` |
 | Animations and micro-interactions | `references/motion.md` |
+| Drag, swipe, a sheet that follows the finger, hold to confirm | `references/gestures.md` |
+| Make it feel native on a phone, or animate in React Native | `references/mobile.md` |
 | Write or translate text in the product: buttons, errors, empty states, tooltips, emails, notifications | `references/copy-app.md` |
 | Write a landing page, a store listing or release notes | `references/copy-pages.md` |
 | Review existing text: "sounds like AI", "too formal", "check the translations" | `references/review-copy.md` |
@@ -48,6 +50,7 @@ Resources, loaded by the files above, never on their own:
   for other languages: lexicon and typography. Load the file of each language you write.
 - `references/states.md`: what each state shows and says.
 - `references/ai-look.md`: the dated list of generic AI visual choices.
+- `references/motion-recipes.md` (per-component recipes), `references/motion-words.md` (a vague motion request): loaded by `motion.md`.
 
 If no case fits, say so and ask. Do not improvise from this page.
 
@@ -58,10 +61,9 @@ its full path from the project root: `node <skill dir>/scripts/scan.mjs`. Comman
 shell (Git Bash on Windows). Scratch output goes to the session's scratch folder.
 
 - `scripts/scan.mjs` needs Node 18 or later. Check `node --version` first; without Node, say so
-  and review by reading.
-- Screenshots need a way to run the UI. Optional.
-- `npx react-doctor@latest design --verbose` and `npx playwright` download packages or browsers:
-  ask before the first run.
+  and review by reading. Screenshots need a way to run the UI, and are optional.
+- `npx react-doctor@latest design --verbose`, `npx playwright` and `npx expo install` download
+  packages or browsers: ask before the first run. Gesture and phone work needs a real device.
 
 ## Rules that hold in every case
 

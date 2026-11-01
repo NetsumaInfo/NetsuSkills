@@ -32,7 +32,9 @@ grep -rnE '\b(ml|mr|pl|pr|left|right)-[0-9]|margin-(left|right)|padding-(left|ri
 1. **Groups by space.** Tight inside a group, at least twice as wide between groups (house rule,
    Krehel, github.com/jakubkrehel/skills, `better-layout`, read 2026-09-17), more above a
    heading than below it. Space first, a background second, a line last. One gap repeated
-   everywhere flattens the page.
+   everywhere flattens the page. Proximity implies relationship: a control sits next to what it
+   affects and mirrors what it changes. A control that needs a label to explain it has a weak
+   mapping.
 2. **Scale.** A 4/8 scale: 4, 8, 12, 16, 24, 32, 48, 64 (Tailwind v4 `1 2 3 4 6 8 12 16`). No
    `p-[13px]`.
 3. **Edges.** Elements share alignment edges; every stray edge is a finding. One indent step per
@@ -59,6 +61,8 @@ grep -rnE '\b(ml|mr|pl|pr|left|right)-[0-9]|margin-(left|right)|padding-(left|ri
     panels have none (`references/visual.md` §6).
 12. **Reflow.** At 320 px wide and at 200% zoom nothing needs sideways scrolling, except tables
     and canvases (WCAG 2.2 SC 1.4.10, read 2026-09-17).
+13. **Wayfinding.** Every screen answers where am I, where can I go, what is here, how do I get
+    out. A modal, a flow or a deep view always has a way back; never trap the user.
 
 ## 3. Patterns
 
@@ -114,4 +118,6 @@ window (`references/new-ui.md` §8).
 | A component that reads the viewport inside a resizable panel | `@container` |
 | `w-[120px]` on a button label | Width from the content |
 | Save button below the fold of a long dialog | A fixed action row |
+| A control far from what it changes, explained by a caption | Beside its target, arranged like its effect |
+| A deep screen with no title, no way back | Location, exits and contents visible |
 | "Improves the layout" by moving every section | One change per finding |

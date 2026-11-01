@@ -57,7 +57,7 @@ line citing `## Look`. Read each finding in context; the scanner is a regex heur
 | Krebs | Adrian Krebs, "design slop", adriankrebs.ch/blog/design-slop, 2026-04-20. 1,590 Show HN pages scored on 16 patterns: 22% heavy (4 or more), 32% mild (2 or 3), 46% clean |
 | Anthropic | frontend-design skill, anthropics/claude-code, updated 2026-09-02 |
 | Sonnet 5 docs | platform.claude.com, "Prompting Claude Sonnet 5", read 2026-09-16 |
-| React Doctor | react-doctor 0.9.14, retired design rules, checked 2026-09-16 |
+| React Doctor | react-doctor 0.9.14, retired design rules, checked 2026-09-16. Latest is 0.9.21 (npm, published 2026-11-01); whether the retired rules still match that version is `Not verified` |
 | prg.sh | "Why Your AI Keeps Building the Same Purple Gradient Website", 2025-10-26 |
 | Impeccable | impeccable skill 4.1.1, github.com/pbakaus/impeccable, read 2026-09-17: detector rules in `scripts/`, and `reference/craft-floor.md` for the offset shadow |
 

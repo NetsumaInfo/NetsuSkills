@@ -26,6 +26,19 @@ grep -rlE "<(Button|Dialog|Select|Table)\b" src --include=*.tsx | head
   (`no-emoji-heading-decoration`).
 - Colors, radius and shadows come from the tokens the grep found (Tailwind v4: `@theme`).
 
+Library precedence: what the project already has, then the native element, then a vetted library.
+Ask before installing any new dependency. The picks assume React and Tailwind; for Adobe CEP,
+Tauri or React Native, check compatibility first.
+
+| Job | Pick |
+|---|---|
+| Unstyled accessible primitives (dialog, popover, menu, select) | `base-ui` |
+| Command menu, toasts, OTP input | `cmdk`, `sonner`, `input-otp` |
+| Springs, layout and exit animation (a hover or fade stays CSS) | `motion` |
+| Animated numbers | `NumberFlow` |
+| Drag and drop, long lists | `dnd kit`, `Virtuoso` |
+| Conditional classes, typed variants, charts | `clsx`, `cva`, `recharts` |
+
 ## 3. Write the contract before the code
 
 Load `references/states.md`. Fill this in the reply or at the top of the story, then build it:
@@ -50,7 +63,6 @@ Out of scope: <what it does not do>
 | Large numbers | `1234567.89` through `Intl.NumberFormat` | `tabular-nums`, no clipping, locale separators |
 | Unbreakable | A 60-character path, `Donaudampfschifffahrtsgesellschaft` | Wraps or truncates with the full value reachable; `min-w-0` on the flex child |
 | Scripts | An emoji, an Arabic name in a French sentence, Vietnamese or Thai marks | No clipped marks; user text in `<bdi>` or `dir="auto"` |
-| Width | The component in 320 px and 480 px boxes on the states page | Nothing overflows its box |
 
 ## 4. Semantics and keyboard
 
@@ -70,7 +82,6 @@ Keys (WAI-ARIA APG patterns, read 2026-09-16):
 
 | Widget | Keys |
 |---|---|
-| Button | Enter, Space |
 | Dialog | Focus moves inside on open; Tab and Shift+Tab stay inside; Escape closes; focus returns to the trigger |
 | Menu button | Enter, Space or Down opens on the first item; arrows, Home, End move; Escape closes and returns focus |
 | Tabs | Left and Right move between tabs; Tab leaves the tab list for the panel |
@@ -79,24 +90,16 @@ Keys (WAI-ARIA APG patterns, read 2026-09-16):
 - After an item is removed, move focus to the next item or the list heading, never to `body`.
 - ARIA only where HTML falls short: `aria-expanded`, `aria-invalid` + `aria-describedby`,
   `aria-busy`, `aria-live`. No `role="button"` where a `<button>` fits.
-- **Target size.** WCAG 2.2 SC 2.5.8 (AA): at least 24×24 CSS px, or spaced so a 24 px circle
-  on each target touches no other. SC 2.5.5 (AAA): 44×44 CSS px. Apple HIG Buttons: a hit region
-  of at least 44×44 pt. Android (Material): 48×48 dp, 8 dp apart. All read 2026-09-16. Web
-  desktop floor 24 px; touch (React Native, mobile web) 44 pt iOS, 48 dp Android. Grow the hit
-  area with padding or a pseudo-element; the icon stays 16 to 20 px (React Doctor
-  `no-undersized-icon-button`).
+- **Target size** (read 2026-09-16). WCAG 2.2 SC 2.5.8 (AA): 24×24 CSS px, or spaced so a 24 px
+  circle touches no other target; SC 2.5.5 (AAA): 44×44. Apple HIG 44×44 pt; Material 48×48 dp,
+  8 dp apart. Web desktop floor 24 px; touch 44 pt iOS, 48 dp Android. Grow the hit area with
+  padding or a pseudo-element; the icon stays 16 to 20 px (`no-undersized-icon-button`).
 - **Icon-only buttons** get `aria-label` (React Native: `accessibilityLabel`) in the UI language,
   with the same verb as the tooltip. A tooltip is not a name.
 - **Never reveal an action only on hover.** Tailwind v4 applies `hover:` only under
   `@media (hover: hover)` (upgrade guide, read 2026-09-16), so `opacity-0 group-hover:opacity-100`
   is invisible forever on a touch screen (React Doctor `no-hover-only-reveal`):
-
-```tsx
-// Before
-<div className="opacity-0 group-hover:opacity-100">
-// After
-<div className="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
-```
+  Fix: add `group-focus-within:opacity-100 [@media(hover:none)]:opacity-100`.
 
 - **Every drag has another way.** Reorder, move and resize also work with buttons or the keyboard
   (WCAG 2.2 SC 2.5.7, read 2026-09-17), and a swipe action also sits in a menu.
@@ -120,14 +123,8 @@ Keys (WAI-ARIA APG patterns, read 2026-09-16):
   `loading-action-preserves-trigger`):
 
 ```tsx
-<Button
-  aria-disabled={pending}
-  aria-busy={pending}
-  onClick={() => { if (!pending) save(); }}
-  className="aria-disabled:cursor-progress aria-disabled:opacity-70"
->
-  {pending ? <Spinner data-icon="inline-start" aria-hidden /> : <Save data-icon="inline-start" />}
-  Enregistrer
+<Button aria-disabled={pending} aria-busy={pending} onClick={() => { if (!pending) save(); }}>
+  {pending ? <Spinner aria-hidden /> : <Save />} Enregistrer
 </Button>
 ```
 
@@ -150,7 +147,12 @@ When `DESIGN.md` is silent, use these **fallbacks**, and write the value you pic
 | Border | 1 px, a neutral token |
 | Spacing | 4, 8, 12, 16, 24, 32 |
 | Duration | 120 to 200 ms, on color, opacity and transform |
-| Icons | 16 to 20 px, one library, one stroke width |
+
+Restyling a third-party component, climb only as far as the change needs:
+
+1. Defaults. 2. Inline `style`. 3. Classes on its parts: the library's styles win the cascade, so
+each class needs `!important`; more than a few means stop. 4. Headless: your own markup on the
+library's positioning, stacking and gesture handling, wrapped in your own abstraction.
 
 ## 6. Text
 
@@ -199,15 +201,29 @@ alone (React Doctor `design-no-vague-button-label`).
 
 ### Toast
 - For the outcome of the user's own action. An error that needs a fix stays inline, near its source.
-- Never takes focus; announced with `aria-live="polite"` (sonner does this).
-- A toast with an action, or an error, does not vanish on a timer; the action also exists elsewhere.
-- No toast for what the screen already shows, and never over the primary action or mobile nav.
+- Never takes focus; `aria-live="polite"`. An action or an error does not vanish on a timer; the
+  action also exists elsewhere. No toast for what the screen shows, none over the primary action
+  or mobile nav.
+- One region, mounted once at the document root: never per page or conditional (a second one
+  duplicates every toast), and outside any dialog or portal (an ancestor with `transform`,
+  `filter` or `overflow` makes a stacking context that clips or buries it).
+- Fire from the event handler or callback, never an effect (StrictMode's dev double-invoke gives
+  two). From a server action, return the result and let the client fire it.
+- Update in place through a stable id (loading becomes success or error on that id), never stack.
+  A promise-bound toast needs a promise that settles, or it loads forever.
+- Two close signals, user dismiss and timeout: never assume one callback. An action button closes
+  the toast unless its handler prevents it.
+- Show about three, queue the rest. Edge offset 32 px desktop, 16 px under 600 px, plus
+  safe-area insets. Name the region and give it a shortcut that focuses it.
+- Semantic colours are often opt-in: check success and error are not grey. Wire the theme to the
+  app's theme provider, or it ignores the OS.
 
 ### Table and list
 - Real `<table>` for tabular data. Numbers right-aligned in `tabular-nums`, text left-aligned.
 - Skeleton rows keep the final column widths, so nothing jumps when data arrives.
 - 1,000 rows: virtualize or paginate, and show the total. Long tables keep a sticky header.
-- Row actions reachable by keyboard. Empty, filtered-empty and error are three different states.
+- Row actions reachable by keyboard. Empty, filtered-empty and error are three different states
+  (`references/states.md`), the empty one with the content's footprint.
 - Mobile: priority columns or stacked rows, or a visible horizontal scroll. Never a silent clip.
 
 ### Card
@@ -236,19 +252,12 @@ alone (React Doctor `design-no-vague-button-label`).
 - Collapsed to icons: each item keeps its accessible name and gets a tooltip.
 - Mobile: a drawer, or a bottom bar of 5 items at most, each with a label.
 - Hover never changes its width; the content does not reflow. Provide a skip link to `<main>`.
-- Group labels in sentence case, not tracked capitals.
 
 ### Tooltip
 - Extra information only. Never the only place for an action or a required fact.
 - Opens on hover and on focus, closes on Escape, stays open while hovered (WCAG 2.2 SC 1.4.13,
   read 2026-09-16). Touch has no hover: put the fact in the UI instead.
 - Never repeats the visible label. Never sits directly on a disabled button: it gets no events.
-
-### Empty state
-- Says why it is empty and gives the next action as a button, or says when data will appear.
-- First use, no results for a filter (offer "Effacer les filtres") and done are different screens.
-- Never flashes while data loads: loading shows first.
-- Same footprint as the content. No illustration pushing the action below the fold.
 
 ## 8. Proof
 
@@ -281,8 +290,8 @@ observed.
 | Row actions at `opacity-0 group-hover:opacity-100` | Also on `focus-within` and on `(hover: none)` |
 | An icon button with a tooltip and no name | `aria-label` with the tooltip's verb, hit area to target size |
 | "Loading…" replacing the label, the button shrinking | Spinner in the icon slot, same label, same width, `aria-busy` |
-| `bg-[#6366f1] rounded-2xl shadow-xl transition-all` | Tokens, radius from `## Look`, named transition properties |
 | A dropdown clipped by its scrolling parent | A portal |
-| A card inside a card inside a card | One surface, spacing inside it |
-| A modal for a task that could stay inline | Inline, a popover or a sheet |
+| Hand-built toast, `<div>` dropdown with manual focus, number animated by re-rendering text, 1,000-row `.map`, three-deep className ternaries | `sonner`, `base-ui`, `NumberFlow`, `Virtuoso`, `clsx`/`cva`, after the precedence rule |
+| A toast region per page, or fired from an effect | One at the root; fire from the handler |
+| `!important` on a dozen library classes | Go headless behind your own abstraction |
 | "Done, looks good" with no render | Screenshots of each state, or a list of what was not observed |

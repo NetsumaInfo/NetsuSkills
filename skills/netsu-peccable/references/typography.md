@@ -50,9 +50,12 @@ Each line that fails is one finding, with every place it occurs.
    (house rule from Krehel, github.com/jakubkrehel/skills, `better-typography`, read
    2026-09-17). Emphasis by weight or size, never by gradient text or one italic serif word.
 5. **Line height.** About 1.5 for body, 1.1 to 1.25 for headings, unitless. Text that wraps to
-   three lines or more gets at least 1.4, even in a tight row (same source).
-6. **Tracking.** Negative only on large headings, never past -0.04em. Tracked small capitals
-   above a heading are the eyebrow pattern of `references/ai-look.md`: only if `## Look` says so.
+   three lines or more gets at least 1.4, even in a tight row (same source). Raise it for scripts
+   with tall ascenders or descenders; tighten it only in dense information UI.
+6. **Tracking.** Size-specific, never one value. Slightly positive on small text for legibility
+   (+0.01em to +0.02em), near 0 on body, negative on large display text, never past -0.04em.
+   Tracked small capitals above a heading are the eyebrow pattern of
+   `references/ai-look.md`: only if `## Look` says so.
 7. **Measure.** 60 to 75 characters for reading text (`max-w-[65ch]`). Tables and dense panels
    may run wider.
 8. **Wrapping.** `text-wrap: balance` on headings, `pretty` on descriptions, neither on long
@@ -69,8 +72,13 @@ Each line that fails is one finding, with every place it occurs.
     regions.
 13. **Direction.** `lang` on the root and on any passage in another language; `dir` where the
     direction changes; user text in `<bdi>` (`references/words-any.md`, right-to-left).
-14. **Zoom.** Sizes in `rem`; never `user-scalable=no` or `maximum-scale=1`. Text zoomed to 200%
+14. **Zoom.** Sizes and spacing in `rem`/`em`, so the layout scales with the user's text-size
+    setting. Never `user-scalable=no` or `maximum-scale=1`. Text zoomed to 200%
     still fits (WCAG 2.2 SC 1.4.4, read 2026-09-17). React Native keeps `allowFontScaling`.
+15. **Hierarchy and text on glass.** Hierarchy is weight, size and leading as a set, not size
+    alone; weight adds presence without taking space. A display size is fluid:
+    `font-size: clamp(2rem, 5vw, 4rem)`. Over a translucent surface, text gets higher contrast,
+    a little more weight and a small letter-spacing bump (+0.01em), never flat grey.
 
 ## 3. A new font, only on request
 
@@ -79,7 +87,8 @@ Each line that fails is one finding, with every place it occurs.
   the type row only, and ask once. Never pick silently, never fall back on the model's usual
   faces (`references/ai-look.md`, Type).
 - A system stack is a valid choice for a tool that must match its host or work offline; record
-  it with its reason.
+  it with its reason. When `## Look` is silent and the user picks it, it also brings the
+  platform's optical sizing and tracking tables. Never the default.
 
 ## 4. Load it properly
 
@@ -128,5 +137,8 @@ changed. Code-only: say so.
 | `leading-none` on a three-line description | 1.4 or more |
 | A long path pushing the panel wider | `overflow-wrap: anywhere` or truncation with `min-w-0` |
 | `font-feature-settings: "tnum"` | `font-variant-numeric: tabular-nums` |
+| One `letter-spacing` for every size | Positive on small, near 0 on body, negative on display |
+| `px` spacing that stays put at a larger text size | `rem`/`em`, so layout follows the text |
+| Flat grey 13 px text on a blurred bar | More contrast, a little more weight, +0.01em |
 | `select-none` on the body of a desktop app | Selectable text; `select-none` on chrome only |
 | Fixes the colours while it is there | Reports them for `colors.md` |

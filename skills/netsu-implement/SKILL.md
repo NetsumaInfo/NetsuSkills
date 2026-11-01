@@ -1,6 +1,6 @@
 ---
 name: netsu-implement
-description: Use when the user asks to implement, build, add, wire up, hook up, finish, fix, change or migrate something in the code — a feature, a bug fix, an endpoint, a button, a setting, a schema change — or says "one shot this", "just make it work", or hands over a plan, an issue or a task file to execute. Also fires on the flags --fast, --full, --plan and --resume. Do NOT use for reviewing or debugging without changing code, writing a README or docs, designing, restyling or critiquing an interface or writing its text, or for committing, pushing and opening a pull request.
+description: Use when the user asks to implement, build, add, wire up, hook up, finish, fix, change or migrate something in the code — a feature, a bug fix, an endpoint, a button, a setting, a schema change — or says "one shot this", "just make it work", or hands over a plan, an issue or a task file to execute. Also fires on the flags --fast, --full, --plan and --resume. Do NOT use for reviewing or debugging without changing code, writing a README or docs, designing, restyling or critiquing an interface, writing its text, or fixing how it looks, fits a screen or responds to touch, or for committing, pushing and opening a pull request.
 argument-hint: "[--fast|--full|--plan|--review|--proof|--resume <run-id>] <what to implement>"
 ---
 

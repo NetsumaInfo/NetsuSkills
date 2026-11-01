@@ -53,7 +53,10 @@ Each item that fails is one finding, with every place it occurs.
 8. **States.** Hover, focus-visible, active and disabled look deliberate and consistent with the
    neighbouring screen. A disabled control without its reason is reported for
    `references/states.md`, not added here.
-9. **Leftovers.** Debug output and commented-out blocks in the touched files are reported;
+9. **Scroll edge.** Where content slides under floating chrome, fade a small blur or gradient
+   mask instead of a 1 px border, and only where the chrome really overlaps content. An in-flow
+   surface keeps its border or tone step (`references/visual.md` §4).
+10. **Leftovers.** Debug output and commented-out blocks in the touched files are reported;
    cleaning code is not this file's job.
 
 ## 3. Fix
@@ -87,4 +90,5 @@ touched files. For motion changes, the timing snippet of `references/motion.md` 
 | `-translate-x-px` on twelve icons | The icon's viewBox fixed once |
 | Details before the missing error state | States first, then details |
 | A second icon library for one nicer glyph | The project's library |
+| A 1 px divider under a floating header over scrolling content | A short blur or gradient fade at the edge |
 | Rounder corners everywhere | The radius scale, nested correctly |
