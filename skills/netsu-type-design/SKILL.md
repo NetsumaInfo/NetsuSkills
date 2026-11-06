@@ -13,7 +13,8 @@ font family by family, space it, cover its languages, kern it and export it.
 - The `netsufont` MCP server. Call `list_fonts` first; if it fails, stop and say so (NetsuFont
   starts with `pnpm dev` in its folder). With a shell and no MCP connection, the same tools:
   `pnpm -s --filter @netsufont/server mcp <tool> '@args.json' [image.png]`, from that folder.
-  Always write the arguments to a file first: inline JSON breaks on quotes, `&` and newlines.
+  Always write the arguments to a file first, in UTF-8: inline JSON breaks on quotes, `&` and newlines.
+  Many similar ops (a script's letters and their forms): generating the JSON with a short script is fine.
 - Its `guide` holds the format, the ops and the shapes. Read it once. This page does not repeat it.
 
 ## Procedure
@@ -59,6 +60,7 @@ font family by family, space it, cover its languages, kern it and export it.
    | 0–9 | the width of n, the height of caps or a little less |
    | . , : ; ! ? ' " - ( ) / & @ | dots as wide as the stem |
 
+   Draw at any x: `set_spacing` moves the ink to its side bearings later.
    After each family: `look_glyphs` of the family with H, n, o beside it. Fix in the same
    family before the next one.
 
@@ -71,7 +73,14 @@ nnynn ooyoo"`. Each x
 
 7. **Languages.** `languages {languages:[...the brief's codes]}`. Load
    `references/languages.md` before drawing marks or letters of another script. Draw the marks,
-   then one `compose` with every letter it can make, then draw what is left. Check with one
+   then one `compose` with every letter it can make, then draw what is left. A script you cannot
+   draw from memory (Devanagari, Thai, Arabic letters you are unsure of): first bring in a font of
+   that script as a **model** (`import_font {name:"model-deva"}`). Then, family by family (6 to 8
+   letters): `look_glyphs {name, chars, model:"model-deva"}` shows the model in blue in each cell,
+   even before you draw; draw your letters in your style with your sheet's numbers, never its
+   paths; look again with the model under and fix until each letter keeps the model's structure
+   (which side the stem is on, where strokes meet, the counters, the width). `remove_font` it at
+   the end. Two blind runs without this tracing drew Devanagari no reader could read. Check with one
    `proof` of the brief's pangrams, a line each, sizes `[48, 18]`.
 
 8. **Features**, when the brief asks for character or display use: the alternates of the
@@ -81,7 +90,7 @@ nnynn ooyoo"`. Each x
 9. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
    after spacing; a first release needs 40 to 150 pairs, never a pair for every combination.
 
-10. **Deliver.** `list_fonts`: no check left unexplained. `proof` a paragraph at 48, 18 and 12.
+10. **Deliver.** `list_fonts {name}`: no check left unexplained. `proof` a paragraph at 48, 18 and 12.
    `export_font`, give the path, say how to install it (Windows: right click, Install), and
    what was not verified (an app the font was not tried in).
 
@@ -89,7 +98,9 @@ nnynn ooyoo"`. Each x
 
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix
 at most. Spacing: one edit and one proof per family. Languages: 1 call, 2 to 4 edits, 1 proof.
-Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. Arabic: not measured in a blind
+Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. A script traced on a model:
+one look with the model and one edit per family, then one look to fix; about 40 calls for
+Devanagari. Arabic: not measured in a blind
 run yet; in a test (2026-11-06) the skeletons with their forms, lam-alef and the dots took one edit
 of 41 ops, and one `compose` made 9 letters with their forms. Kerning: 2 proofs, 2 edits.
 About 90 calls for a Latin font with two languages; past 110, say why.
@@ -123,6 +134,11 @@ Brief: Brume, above. Control glyphs from the recipes, measured after one `edit_f
 check. `proof` "HOnocevasbA Hanson Abbe seven": even colour, the s a touch light — its
 strokes were set to 84/72, under the sheet's 86/76; raised in the s family step.
 
+Two more blind runs (Sonnet, the skill alone, 2026-11-06). Sahra, a Kufi Arabic with Latin: ar
+150/150, en 81/81, 249 glyphs, 44 calls; the Arabic readable, its ع forms the weakest. Deva Sans, a
+rounded sans for Hindi: hi 111/111, 183 glyphs, 56 calls; the Devanagari letters guessed from
+memory and hard to read, which brought in the model step of step 7.
+
 Two blind runs (Sonnet, the skill alone, 2026-10-25). Galet, a soft round sans for fr and pl:
 fr 113/113, pl 101/101, 76 kerning pairs, about 95 calls. Rivet, a condensed grotesque for en, ru
 and el: 230 glyphs, en 82/82, ru 93/93, el 91/91, 90 pairs, about 61 calls. Both even in colour
@@ -142,6 +158,7 @@ and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
 | "Supports Polish" because ą ę exist | `languages` reports the language complete, and its pangram is proofed |
 | Bengali, Tamil or Chinese promised | Said plainly: not possible yet (the languages answer says why) |
 | Marks placed by hand on each letter | Marks drawn once with advance 0: the font's GPOS puts them on every letter |
+| A script drawn from memory, letters guessed | A model font looked at first; the letters drawn from it, in the font's own style |
 | Arabic drawn as isolated letters only | Skeletons with `.init` `.medi` `.fina`, lam-alef, dots by `compose`; `languages` reports it complete |
 | A font of averages: every number from the table | Two or three signature traits, held in every family |
 | The imported font kept under its own name | `set_info` with a new family name: OFL fonts reserve theirs |
