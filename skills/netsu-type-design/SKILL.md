@@ -14,6 +14,7 @@ font family by family, space it, cover its languages, kern it and export it.
   starts with `pnpm dev` in its folder). With a shell and no MCP connection, the same tools:
   `pnpm -s --filter @netsufont/server mcp <tool> '@args.json' [image.png]`, from that folder.
   Always write the arguments to a file first, in UTF-8: inline JSON breaks on quotes, `&` and newlines.
+  Windows paths in JSON: forward slashes (`C:/Windows/Fonts/Nirmala.ttc`).
   Many similar ops (a script's letters and their forms): generating the JSON with a short script is fine.
 - Its `guide` holds the format, the ops and the shapes. Read it once. This page does not repeat it.
 
@@ -76,11 +77,12 @@ nnynn ooyoo"`. Each x
    then one `compose` with every letter it can make, then draw what is left. A script you cannot
    draw from memory (Devanagari, Thai, Arabic letters you are unsure of): first bring in a font of
    that script as a **model** (`import_font {name:"model-deva"}`). Then, family by family (6 to 8
-   letters): `look_glyphs {name, chars, model:"model-deva"}` shows the model in blue in each cell,
-   even before you draw; draw your letters in your style with your sheet's numbers, never its
-   paths; look again with the model under and fix until each letter keeps the model's structure
-   (which side the stem is on, where strokes meet, the counters, the width). `remove_font` it at
-   the end. Two blind runs without this tracing drew Devanagari no reader could read. Check with one
+   letters): `look_glyphs {name, chars, model:"model-deva"}` shows the model in each cell, filled
+   blue under your glyph and outlined over it, even before you draw. Draw your letters in your
+   style with your sheet's numbers, never its paths; look again and fix until each letter keeps
+   the model's structure (which side the stem is on, where strokes meet, the counters, the
+   width). Two passes per family at least: a first edit never lands. `remove_font` the model at
+   the end. Three blind runs that drew Devanagari in one pass made letters no reader could read. Check with one
    `proof` of the brief's pangrams, a line each, sizes `[48, 18]`.
 
 8. **Features**, when the brief asks for character or display use: the alternates of the
@@ -90,7 +92,7 @@ nnynn ooyoo"`. Each x
 9. **Kerning.** `proof` the pairs of `construction.md` §Kerning. Kern only what looks wrong
    after spacing; a first release needs 40 to 150 pairs, never a pair for every combination.
 
-10. **Deliver.** `list_fonts {name}`: no check left unexplained. `proof` a paragraph at 48, 18 and 12.
+10. **Deliver.** `list_fonts {name}`: no check left unexplained. `proof` a paragraph at 48, 18 and 12, in lines of about 60 characters.
    `export_font`, give the path, say how to install it (Windows: right click, Install), and
    what was not verified (an app the font was not tried in).
 
@@ -99,8 +101,9 @@ nnynn ooyoo"`. Each x
 Control glyphs: 1 create, 1 to 3 edits, 2 looks. Each of the 12 families: 1 edit, 1 look, 1 fix
 at most. Spacing: one edit and one proof per family. Languages: 1 call, 2 to 4 edits, 1 proof.
 Each new script (Greek, Cyrillic): 3 to 5 edits and 2 proofs more. A script traced on a model:
-one look with the model and one edit per family, then one look to fix; about 40 calls for
-Devanagari. Arabic: not measured in a blind
+per family a look with the model, an edit, a look, a fixing edit and a last look; 60 to 80 calls
+for Devanagari. Write generator scripts with a file tool, not a shell heredoc: quotes and
+non-Latin text break it. Arabic: not measured in a blind
 run yet; in a test (2026-11-06) the skeletons with their forms, lam-alef and the dots took one edit
 of 41 ops, and one `compose` made 9 letters with their forms. Kerning: 2 proofs, 2 edits.
 About 90 calls for a Latin font with two languages; past 110, say why.
