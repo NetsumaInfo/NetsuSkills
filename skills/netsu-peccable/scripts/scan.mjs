@@ -16,6 +16,8 @@ const HELP = `Usage:
   node scan.mjs contrast <text colour> <background> [<text colour> <background> ...]
 
 copy  extracts the strings a user reads (code, locale catalogs in JSON or TS, extension manifests,
+      Kotlin string classes such as \`open class SettingsStrings\` / \`object SettingsStringsEn\`,
+      \`Lang.Fr ->\` branches and text given to composables, Android \`values-xx/strings.xml\`,
       Markdown given by name) and checks words, buttons, typography and the form of "you".
       Catalogs of several languages are compared: broken placeholders, missing keys, text left
       in code, keys the code never names. Pass the code folder with the locale folder, and
@@ -177,6 +179,9 @@ function selectFiles(opts, notes) {
     // Icon SVGs are read for their colors; logos and illustrations keep theirs.
     if (opts.mode === "ui") return CODE_EXT.has(ext) || COMPOSE_EXT.has(ext) || STYLE_EXT.has(ext) || (ext === ".svg" && /icon/i.test(path));
     if (CODE_EXT.has(ext)) return true;
+    // Kotlin: tests and build scripts hold no interface text.
+    if (ext === ".kt") return explicit || !path.split(/[\\/]/).some((p) => /^(?:\w*Test|test|androidTest|testFixtures)$/.test(p));
+    if (ext === ".xml") return isAndroidStrings(path);
     if (ext === ".json") return explicit || isLocaleFile(path) || basename(path) === "manifest.json";
     return TEXT_EXT.has(ext) && explicit;
   };
@@ -560,6 +565,258 @@ function extractText(src, file) {
   return out;
 }
 
+// ---------------------------------------------------------------- copy: Kotlin and Android
+
+// Kotlin string literals, with `${…}` templates (which may hold strings) and `"""raw"""` strings.
+// `'"'` is a char, not the start of a string.
+function ktLiteralEnd(src, i) {
+  if (src.startsWith('"""', i)) {
+    const end = src.indexOf('"""', i + 3);
+    let e = end < 0 ? src.length : end + 3;
+    while (src[e] === '"') e++;
+    return { end: e, raw: src.slice(i + 3, e - 3), triple: true };
+  }
+  let j = i + 1;
+  while (j < src.length && src[j] !== '"' && src[j] !== "\n") {
+    if (src[j] === "\\") { j += 2; continue; }
+    if (src[j] === "$" && src[j + 1] === "{") {
+      let depth = 0;
+      for (; j < src.length; j++) {
+        if (src[j] === '"') { j = ktLiteralEnd(src, j).end - 1; continue; }
+        if (src[j] === "{") depth++;
+        else if (src[j] === "}" && --depth === 0) break;
+      }
+      j++;
+      continue;
+    }
+    j++;
+  }
+  return { end: j + 1, raw: src.slice(i + 1, j), triple: false };
+}
+
+// What the user reads: escapes decoded, `$n` and `${n}` as `{n}` so placeholders compare across
+// languages, any other expression as `{…}`.
+function ktText(raw, triple) {
+  let out = "";
+  for (let i = 0; i < raw.length; i++) {
+    const c = raw[i];
+    if (c === "\\" && !triple) {
+      const n = raw[i + 1];
+      if (n === "u" && /^[0-9a-fA-F]{4}$/.test(raw.slice(i + 2, i + 6))) { out += String.fromCharCode(parseInt(raw.slice(i + 2, i + 6), 16)); i += 5; }
+      else { out += { n: "\n", t: "\t", r: "", b: "" }[n] ?? n ?? ""; i++; }
+      continue;
+    }
+    if (c === "$" && raw[i + 1] === "{") {
+      let depth = 0, j = i + 1;
+      for (; j < raw.length; j++) {
+        if (raw[j] === "{") depth++;
+        else if (raw[j] === "}" && --depth === 0) break;
+      }
+      const expr = raw.slice(i + 2, j).trim();
+      out += `{${/^[\w.]+$/.test(expr) ? expr : "…"}}`;
+      i = j;
+      continue;
+    }
+    if (c === "$" && /[A-Za-z_]/.test(raw[i + 1] ?? "")) {
+      const name = /^[A-Za-z_]\w*/.exec(raw.slice(i + 1))[0];
+      out += `{${name}}`;
+      i += name.length;
+      continue;
+    }
+    out += c;
+  }
+  return out;
+}
+
+// Literals, braces and `Lang.Xx ->` branches of a Kotlin file, in order, with the brace depth.
+function ktTokens(masked) {
+  const out = [];
+  let depth = 0;
+  for (let i = 0; i < masked.length; i++) {
+    const c = masked[i];
+    if (c === "'" && /^'(?:\\u[0-9a-fA-F]{4}|\\.|[^'\\\n])'/.test(masked.slice(i, i + 8))) {
+      i = masked.indexOf("'", i + 1 + (masked[i + 1] === "\\" ? 1 : 0));
+      continue;
+    }
+    if (c === '"') {
+      const lit = ktLiteralEnd(masked, i);
+      out.push({ t: "str", start: i, end: lit.end, raw: lit.raw, triple: lit.triple, depth });
+      i = lit.end - 1;
+      continue;
+    }
+    if (c === "{") { out.push({ t: "open", start: i, depth }); depth++; continue; }
+    if (c === "}") { depth--; out.push({ t: "close", start: i, depth }); continue; }
+    if (c === "L" && masked.startsWith("Lang.", i) && !/[\w.]/.test(masked[i - 1] ?? "")) {
+      const m = /^Lang\.([A-Z][a-z])\s*->/.exec(masked.slice(i, i + 20));
+      if (m) out.push({ t: "lang", start: i, lang: m[1].toLowerCase(), depth });
+    }
+  }
+  return out;
+}
+
+const KT_MEMBER = /^[ \t]*(?:(?:override|open|internal|private|public|protected|final|abstract|inline|const|lateinit)\s+)*(?:val|var|fun)\s+(?:<[^>\n]*>\s*)?(?:[\w.]+\.)?([A-Za-z_]\w*)/gm;
+const KT_BRANCH = /(?:^|[\s({,;])((?:"[^"\n]*"|[A-Za-z_][\w.]*)(?:\s*,\s*(?:"[^"\n]*"|[A-Za-z_][\w.]*))*)\s*->\s*$/;
+// Composable calls and arguments that show their text, and calls whose strings are never text.
+const KT_TEXT_ARG = /\b(?:text|title|subtitle|label|contentDescription|description|placeholder|hint|message|caption|value|action|actionLabel|onClickLabel|header|heading|note|summary|body)\s*=\s*$/;
+const KT_NOT_TEXT_CALL = new Set(["Regex", "Exception", "IllegalStateException", "IllegalArgumentException", "Error", "Throwable", "RuntimeException", "File", "Uri", "Color", "Locale", "Intent", "ComponentName", "Log", "Pair", "Triple", "TODO", "Font", "FontFamily"]);
+
+// String classes (`open class SettingsStrings`, `object SettingsStringsEn : SettingsStrings()`):
+// each one is a catalog in its own language, keyed `SettingsStrings.reset`. A `when` branch or a
+// map key names the entry inside a member (`riteName.Sefard`); otherwise the order does (`#2`).
+function extractKotlin(src, file, source, kotlinPairs) {
+  const out = [];
+  const masked = maskComments(src);
+  const line = lineIndex(src);
+  const tokens = ktTokens(masked);
+  const classes = [];
+  for (const m of masked.matchAll(/\b(?:class|object)\s+([A-Z]\w*Strings\w*)\b/g)) {
+    const open = tokens.find((t) => t.t === "open" && t.start > m.index);
+    if (!open || /[;}]|\b(?:class|object|fun)\b/.test(masked.slice(m.index + m[0].length, open.start).replace(/\([^)]*\)/g, ""))) continue;
+    const close = tokens.find((t) => t.t === "close" && t.start > open.start && t.depth === open.depth);
+    const suffix = /^(.*Strings)_?([A-Z][a-z])$/.exec(m[1]);
+    const lang = suffix && isLangCode(suffix[2].toLowerCase()) ? suffix[2].toLowerCase() : null;
+    classes.push({ name: m[1], base: suffix && lang ? suffix[1] : m[1], lang, from: open.start, to: close ? close.start : masked.length, depth: open.depth + 1 });
+  }
+  const inClass = (pos) => classes.find((c) => pos > c.from && pos < c.to);
+
+  for (const c of classes) {
+    const members = [];
+    for (const m of masked.slice(c.from, c.to).matchAll(KT_MEMBER)) {
+      const at = c.from + m.index;
+      const tok = tokens.filter((t) => t.start < at).at(-1);
+      const depth = tok ? (tok.t === "open" ? tok.depth + 1 : tok.depth) : 0;
+      if (depth === c.depth) members.push({ name: m[1], at });
+    }
+    const lits = tokens.filter((t) => t.t === "str" && t.start > c.from && t.start < c.to);
+    const items = [];
+    let member = null, branch = null, prevEnd = c.from;
+    for (const lit of lits) {
+      const owner = members.filter((x) => x.at < lit.start).at(-1);
+      if (owner !== member) { member = owner; branch = null; prevEnd = owner ? owner.at : c.from; }
+      if (!member) continue;
+      const gap = masked.slice(prevEnd, lit.start);
+      const b = KT_BRANCH.exec(gap);
+      if (b) branch = b[1].split(",")[0].trim().replace(/^"|"$/g, "").split(".").at(-1);
+      prevEnd = lit.end;
+      // `leaf.contains("Modeh Ani")`, `Regex("…")`: a value the code tests, not text.
+      if (/(?:\.\w+|\bRegex)\(\s*$/.test(masked.slice(Math.max(0, lit.start - 40), lit.start))) continue;
+      const pairLeft = /^\s+to\s+"/.test(masked.slice(lit.end, lit.end + 8));
+      items.push({ lit, member: member.name, branch, pairLeft, text: ktText(lit.raw, lit.triple) });
+    }
+    const lang = c.lang ?? null;
+    for (const it of items) if (it.pairLeft) {
+      const k = `${file}::${c.base}.${it.member}`;
+      if (!kotlinPairs.has(k)) kotlinPairs.set(k, new Map());
+      const byText = kotlinPairs.get(k);
+      if (!byText.has(it.text)) byText.set(it.text, new Set());
+      byText.get(it.text).add(c.name);
+    }
+    c.items = items;
+    c.lang = lang;
+  }
+
+  // Map keys first, then one slot per member or `when` branch. The strings of a slot (`if (n == 1)
+  // "1 livre" else "$n livres"`) are compared as a whole: languages split plurals differently.
+  for (const c of classes) {
+    const languages = classes.filter((x) => x.base === c.base).length;
+    let mapKey = null;
+    for (const it of c.items) {
+      const seen = kotlinPairs.get(`${file}::${c.base}.${it.member}`)?.get(it.text);
+      // A map key is the same word in every language (`"Rashi" to "Rachi"`); a heading is not.
+      if (it.pairLeft && seen && (languages > 1 ? seen.size === languages : /^[A-Za-z][\w-]*$/.test(it.text))) { mapKey = it.text; it.isKey = true; continue; }
+      if (mapKey !== null) { it.slot = `${it.member}.${mapKey}`; mapKey = null; continue; }
+      it.slot = `${it.member}${it.branch ? `.${it.branch}` : ""}`;
+    }
+  }
+  for (const c of classes) {
+    const strings = [];
+    for (const it of c.items) {
+      if (it.isKey) continue;
+      const key = `${c.base}.${it.slot}`;
+      const text = clean(it.text);
+      if (!looksLikeText(text)) continue;
+      strings.push({ file, line: line(it.lit.start), text, key, member: it.member, group: `${file}::${c.base}`, catalogId: `${file}::${c.name}`, catalogLabel: c.name, presetLang: c.lang, edge: /^[ \t](?![ \t*•\-\d])|[^ \t][ \t]$/.test(it.text), context: isButtonKey(it.member) ? "button" : null, kind: "kt" });
+    }
+    // The class without a language suffix is the source: --source, else what its text looks like.
+    if (!c.lang) {
+      const guess = source ?? guessLang(strings.map((s) => s.text).join(" "));
+      for (const s of strings) s.presetLang = guess;
+    }
+    for (const s of strings) addCatalogKey(s.key, file);
+    out.push(...strings);
+  }
+
+  // Outside the string classes: text in a `Lang.Fr ->` branch, and text given to a composable.
+  const stack = [];
+  let pending = null;
+  for (const t of tokens) {
+    if (t.t === "lang") { pending = t.lang; continue; }
+    if (t.t === "open") { stack.push(pending ?? stack.at(-1) ?? null); pending = null; continue; }
+    if (t.t === "close") { stack.pop(); continue; }
+    if (inClass(t.start)) { pending = null; continue; }
+    const lang = pending ?? stack.at(-1) ?? null;
+    pending = null;
+    const raw = ktText(t.raw, t.triple);
+    const text = clean(raw);
+    if (!looksLikeText(text) || CODE_HINT.test(text) || !/\p{L}{2,}/u.test(text.replace(/\{[^{}]*\}/g, ""))) continue;
+    const before = masked.slice(Math.max(0, t.start - 60), t.start);
+    const call = /\b([A-Z]\w*)\(\s*$/.exec(before);
+    // `label = "…"` of an animation names it for the inspector: nobody reads it.
+    if (/\blabel\s*=\s*$/.test(before) && /\b(?:animate\w*|AnimatedContent|AnimatedVisibility|Crossfade|\w*[Tt]ransition)\s*\((?:[^()]|\([^()]*\))*$/.test(masked.slice(Math.max(0, t.start - 600), t.start))) continue;
+    if (lang) {
+      out.push({ file, line: line(t.start), text, presetLang: lang, context: null, kind: "kt" });
+    } else if ((KT_TEXT_ARG.test(before) || (call && !KT_NOT_TEXT_CALL.has(call[1]))) && sentenceLike(text) && !/^[\w.]+$/.test(text)) {
+      out.push({ file, line: line(t.start), text, context: /Button$/.test(call?.[1] ?? "") ? "button" : null, kind: "kt-ui" });
+    }
+  }
+  return out;
+}
+
+// Android and Compose Multiplatform resources: `values/strings.xml`, `values-fr/strings.xml`.
+// `values` is the source language (--source, else its text decides).
+function androidLang(file) {
+  const dir = basename(dirname(file));
+  const m = /^values(?:-b\+([a-z]{2})|-([a-z]{2}))?(?:[-+].*)?$/.exec(dir);
+  if (!m) return undefined;
+  const lang = m[1] ?? m[2] ?? null;
+  return lang && !isLangCode(lang) ? undefined : lang;
+}
+const isAndroidStrings = (file) => extname(file).toLowerCase() === ".xml" && androidLang(file) !== undefined && /string|plural|array/i.test(basename(file));
+
+function extractAndroidXml(src, file, source) {
+  const out = [];
+  const line = lineIndex(src);
+  const lang = androidLang(file);
+  const group = join(dirname(dirname(file)), "values*", basename(file)).split("\\").join("/");
+  const decode = (s) => decodeEntities(s.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/<[^>]+>/g, ""))
+    .replace(/\\u([0-9a-fA-F]{4})/g, (m, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/\\(.)/g, (m, e) => ({ n: "\n", t: "\t" }[e] ?? e))
+    .replace(/^"([\s\S]*)"$/, "$1");
+  const push = (offset, key, raw) => {
+    if (/translatable\s*=\s*"false"/.test(src.slice(src.lastIndexOf("<", offset), offset))) return;
+    addCatalogKey(key, file);
+    const value = decode(raw);
+    const text = clean(value);
+    if (!looksLikeText(text)) return;
+    out.push({ file, line: line(offset), text, key, group, presetLang: lang, edge: /^[ \t](?![ \t*•\-\d])|[^ \t][ \t]$/.test(value), context: isButtonKey(key) ? "button" : null, kind: "xml" });
+  };
+  const masked = src.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, " "));
+  for (const m of masked.matchAll(/<string\b[^>]*\bname\s*=\s*"([^"]+)"[^>]*>([\s\S]*?)<\/string>/g)) push(m.index, m[1], m[2]);
+  for (const m of masked.matchAll(/<(plurals|string-array)\b[^>]*\bname\s*=\s*"([^"]+)"[^>]*>([\s\S]*?)<\/\1>/g)) {
+    let i = 0;
+    for (const item of m[3].matchAll(/<item\b([^>]*)>([\s\S]*?)<\/item>/g)) {
+      const q = /quantity\s*=\s*"(\w+)"/.exec(item[1]);
+      push(m.index + m[0].indexOf(item[0]), `${m[2]}.${q ? q[1] : i}`, item[2]);
+      i++;
+    }
+  }
+  if (lang === null) {
+    const guess = source ?? guessLang(out.map((s) => s.text).join(" "));
+    for (const s of out) s.presetLang = guess;
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------- copy: language
 
 const FR_WORDS = new Set(("le la les de des une un du au aux et est pour avec sur dans par vous votre vos tu ton ta tes pas plus ce cette ces qui que ne en il elle nous sont être avoir aucun aucune ici nom " +
@@ -627,7 +884,8 @@ function assignLanguages(strings, forced) {
   };
   for (const s of strings) {
     const guess = guessLang(s.text);
-    s.lang = localeLang(s.file) ?? (forced !== "auto" ? forced : weakGuess(s.text) ? null : guess);
+    s.lang = s.presetLang ?? localeLang(s.file) ?? (forced !== "auto" ? forced : weakGuess(s.text) ? null : guess);
+    delete s.presetLang;
     s.guess = guess;
     if (!perFile.has(s.file)) perFile.set(s.file, {});
     if (s.lang) { bump(perFile.get(s.file), s.lang); bump(total, s.lang); }
@@ -1150,7 +1408,8 @@ function placeholders(text) {
   };
   walk(text);
   for (const m of text.matchAll(/\$([A-Za-z_]\w*)\$|%(?:\d+\$)?[sd@]/g)) out.push(m[1] ? `$${m[1]}$` : m[0]);
-  return out.sort().join(" ");
+  // `{…}` is code written into the string (Kotlin `${…}`, a JS template): not a placeholder.
+  return [...new Set(out)].filter((p) => p !== "{…}").sort().join(" ");
 }
 
 
@@ -1159,13 +1418,20 @@ function placeholders(text) {
 function catalogChecks(strings, source) {
   const out = [];
   const groups = new Map();
+  // A catalog is a file, or a string class in a Kotlin file (several languages share the file).
+  const info = new Map();
   for (const s of strings) {
     if (!s.group || s.key == null) continue;
     if (!groups.has(s.group)) groups.set(s.group, new Map());
     const byFile = groups.get(s.group);
-    if (!byFile.has(s.file)) byFile.set(s.file, new Map());
-    const keys = byFile.get(s.file);
-    keys.set(s.key, keys.has(s.key) ? null : s);
+    const id = s.catalogId ?? s.file;
+    if (!info.has(id)) info.set(id, { file: s.file, line: s.line, lang: s.lang, label: s.catalogLabel ?? rel(s.file) });
+    if (!byFile.has(id)) byFile.set(id, new Map());
+    const keys = byFile.get(id);
+    // A Kotlin slot split into several strings: its placeholders are those of all of them.
+    const prev = keys.get(s.key);
+    if (keys.has(s.key)) keys.set(s.key, prev && prev.kind === "kt" && s.kind === "kt" ? { ...prev, text: `${prev.text} ${s.text}` } : null);
+    else keys.set(s.key, s);
   }
   for (const byFile of groups.values()) {
     if (byFile.size < 2) continue;
@@ -1174,7 +1440,7 @@ function catalogChecks(strings, source) {
     // The source language decides what the placeholders should be: --source, else the file whose
     // keys are its own text (sentences used as keys), else the majority of the languages.
     const own = (keys) => [...keys.values()].filter((x) => x && x.key === x.text).length;
-    const sourceFile = ranked.find(([file]) => source && localeLang(file) === source)
+    const sourceFile = ranked.find(([id]) => source && info.get(id).lang === source)
       ?? [...ranked].sort((a, b) => own(b[1]) - own(a[1])).find(([, keys]) => own(keys) >= 3);
     const allKeys = new Set(ranked.flatMap(([, keys]) => [...keys.keys()]));
     for (const key of allKeys) {
@@ -1189,14 +1455,18 @@ function catalogChecks(strings, source) {
       const expected = fromSource ? placeholders(fromSource.text) : freq.get(ref) === best ? ref : [...freq].find(([, n]) => n === best)[0];
       entries.forEach((s, i) => {
         if (sets[i] === expected) return;
-        out.push({ file: s.file, line: s.line, text: s.text, lang: s.lang, key, rule: "placeholder-mismatch", level: "block", hint: `placeholders ${sets[i] || "none"}, ${fromSource ? "the source language has" : "the other languages have"} ${expected || "none"}: a translated or missing placeholder shows broken text` });
+        out.push({ file: s.file, line: s.line, text: s.text, lang: s.lang, key, rule: "placeholder-mismatch", level: s.kind === "kt" ? "check" : "block", hint: `placeholders ${sets[i] || "none"}, ${fromSource ? "the source language has" : "the other languages have"} ${expected || "none"}: a translated or missing placeholder shows broken text` });
       });
     }
     for (const [file, keys] of ranked.slice(1)) {
-      const missing = [...refKeys.keys()].filter((k) => !keys.has(k));
+      // A Kotlin class inherits what it does not override: only text in the reference's own language
+      // (not a Hebrew name, not a number) falls back wrongly.
+      const refLang = info.get(refFile).lang;
+      const missing = [...refKeys.keys()].filter((k) => !keys.has(k) && (refKeys.get(k)?.kind !== "kt" || guessLang(refKeys.get(k).text) === refLang));
       if (!missing.length) continue;
       const sample = missing.slice(0, 3).join(", ") + (missing.length > 3 ? ", …" : "");
-      out.push({ file, line: 1, text: basename(file), lang: localeLang(file), rule: "locale-missing", level: "check", hint: `${missing.length} of ${refKeys.size} keys missing compared with ${rel(refFile)} (${sample}): those strings fall back to another language or show the key` });
+      const at = info.get(file);
+      out.push({ file: at.file, line: at.catalogLine ?? (at.label === rel(at.file) ? 1 : at.line), text: at.label === rel(at.file) ? basename(at.file) : at.label, lang: at.lang, rule: "locale-missing", level: "check", hint: `${missing.length} of ${refKeys.size} keys missing compared with ${info.get(refFile).label} (${sample}): those strings fall back to another language or show the key` });
     }
   }
   return out;
@@ -1208,9 +1478,12 @@ function codeLiterals(files) {
   const prefixes = [];
   let scanned = 0;
   for (const { path } of files) {
-    if (!CODE_EXT.has(extname(path).toLowerCase()) || isLocaleFile(path)) continue;
+    const kotlin = extname(path).toLowerCase() === ".kt";
+    if ((!CODE_EXT.has(extname(path).toLowerCase()) && !kotlin) || isLocaleFile(path)) continue;
     scanned++;
     const src = readFileSync(path, "utf8");
+    // A Kotlin string class entry is used through its member: `t.reset`, `strings.removeTitle(…)`.
+    if (kotlin) for (const m of src.matchAll(/\.([A-Za-z_]\w*)/g)) names.add(`kt:${m[1]}`);
     for (const m of src.matchAll(/(["'`])((?:\\.|(?!\1)[^\\\n]){1,300})\1/g)) {
       names.add(m[2]);
       names.add(m[2].slice(m[2].lastIndexOf(":") + 1));
@@ -1360,10 +1633,13 @@ if (opts.mode === "ui") {
   strings = [];
   const pinned = [];
   const keyCalls = [];
+  const kotlinPairs = new Map();
   for (const { path } of files) {
     const src = readFileSync(path, "utf8");
     const ext = extname(path).toLowerCase();
-    if (ext === ".json") strings.push(...extractJson(src, path));
+    if (ext === ".kt") strings.push(...extractKotlin(src, path, opts.source, kotlinPairs));
+    else if (ext === ".xml") strings.push(...extractAndroidXml(src, path, opts.source));
+    else if (ext === ".json") strings.push(...extractJson(src, path));
     else if (TEXT_EXT.has(ext)) strings.push(...extractText(src, path));
     else if (isLocaleFile(path)) strings.push(...extractLocaleCode(src, path));
     else {
@@ -1407,7 +1683,7 @@ if (opts.mode === "ui") {
       // A string that is itself a catalog key ("Image suivante" passed to t() later) is translated.
       const catalogKeys = new Set(strings.filter((s) => s.group && s.key != null).map((s) => s.key));
       for (const s of strings) {
-        if (s.group || !["jsx", "attr", "prop", "call"].includes(s.kind) || catalogKeys.has(s.text)) continue;
+        if (s.group || !["jsx", "attr", "prop", "call", "kt-ui"].includes(s.kind) || catalogKeys.has(s.text)) continue;
         if (s.file.split(/[\\/]/).slice(0, -1).some((p) => LOCALE_DIR.test(p))) continue;
         const words = s.text.replace(/\{[^{}]*\}/g, " ").split(/\s+/).filter((w) => /\p{L}{2,}/u.test(w));
         if (words.length < 2) continue;
@@ -1432,7 +1708,8 @@ if (opts.mode === "ui") {
     if (code) {
       const keyed = strings.filter((s) => s.group && s.key != null);
       const id = (file, key) => JSON.stringify([file, key]);
-      const unused = new Set(keyed.filter((s) => !keyUsed(s.key, code)).map((s) => id(s.file, s.key)));
+      const used = (s) => (s.member ? code.names.has(`kt:${s.member}`) : keyUsed(s.key, code));
+      const unused = new Set(keyed.filter((s) => !used(s)).map((s) => id(s.file, s.key)));
       if (unused.size > keyed.length * 0.6) {
         // Most keys unnamed means the scan saw part of the app (one screen), not dead strings.
         notes.push(`${unused.size} of ${keyed.length} catalog entries are not named in the scanned code: the scan covers part of the app, so no key is marked unused. Scan the whole app to find dead strings`);

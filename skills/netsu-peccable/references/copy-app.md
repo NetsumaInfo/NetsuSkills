@@ -182,6 +182,14 @@ node <skill dir>/scripts/scan.mjs copy <touched files> --address vous
 Locale files carry their language in their path. For strings inline in components, add
 `--lang <code>`, one run per UI language. `--address` applies to French only.
 
+Kotlin and Compose: pass the source folders (`composeApp/src`, plus any shared module that holds
+notification text) and `--source <code>`. A string class without a language suffix
+(`open class SettingsStrings`) is the source; `object SettingsStringsEn : SettingsStrings()` is
+English, keyed by member (`SettingsStrings.reset`), by `when` branch (`riteName.Sefard`) or by
+map key. A class that does not override a member shows the source text: `locale-missing` names
+those. `Lang.Fr ->` branches and `values-fr/strings.xml` are read too. Write `\u00A0` in the
+Kotlin string for the French non-breaking spaces.
+
 1. Zero `block` findings. Read each `check` finding in context: the scan is a regex heuristic,
    it misses strings built at run time and can flag code. Never auto-fix from its output.
 2. Read every changed string aloud, in the order the user meets them. A string you would not say

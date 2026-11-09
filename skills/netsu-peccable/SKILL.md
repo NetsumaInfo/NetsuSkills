@@ -60,8 +60,10 @@ Paths under `scripts/` and `assets/` are relative to this skill's directory; cal
 its full path from the project root: `node <skill dir>/scripts/scan.mjs`. Commands are POSIX
 shell (Git Bash on Windows). Scratch output goes to the session's scratch folder.
 
-- `scripts/scan.mjs` needs Node 18 or later; check `node --version` first. It reads web files and,
-  for its Compose rules only, `.kt` and `.kts`. Screenshots are optional.
+- `scripts/scan.mjs` needs Node 18 or later; check `node --version` first. It reads web files,
+  `.kt` and `.kts` for its Compose rules, and for `copy`: Kotlin string classes (`open class
+  SettingsStrings` and its `object SettingsStringsEn`), `Lang.Fr ->` branches, text given to
+  composables, and Android `values-xx/strings.xml`. Screenshots are optional.
 - `npx react-doctor@latest design --verbose`, `npx playwright` and `npx expo install` download
   packages or browsers: ask before the first run. Gesture and phone work needs a real device.
 
