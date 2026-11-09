@@ -187,7 +187,19 @@ notification text) and `--source <code>`. A string class without a language suff
 (`open class SettingsStrings`) is the source; `object SettingsStringsEn : SettingsStrings()` is
 English, keyed by member (`SettingsStrings.reset`), by `when` branch (`riteName.Sefard`) or by
 map key. A class that does not override a member shows the source text: `locale-missing` names
-those. `Lang.Fr ->` branches and `values-fr/strings.xml` are read too. Write `\u00A0` in the
+those. `Lang.Fr ->` branches and `values-fr/strings.xml` are read too.
+
+Data written as calls is read when the helper names its parameters for languages:
+`fun show(key: String, fr: String, en: String)`, `fun tr(lang: Lang, fr: String, en: String, he:
+String)`, `class Name(val fr: String, val he: String)`, `fun e(prefix, frName, frGist, enName,
+enGist, he)`. Each call is one entry and its languages are compared. A map named for a language
+(`val frenchSections = mapOf("Amidah" to "Amida")`) gives that language's text. So, to keep text
+easy to translate later, write it this way: one helper, one parameter per language.
+
+A file whose text is content, not interface (liturgy, a book's titles, proper names, a verse that
+says « Louez Hachem »), carries the comment `// scan: content`: typography, placeholders and
+missing translations are still checked, the product lexicon, title case and the address form are
+not. Write `\u00A0` in the
 Kotlin string for the French non-breaking spaces.
 
 1. Zero `block` findings. Read each `check` finding in context: the scan is a regex heuristic,

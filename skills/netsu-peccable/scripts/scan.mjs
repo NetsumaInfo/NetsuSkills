@@ -660,10 +660,94 @@ const KT_BRANCH = /(?:^|[\s({,;])((?:"[^"\n]*"|[A-Za-z_][\w.]*)(?:\s*,\s*(?:"[^"
 const KT_TEXT_ARG = /\b(?:text|title|subtitle|label|contentDescription|description|placeholder|hint|message|caption|value|action|actionLabel|onClickLabel|header|heading|note|summary|body)\s*=\s*$/;
 const KT_NOT_TEXT_CALL = new Set(["Regex", "Exception", "IllegalStateException", "IllegalArgumentException", "Error", "Throwable", "RuntimeException", "File", "Uri", "Color", "Locale", "Intent", "ComponentName", "Log", "Pair", "Triple", "TODO", "Font", "FontFamily"]);
 
+// A parameter named for a language holds text in that language: `fr`, `en`, `he`, `frName`,
+// `enGist`. Not `lang`, `french` or `frame`: two letters, then the end or a capital.
+const KT_LANG_PARAM = /^([a-z]{2})(?=[A-Z_]|$)/;
+
+// Data written as calls to a helper whose parameters are named for languages:
+// `fun show(key: String, fr: String, en: String)`, `fun tr(lang: Lang, fr: String, en: String,
+// he: String)`, `fun e(prefix, frName, frGist, enName, enGist, he)`. Each call is one entry,
+// keyed by the helper, its call site and the parameter without its language (`e:12.Name`), so the
+// languages of one call compare with each other. Maps named for a language (`val frenchSections =
+// mapOf("Amidah" to "Amida")`) give that language's text, keyed by the left side.
+const LANG_WORDS = { french: "fr", english: "en", hebrew: "he", spanish: "es", german: "de", arabic: "ar", russian: "ru", italian: "it" };
+function extractKotlinCalls(masked, file, line, tokens) {
+  const out = [];
+  const helpers = new Map();
+  for (const m of masked.matchAll(/\b(?:fun|class)\s+(?:<[^>\n]*>\s*)?([A-Za-z_]\w*)\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g)) {
+    const params = m[2].split(",").map((p) => p.trim().split(/\s*:\s*/)[0].replace(/^(?:(?:private|internal|public|override|vararg|val|var)\s+)+/, "")).filter(Boolean);
+    const langs = params.map((p) => {
+      const l = KT_LANG_PARAM.exec(p)?.[1];
+      return l && isLangCode(l) && p !== "lang" ? { lang: l, suffix: p.slice(2).replace(/^_/, "") } : null;
+    });
+    if (new Set(langs.filter(Boolean).map((x) => x.lang)).size >= 2) helpers.set(m[1], { params, langs, at: m.index });
+  }
+  const strAt = new Map(tokens.filter((t) => t.t === "str").map((t) => [t.start, t]));
+  // The arguments of a call: top-level commas, strings and nested calls skipped as a whole.
+  const args = (from) => {
+    const list = [];
+    let depth = 0, start = from + 1;
+    for (let i = from; i < masked.length; i++) {
+      const c = masked[i];
+      if (c === '"') { i = (strAt.get(i)?.end ?? i + 1) - 1; continue; }
+      if (c === "(" || c === "[" || c === "{") depth++;
+      else if (c === ")" || c === "]" || c === "}") {
+        if (--depth === 0) { list.push([start, i]); return list; }
+      } else if (c === "," && depth === 1) { list.push([start, i]); start = i + 1; }
+    }
+    return list;
+  };
+  for (const [name, h] of helpers) {
+    for (const m of masked.matchAll(new RegExp(`(?<![\\w.])${name}\\s*\\(`, "g"))) {
+      if (m.index === masked.indexOf(name, h.at)) continue;
+      const callLine = line(m.index);
+      args(m.index + m[0].length - 1).forEach(([a, b], i) => {
+        let slot = i;
+        const piece = masked.slice(a, b);
+        const named = /^\s*([A-Za-z_]\w*)\s*=\s*/.exec(piece);
+        if (named) slot = h.params.indexOf(named[1]);
+        const lang = h.langs[slot];
+        if (!lang) return;
+        const lit = tokens.find((t) => t.t === "str" && t.start >= a && t.end <= b);
+        if (!lit || masked.slice(a, b).trim() !== masked.slice(lit.start, lit.end).trim() && !named) return;
+        lit.used = true;
+        const value = ktText(lit.raw, lit.triple);
+        const text = clean(value);
+        if (!looksLikeText(text)) return;
+        const key = `${name}:${callLine}${lang.suffix ? `.${lang.suffix}` : ""}`;
+        out.push({ file, line: line(lit.start), text, key, group: `${file}::${name}`, catalogId: `${file}::${name}:${lang.lang}`, catalogLabel: `${name}() ${lang.lang}`, presetLang: lang.lang, part: lang.suffix, member: name, written: true, edge: /^[ \t](?![ \t*•\-\d])|[^ \t][ \t]$/.test(value), context: null, kind: "kt" });
+      });
+    }
+  }
+  for (const m of masked.matchAll(/\bval\s+(([a-z]+)\w*)\s*(?::[^=\n]*)?=\s*(?:mutable)?mapOf\s*\(/g)) {
+    const lang = LANG_WORDS[m[2]];
+    if (!lang) continue;
+    for (const [a, b] of args(m.index + m[0].length - 1)) {
+      const pair = /^\s*"((?:\\.|[^"\\])*)"\s+to\s+"/.exec(masked.slice(a, b));
+      if (!pair) continue;
+      const lit = tokens.filter((t) => t.t === "str" && t.start >= a && t.end <= b).at(-1);
+      if (!lit) continue;
+      lit.used = true;
+      for (const t of tokens) if (t.t === "str" && t.start >= a && t.end <= b) t.used = true;
+      const value = ktText(lit.raw, lit.triple);
+      const text = clean(value);
+      if (!looksLikeText(text)) continue;
+      out.push({ file, line: line(lit.start), text, key: `${m[1]}.${pair[1]}`, member: m[1], written: true, presetLang: lang, context: null, kind: "kt" });
+    }
+  }
+  return out;
+}
+
 // String classes (`open class SettingsStrings`, `object SettingsStringsEn : SettingsStrings()`):
 // each one is a catalog in its own language, keyed `SettingsStrings.reset`. A `when` branch or a
 // map key names the entry inside a member (`riteName.Sefard`); otherwise the order does (`#2`).
 function extractKotlin(src, file, source, kotlinPairs) {
+  const all = extractKotlinStrings(src, file, source, kotlinPairs);
+  if (/\bscan:\s*content\b/.test(src)) for (const s of all) s.content = true;
+  return all;
+}
+
+function extractKotlinStrings(src, file, source, kotlinPairs) {
   const out = [];
   const masked = maskComments(src);
   const line = lineIndex(src);
@@ -746,6 +830,8 @@ function extractKotlin(src, file, source, kotlinPairs) {
     out.push(...strings);
   }
 
+  out.push(...extractKotlinCalls(masked, file, line, tokens));
+
   // Outside the string classes: text in a `Lang.Fr ->` branch, and text given to a composable.
   const stack = [];
   let pending = null;
@@ -753,7 +839,7 @@ function extractKotlin(src, file, source, kotlinPairs) {
     if (t.t === "lang") { pending = t.lang; continue; }
     if (t.t === "open") { stack.push(pending ?? stack.at(-1) ?? null); pending = null; continue; }
     if (t.t === "close") { stack.pop(); continue; }
-    if (inClass(t.start)) { pending = null; continue; }
+    if (t.used || inClass(t.start)) { pending = null; continue; }
     const lang = pending ?? stack.at(-1) ?? null;
     pending = null;
     const raw = ktText(t.raw, t.triple);
@@ -765,7 +851,7 @@ function extractKotlin(src, file, source, kotlinPairs) {
     if (/\blabel\s*=\s*$/.test(before) && /\b(?:animate\w*|AnimatedContent|AnimatedVisibility|Crossfade|\w*[Tt]ransition)\s*\((?:[^()]|\([^()]*\))*$/.test(masked.slice(Math.max(0, t.start - 600), t.start))) continue;
     if (lang) {
       out.push({ file, line: line(t.start), text, presetLang: lang, context: null, kind: "kt" });
-    } else if ((KT_TEXT_ARG.test(before) || (call && !KT_NOT_TEXT_CALL.has(call[1]))) && sentenceLike(text) && !/^[\w.]+$/.test(text)) {
+    } else if ((KT_TEXT_ARG.test(before) || (call && !KT_NOT_TEXT_CALL.has(call[1]) && !/(?:Exception|Error)$/.test(call[1]))) && sentenceLike(text) && !/^[\w.]+$/.test(text)) {
       out.push({ file, line: line(t.start), text, context: /Button$/.test(call?.[1] ?? "") ? "button" : null, kind: "kt-ui" });
     }
   }
@@ -1070,7 +1156,8 @@ function checkString(s, env) {
   const prose = t.replace(/`[^`]*`|“[^”]*”(?=[\s\p{P}]|$)|<[^<>]*>|\{[^{}]*\}/gu, " ");
   const bare = t.replace(/[.!…:]+$/u, "").trim().toLowerCase();
 
-  const lexicon = s.lang ? lexiconFor(s.lang) : null;
+  // Content (liturgy, a book, proper names) marked `scan: content`: its words are the text's own.
+  const lexicon = s.lang && !s.content ? lexiconFor(s.lang) : null;
   if (lexicon) {
     // Overlapping rows ("cliquez ici" and "cliquez") report once, on the longer match.
     const hits = [];
@@ -1091,7 +1178,7 @@ function checkString(s, env) {
   if (s.context === "button" && (words.length > 5 || t.length > 32)) {
     add("long-button", "check", `${words.length} words, ${t.length} characters: a button is a verb and 1 to 4 words`);
   }
-  if (titleCaseLang(s.lang) && CASED.test(t) && !/[▸›»>→←↔|/+=#*`()]/.test(t) && !/,.*,/.test(t) && !/name|author|owner|channel|user/i.test(s.key ?? "")) {
+  if (!s.content && titleCaseLang(s.lang) && CASED.test(t) && !/[▸›»>→←↔|/+=#*`()]/.test(t) && !/,.*,/.test(t) && !/name|author|owner|channel|user/i.test(s.key ?? "")) {
     // CamelCase, acronyms and the project's own names (NetsuRush, JSON, Discord) do not count.
     if (t.split(/\s+[·•–—-]\s+/).some((part) => isTitleCase(part, s.lang, vocab))) {
       add("title-case", "check", "use sentence case unless these are proper nouns");
@@ -1123,7 +1210,8 @@ function checkString(s, env) {
     f.push(...frSpacing(t));
     if (/"[^"]+"/.test(prose)) add("fr-quotes", "check", "use « » with non-breaking spaces inside");
     if (FR_CAPS.test(t)) add("fr-caps", "block", "accent the capital: État, Écran, Échec, À propos");
-    if (address.minority && (address.minority === "tu" ? usesTu(t) : usesVous(t)) > 0) add("fr-address", "block", address.hint);
+    // A verse quoted in content speaks to whom it speaks ("Louez Hachem"): not the product's address.
+    if (!s.content && address.minority && (address.minority === "tu" ? usesTu(t) : usesVous(t)) > 0) add("fr-address", "block", address.hint);
   }
   if (s.lang === "es") {
     if (prose.includes("?") && !prose.includes("¿")) add("es-marks", "check", "Spanish opens a question with ¿");
@@ -1462,7 +1550,13 @@ function catalogChecks(strings, source) {
       // A Kotlin class inherits what it does not override: only text in the reference's own language
       // (not a Hebrew name, not a number) falls back wrongly.
       const refLang = info.get(refFile).lang;
-      const missing = [...refKeys.keys()].filter((k) => !keys.has(k) && (refKeys.get(k)?.kind !== "kt" || guessLang(refKeys.get(k).text) === refLang));
+      // A helper can give a language only some parts (a Hebrew name, no Hebrew summary).
+      const parts = new Set([...keys.values()].filter(Boolean).map((x) => x.part));
+      const missing = [...refKeys.keys()].filter((k) => {
+        const r = refKeys.get(k);
+        if (keys.has(k) || (r && r.part !== undefined && !parts.has(r.part))) return false;
+        return r?.kind !== "kt" || guessLang(r.text) === refLang;
+      });
       if (!missing.length) continue;
       const sample = missing.slice(0, 3).join(", ") + (missing.length > 3 ? ", …" : "");
       const at = info.get(file);
@@ -1708,7 +1802,8 @@ if (opts.mode === "ui") {
     if (code) {
       const keyed = strings.filter((s) => s.group && s.key != null);
       const id = (file, key) => JSON.stringify([file, key]);
-      const used = (s) => (s.member ? code.names.has(`kt:${s.member}`) : keyUsed(s.key, code));
+      // An entry written as a call or a map is read where it is written.
+      const used = (s) => (s.written || (s.member ? code.names.has(`kt:${s.member}`) : keyUsed(s.key, code)));
       const unused = new Set(keyed.filter((s) => !used(s)).map((s) => id(s.file, s.key)));
       if (unused.size > keyed.length * 0.6) {
         // Most keys unnamed means the scan saw part of the app (one screen), not dead strings.

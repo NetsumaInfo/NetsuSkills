@@ -62,8 +62,10 @@ shell (Git Bash on Windows). Scratch output goes to the session's scratch folder
 
 - `scripts/scan.mjs` needs Node 18 or later; check `node --version` first. It reads web files,
   `.kt` and `.kts` for its Compose rules, and for `copy`: Kotlin string classes (`open class
-  SettingsStrings` and its `object SettingsStringsEn`), `Lang.Fr ->` branches, text given to
-  composables, and Android `values-xx/strings.xml`. Screenshots are optional.
+  SettingsStrings` and its `object SettingsStringsEn`), `Lang.Fr ->` branches, calls to helpers
+  whose parameters are named for languages (`fr`, `enName`), text given to composables, and
+  Android `values-xx/strings.xml`; `// scan: content` marks liturgy and names. Screenshots are
+  optional.
 - `npx react-doctor@latest design --verbose`, `npx playwright` and `npx expo install` download
   packages or browsers: ask before the first run. Gesture and phone work needs a real device.
 
