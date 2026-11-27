@@ -1,6 +1,6 @@
 ---
 name: netsu-implement
-description: Use when the user asks to implement, build, add, wire up, hook up, finish, fix, change or migrate something in the code — a feature, a bug fix, an endpoint, a button, a setting, a schema change — or says "one shot this", "just make it work", or hands over a plan, an issue or a task file to execute. Also fires on the flags --fast, --full, --plan and --resume. Do NOT use for reviewing or debugging without changing code, writing a README or docs, designing, restyling or critiquing an interface, writing its text, or fixing how it looks, fits a screen or responds to touch, or for committing, pushing and opening a pull request.
+description: Use when the user asks to implement, build, add, wire up, hook up, finish, fix, change or migrate something in the code — a feature, a bug fix, an endpoint, the logic behind a button, a setting, a schema change — or says "one shot this", "just make it work", or hands over a plan, an issue or a task file to execute. Do NOT use for reviewing or debugging without changing code, writing a README or docs, designing, restyling or critiquing an interface, writing its text, or fixing how it looks, fits a screen or responds to touch, or for committing, pushing and opening a pull request.
 argument-hint: "[--fast|--full|--plan|--review|--proof|--resume <run-id>] <what to implement>"
 ---
 
@@ -13,8 +13,9 @@ Turn a request into working, verified code. One gate, two paths.
 - **Capture the baseline before editing.** Never assume a clean checkout. Record what is already
   modified, staged and untracked. Changes you did not make are not yours to absorb, revert or
   commit.
-- **Name the files you will write before writing them.** Touching one outside that set is a
-  signal to stop and re-plan, never to widen quietly.
+- **Name the files you will write before writing them.** A file outside that set is not a reason
+  to stop: add it to the set, take the reversible default, and name it in the report. Widening
+  the set silently is the thing to avoid — not widening it.
 - **Use what the repo already has, before writing anything new.** A component, client or helper
   written from memory instead of found is the commonest way a working diff is still wrong. A new
   convention needs a reason that survives being said out loud.
@@ -52,8 +53,8 @@ and escalates to full; it does not keep improvising.
 
 ## Flags
 
-Five overrides, and nothing else. A flag states intent; it never grants authority the user has
-not given.
+The overrides below, and nothing else. A flag states intent; it never grants authority the user
+has not given. A flag never fires this skill on its own — the sentence around it does.
 
 | Flag | Effect |
 |---|---|

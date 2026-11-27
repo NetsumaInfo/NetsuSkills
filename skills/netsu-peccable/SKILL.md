@@ -1,13 +1,14 @@
 ---
 name: netsu-peccable
-description: Use when the user wants to design, build, redesign, critique or polish a front-end interface (page, screen, dashboard, form, dialog, component), change its fonts, colors, spacing, dark mode or animations, make it bolder, calmer or simpler, check its accessibility, speed up its loading, scrolling or animations, fit it to phones or other devices or fix a layout or touch bug there, including React Native and Compose, add a swipe or drag, stress-test it, compare variants, extract components, add delight, review a branch or pull request, or how it was built; or write, rewrite, translate or review text people read in or about a product, in any language: buttons, labels, tooltips, errors, empty states, onboarding, notifications, emails, landing copy, store listings, release notes. Also sets up the project's DESIGN.md. Catches AI-sounding copy and the generic AI look. Do NOT use for a README, a blog post, article or newsletter, backend-only work, or feature logic that changes nothing a user sees or reads.
+description: Use when the user wants to design, build, redesign, critique or polish a front-end interface (page, screen, dashboard, form, dialog, component), change its fonts, colors, spacing, dark mode or animations, make it bolder, calmer or simpler, check its accessibility, speed up its loading or scrolling, fit it to phones or fix a layout or touch bug there, including React Native and Compose, add a swipe or drag, stress-test it, compare variants, extract components, add delight, review a branch or pull request, or explain how it was built; or write, rewrite, translate or review product text in any language: buttons, labels, tooltips, errors, onboarding, emails, landing copy, store listings. Sets up DESIGN.md; catches AI-sounding copy and the generic AI look. Do NOT use for a README, a blog post, article or newsletter, backend-only work, feature logic that changes nothing a user sees or reads, NetsuRush Mobile (netsu-rush-mobile-ui), or an icon animation in NetsuIcon (netsu-icon-motion).
 argument-hint: "<screen, component, branch or text to work on>"
 ---
 
 # NetsuPeccable
 
 This is an index. Load the one file the request asks for and follow its frame: what it changes,
-what it never touches, when it stops, what it returns. No file loads unless its case is asked.
+what it never touches, when it stops, what it returns. No file loads unless its case is asked —
+except `references/setup.md`, which runs first whenever no design file exists.
 
 ## Pick the case
 
@@ -43,29 +44,26 @@ what it never touches, when it stops, what it returns. No file loads unless its 
 | Explain how an interface or an effect was built | `references/explain-ui.md` |
 
 A request that mixes cases starts with the one that decides the others: a new screen at
-`new-ui.md`; text and screens together at `review-ui.md`, which holds the single report. A
-platform file (`mobile.md`, `compose.md`) loads alongside the case, never instead of it.
-
-Resources, loaded by the files above, never on their own:
+`new-ui.md`; text and screens together at `review-ui.md`, which holds the single report. A platform
+file (`mobile.md`, `compose.md`) loads alongside the case, never instead of it. If no case fits,
+say so and ask; do not improvise from this page. Resources below are loaded by the case files,
+never on their own:
 
 - `references/words-<lang>.md` (`fr`, `en`, `es`, `de`, `ja`, `zh`), `references/words-any.md` otherwise: lexicon and typography. Load the file of each language you write.
 - `references/states.md`: what each state shows and says. `references/ai-look.md`: the dated list of generic AI visual choices.
 - `references/motion-recipes.md` (per-component recipes), `references/motion-words.md` (a vague motion request): loaded by `motion.md`.
 
-If no case fits, say so and ask. Do not improvise from this page.
-
 ## Requirements
 
 Paths under `scripts/` and `assets/` are relative to this skill's directory; call the scanner by
-its full path from the project root: `node <skill dir>/scripts/scan.mjs`. Commands are POSIX
-shell (Git Bash on Windows). Scratch output goes to the session's scratch folder.
+its full path from the project root: `node <skill dir>/scripts/scan.mjs`. Commands are POSIX shell
+(Git Bash on Windows); scratch output goes to the session's scratch folder.
 
-- `scripts/scan.mjs` needs Node 18 or later; check `node --version` first. It reads web files,
-  `.kt` and `.kts` for its Compose rules, and for `copy`: Kotlin string classes (`open class
-  SettingsStrings` and its `object SettingsStringsEn`), `Lang.Fr ->` branches, calls to helpers
-  whose parameters are named for languages (`fr`, `enName`), text given to composables, and
-  Android `values-xx/strings.xml`; `// scan: content` marks liturgy and names. Screenshots are
-  optional.
+- `scripts/scan.mjs` needs Node 18 or later; check `node --version` first. It reads web files, and
+  `.kt`/`.kts` for its Compose rules. In `copy` mode it also reads Kotlin string classes (`open
+  class SettingsStrings` and its `object SettingsStringsEn`), `Lang.Fr ->` branches, helpers whose
+  parameters are named for languages (`fr`, `enName`), text given to composables, and Android
+  `values-xx/strings.xml`; `// scan: content` marks liturgy and names. Screenshots are optional.
 - `npx react-doctor@latest design --verbose`, `npx playwright` and `npx expo install` download
   packages or browsers: ask before the first run. Gesture and phone work needs a real device.
 
@@ -78,9 +76,8 @@ Questions come at the start, never mid-build; when nobody can answer, they go at
 report with a recommended answer, and nothing waits.
 
 **Words people say out loud, in every language.** The words of `DESIGN.md`, one per concept,
-everywhere. A sentence that would sound odd said to a colleague gets rewritten.
-
-**No default look.** Every visual choice comes from `DESIGN.md` or from options the user picked.
+everywhere. A sentence that would sound odd said to a colleague gets rewritten. **No default
+look** either: every visual choice comes from `DESIGN.md` or from options the user picked.
 
 **Never invent.** No user counts, ratings, testimonials, logos, prices or features the project
 does not state.
@@ -89,13 +86,12 @@ does not state.
 and stop where the loaded file says.
 
 **Show it, once.** A screenshot of the real render or the scan, before and after; one proof per
-change. What the skill could not observe — the app not run, the scan not covering it — is
-reported as `Not verified` with what is missing, never inferred from the code and written as seen.
+change. What the skill could not observe is reported as `Not verified` with what is missing —
+never inferred from the code and written as seen.
 
 ## The report
 
 This page owns the output; the loaded file owns the checks. Same scale, same cap, same table.
-
 `P0` the task cannot be completed, data is lost, or the screen shows raw internals or a false
 claim · `P1` the task is hard or unclear · `P2` annoying, with a workaround · `P3` polish.
 

@@ -60,8 +60,8 @@ levels ran, on one scale:
 
 | Verdict | Means | Typical rung |
 |---|---|---|
-| **critical** | Will actively mislead whoever reads it. Mechanically proven wrong | 1–2 |
-| **moderate** | Probably wrong; a human has to read the code to settle it | 3–5 |
+| **critical** | Will actively mislead whoever reads it. Proven wrong by `scripts/mechanical.py`, or by a quoted line of a file | 1 |
+| **moderate** | Probably wrong; a human has to read the code to settle it | 2–5 |
 | **minor** | True, but stale in shape: duplicated, superseded, too vague to act on | 3–6 |
 | **obsolete** | The subject no longer exists at all. Proposed for **deletion**, never edited | 1 |
 

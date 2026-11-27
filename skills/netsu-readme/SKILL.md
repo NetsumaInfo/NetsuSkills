@@ -1,6 +1,6 @@
 ---
 name: netsu-readme
-description: Use when the user asks to write, create, rewrite, redo, generate, set up, fix, clean up, shorten or improve a README or readme file, or a GitHub profile README or profile page (github.com/user/user) — or to strip AI slop out of one, or to add badges, a demo GIF or a section to one. Do NOT use for CONTRIBUTING, CHANGELOG, API reference, a docs site, translating or localizing a README, or removing slop from code.
+description: Use when the user asks to write, create, rewrite, redo, generate, set up, fix, clean up, shorten or improve a README or readme file, or a GitHub profile README or profile page (github.com/user/user) — or to strip AI slop out of one, or to add badges, a demo GIF or a section to one. Do NOT use for CONTRIBUTING, CHANGELOG, API reference, a docs site, translating or localizing a README, removing slop from code, or checking a README against the code it describes (netsu-memory-audit).
 ---
 
 # NetsuReadme
@@ -17,6 +17,7 @@ This is an index. Pick the case, load that file, follow it. No procedure lives o
 | Write the GitHub profile README (`github.com/<user>/<user>`) | `references/profile.md` |
 | Strip AI slop out of a README or docs that already exist | `references/voice.md` |
 | Add badges, a demo, or other visuals to an existing README | `references/visuals.md` |
+| Shorten, restructure, or add a section to an existing README | `references/project.md` |
 
 Writing a full README starts at `project.md`; it says when to pull the others in.
 
@@ -24,13 +25,14 @@ One child is not an entry point. `references/sections.md` holds the section inve
 ordering rules; `project.md` and `profile.md` load it when they reach the planning step. Never
 load it on its own — on its own it decides nothing.
 
-If none of the four cases fits, say so and ask. Do not improvise from this page.
+If none of the cases in the table fits, say so and ask. Do not improvise from this page.
 
 ## Rules that hold in every case
 
 **Every sentence traces to a file in the repository.** Code, config, lockfile, CI workflow,
-LICENSE. A README is derived from the repository. The conversation is not an input — see
-`references/voice.md` for the full rule and what it rules out.
+LICENSE. A README is derived from the repository. The conversation sets scope, audience and
+tone; it never supplies a fact about the code — see `references/voice.md` for the full rule and
+what it rules out.
 
 **Never invent.** No flag, command, package name, benchmark number, or adoption claim that you
 have not read in the repository. An install line that does not work costs every reader time and

@@ -69,9 +69,9 @@ font family by family, space it, cover its languages, kern it and export it.
 6. **Spacing.** Set H, O, n, o from `construction.md` §Spacing, then every glyph by its sides:
    a straight side takes the H (or n) value, a round side the O (or o) value, an open or
    diagonal side a quarter of the straight one. One `edit_font` of `set_spacing` per family,
-   then one `proof` per family (or several families in one) with a line per glyph x: `"nnxnn ooxoo
-nnynn ooyoo"`. Each x
-   sits in the rhythm, not in a hole. Figures: `center` them all in one advance.
+   then one `proof` per family (or several families in one) with a line per glyph x:
+   `"nnxnn ooxoo nnynn ooyoo"`. Each x sits in the rhythm, not in a hole. Figures: `center` them
+   all in one advance.
 
 7. **Languages.** `languages {languages:[...the brief's codes]}`. Load
    `references/languages.md` before drawing marks or letters of another script. Draw the marks,
@@ -108,9 +108,9 @@ nnynn ooyoo"`. Each x
    below 0; `by` is half the stem the style adds), then looked at family by family: small
    counters close, sharp joins blot, the dots of a dieresis merge, a flat end leaves a notch (e, t,
    g), and round letters grow past their overshoot. Those are redrawn with the style's own sheet.
-   A blind run (Lumen, 2026-11-22) made its Bold in 10 calls this way, a, e, g, t, j and the
-   marks redrawn. The result is a start, not the style. Space it again; kern it again. Proof the styles in
-   the same words, one call each, at the same sizes.
+   Measured this way in 10 calls (2026-11-22), with a, e, g, t, j and the marks redrawn. The
+   result is a start, not the style. Space it again; kern it again. Proof the styles in the same
+   words, one call each, at the same sizes.
 
 ## Budget
 
@@ -153,16 +153,6 @@ Brief: Brume, above. Control glyphs from the recipes, measured after one `edit_f
 (2026-10-25): H 700 [80 80], O 760 [60 60], n 580 [75 75], o 580 [50 50], v 560 [34 34], no
 check. `proof` "HOnocevasbA Hanson Abbe seven": even colour, the s a touch light — its
 strokes were set to 84/72, under the sheet's 86/76; raised in the s family step.
-
-Two more blind runs (Sonnet, the skill alone, 2026-11-06). Sahra, a Kufi Arabic with Latin: ar
-150/150, en 81/81, 249 glyphs, 44 calls; the Arabic readable, its ع forms the weakest. Deva Sans, a
-rounded sans for Hindi: hi 111/111, 183 glyphs, 56 calls; the Devanagari letters guessed from
-memory and hard to read, which brought in the model step of step 7.
-
-Two blind runs (Sonnet, the skill alone, 2026-10-25). Galet, a soft round sans for fr and pl:
-fr 113/113, pl 101/101, 76 kerning pairs, about 95 calls. Rivet, a condensed grotesque for en, ru
-and el: 230 glyphs, en 82/82, ru 93/93, el 91/91, 90 pairs, about 61 calls. Both even in colour
-and legible at 12 px; the weakest were & 2 @ and the Greek ζ ξ ς.
 
 ## Anti-patterns
 
