@@ -1,13 +1,12 @@
 # CLAUDE.md
 
-All instructions for this repository live in **[AGENTS.md](AGENTS.md)**. Read it before
+All instructions for this repository live in **[AGENTS.md](AGENTS.md)**, which points at
+[`docs/SKILL-RULES.md`](docs/SKILL-RULES.md) for everything a skill contains. Read both before
 writing or editing anything here.
 
-Nothing is restated in this file on purpose — two copies of a rule means one of them goes
-stale.
+One rule is repeated below, as documented in rule 19 of the contract. It is the only one.
 
-Quick reminders, expanded in `AGENTS.md`:
+- Public files, commits, issues and PRs carry **Netsuma** only. Never a real name, never a
+  personal email address. A first name alone still counts as a real name.
 
-- Public identity is **Netsuma**. Never a real name or personal email, anywhere.
-- Do not create a skill unless Netsuma explicitly asks. Scoping and documenting are always fine.
-- `docs/SKILL-RULES.md` is the merge contract for any skill.
+Nothing else is restated here. For the rest, open the two files above.

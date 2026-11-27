@@ -16,8 +16,8 @@ The full contract is [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md). The short ver
 - **One skill, one job.** If the description says "and also", it is two skills — or one umbrella with two children.
 - **The `description` is the whole trigger.** Third person, the literal words a user would
   type, and an explicit "do NOT use for …" whenever it overlaps another skill.
-- **`SKILL.md` under ~500 lines.** Depth goes in `references/`, code in `scripts/`,
-  copyable files in `assets/`.
+- **Keep `SKILL.md` small.** Depth goes in `references/`, code in `scripts/`, copyable files in
+  `assets/`. The exact limits are rule 2 of the contract — read them there, not here.
 - **Imperative voice.** No "You are an expert…", no "It's important to note…".
 - **Ship something concrete**: an exact command, a template, a checklist, or a before/after.
   Advice alone is not a skill.
@@ -29,7 +29,7 @@ The full contract is [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md). The short ver
 ## Layout
 
 ```
-skills/<kebab-case-name>/
+skills/netsu-<domain>/
 ├── SKILL.md          # required, YAML frontmatter with name + description
 ├── references/       # optional, loaded on demand
 ├── scripts/          # optional
@@ -44,26 +44,28 @@ Everything in this repo is written in **English**.
 
 ## Before you open a PR
 
-Run all three and put the results in your PR body:
+Run the critique pass of rule 18, then the tests of rule 11, in that order. Record them in
+[`docs/JOURNAL.md`](docs/JOURNAL.md), each marked `PASS` or `NOT PROVEN`, and link that entry
+from your PR body:
 
-1. **Trigger** — a natural sentence a user would type fires the skill.
-2. **Non-trigger** — a nearby but off-topic sentence does *not* fire it.
+1. **Trigger** — a natural sentence a user would type routes to the skill.
+2. **Non-trigger** — a nearby but off-topic sentence does *not*.
 3. **Execution** — followed literally, the skill produces the right result on a real case.
 
-A PR without these three is not reviewable.
+A PR without them is not reviewable. `NOT PROVEN` on any of them blocks the merge.
 
 ## Commits
 
-English, imperative, scoped:
+English, imperative, scoped to the skill's own name:
 
 ```
-add(skill): design-review
-fix(skill): commit trigger too broad
+feat(netsu-design-review): add the skill
+fix(netsu-commit): trigger too broad
 docs: sharpen anti-slop rules
-chore: bump plugin version
 ```
 
-One skill (or one coherent change) per commit. No co-author trailers.
+One skill per commit, version bump included — there is no separate bump commit. Types, scopes and
+version files: rule 16 of the contract. No co-author trailers.
 
 ## Ideas and bug reports
 

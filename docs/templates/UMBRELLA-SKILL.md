@@ -33,7 +33,7 @@ If none fits, say so and ask — do not improvise from this file.
 
 **Authoring notes — delete before shipping**
 
-- Keep this parent under 100 lines. It routes; it does not teach.
+- Keep this parent at 100 lines or fewer (rule 2). It routes; it does not teach.
 - Every child listed above must exist, and every child that exists must be listed here.
 - The `description` must cover the union of all children's triggers, or the skill never fires.
 - Each child is a full procedure held to the same bar as an atomic skill: imperative voice,
