@@ -1454,7 +1454,35 @@ a Mac, and the §5 gesture pattern needs a phone.
 services, WorkManager, NNAPI, MediaStore) was considered and refused: the UI-facing half belongs
 here, the rest is either generic Android knowledge the model already has or project documentation
 that already exists in `docs/stack.md`. One mobile project does not justify a skill; a second one
-would.## `netsu-type-design` — blind runs moved out of the skill — 2026-11-27
+would.## `netsu-taskbar-preview` — the icon in the real taskbar — 2026-10-28
+
+Asked by Netsuma after an HTML imitation of a taskbar was refused: a real window, in the real bar.
+
+**Found by building it.** A hidden launcher hides the first window a process shows. `Bitmap.FromFile` locks the PNG while the window is open. Cropping each icon alone gives each head another size, hence `-KeepFrame`.
+
+**Proof, completed 2026-11-28.** PASS: execution, two windows seen by Netsuma in the taskbar.
+PASS: trigger and non-trigger, by rule 4's method — a fresh context given only the eight installed
+descriptions, no bodies, routing nine sentences.
+
+| Sentence | Routed to | Expected |
+|---|---|---|
+| "montre-moi mon icône dans la vraie barre des tâches, est-elle lisible à côté de mes autres applis" | netsu-taskbar-preview | ✅ |
+| "comparer mes trois versions d'icône côte à côte dans la barre Windows" | netsu-taskbar-preview | ✅ |
+| "vérifie que mon icône est vraiment transparente quand Windows l'affiche" | netsu-taskbar-preview | ✅ |
+| "mon icône d'application est trop chargée, redessine-la" | netsu-app-icon | ✅ |
+| "anime l'icône de corbeille au survol" | netsu-icon-motion | ✅ |
+| "exporte les .ico et .icns finaux de mon application" | netsu-app-icon | ✅ |
+| "mon README est périmé, nettoie-le" | netsu-readme | ✅ |
+| "ma barre des tâches Windows est lente, optimise-la" | none | ✅ |
+| "est-ce que mon icône tient à 16 pixels sur iOS et Android ?" | netsu-app-icon | ✅ |
+
+Nine of nine. The exclusion clause did the work twice: "exporte les .ico finaux" went to
+netsu-app-icon because this skill names that exclusion, and "ma barre des tâches est lente" routed
+nowhere rather than here. The router's only hesitation was between netsu-readme and
+netsu-memory-audit on the README sentence, which is a known overlap between those two and not
+about this skill. Verdict: PASS. Published at 0.9.4.
+
+## `netsu-type-design` — blind runs moved out of the skill — 2026-11-27
 
 The run logs below lived in `skills/netsu-type-design/SKILL.md` until today. A `SKILL.md` is
 loaded whole when the skill fires, so a run log there is paid for on every run and changes

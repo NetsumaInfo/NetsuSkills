@@ -62,6 +62,7 @@ two copies of the same sentence means one of them goes stale.
 | [`netsu-peccable`](skills/netsu-peccable) | umbrella, 39 children | front-end work and product text |
 | [`netsu-memory-audit`](skills/netsu-memory-audit) | umbrella, 4 children, 1 script | stale lines in memory and docs |
 | [`netsu-app-icon`](skills/netsu-app-icon) | atomic, 1 reference | application icons |
+| [`netsu-taskbar-preview`](skills/netsu-taskbar-preview) | command-oriented, 1 script | an icon in the real Windows taskbar |
 | [`netsu-icon-motion`](skills/netsu-icon-motion) | atomic, 3 references | animating interface icons |
 | [`netsu-type-design`](skills/netsu-type-design) | atomic, 3 references | drawing a font |
 
@@ -70,8 +71,9 @@ What gets built next, and what it replaces: [`docs/BACKLOG.md`](docs/BACKLOG.md)
 > [!NOTE]
 > Three of these drive editors that are not in this repository. `netsu-app-icon` and
 > `netsu-icon-motion` need the `netsuicon` MCP server, `netsu-type-design` needs `netsufont`.
-> Without those servers connected, the three do nothing. The other four have no dependency
-> beyond Node 18 for the two that ship a scanner.
+> Without those servers connected, the three do nothing. `netsu-taskbar-preview` is Windows-only
+> and needs Windows PowerShell 5. The remaining four have no dependency beyond Node 18 for the
+> two that ship a scanner.
 
 ## Writing your own
 
@@ -120,7 +122,7 @@ docs/
 
 ## Maturity
 
-Version 0.9.3, first commit September 2026, no CI. The contract and the skills both still change
+Version 0.9.4, first commit September 2026, no CI. The contract and the skills both still change
 shape between versions; pin a copy if that matters to you. Naming here is prefixed `netsu-` as a
 local convention — nothing in the rules asks that of a skill you write.
 
