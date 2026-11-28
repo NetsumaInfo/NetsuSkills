@@ -122,7 +122,7 @@ docs/
 
 ## Maturity
 
-Version 0.9.6, first commit September 2026, no CI. The contract and the skills both still change
+Version 0.9.7, first commit September 2026, no CI. The contract and the skills both still change
 shape between versions; pin a copy if that matters to you. Naming here is prefixed `netsu-` as a
 local convention — nothing in the rules asks that of a skill you write.
 

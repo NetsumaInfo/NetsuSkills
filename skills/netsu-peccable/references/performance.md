@@ -8,7 +8,7 @@ of the interface. Server and database speed belong to the project's backend work
 
 | | |
 |---|---|
-| Changes | The one bottleneck §2 found, in the named screen: images, fonts, rendering, animation, list rendering, bundle split |
+| Changes | The one bottleneck §2 found, in the named screen: images, fonts, rendering, animation, list rendering, bundle split, how the screen requests its data, third-party scripts |
 | Never changes | The look, the content, the behaviour. No rewrite, no new framework, no caching layer unasked |
 | Asks first | Nothing. A fix that needs a new dependency is proposed, not installed |
 | Stops when | The measured number has moved past its target, or the cause is reported with its size |
@@ -36,14 +36,18 @@ Record the conditions: device, throttling, build (production, never dev).
 1. **Images.** Width and height on every image (no shift), sizes that match the display,
    `srcset` for large ones, `loading="lazy"` below the fold only and never on the first visible
    image, a modern format where the pipeline supports it.
-2. **Fonts.** Only the weights in use, `woff2`, `font-display: swap`, preloaded when a font
-   draws the first visible text (`references/typography.md` §4).
+2. **Fonts.** Served from the site, not a font CDN (one connection less, no visitor IP sent
+   out); a variable `woff2` when several weights are in use, else only the weights in use;
+   `font-display: swap`, preloaded when a font draws the first visible text
+   (`references/typography.md` §4).
 3. **Layout shift.** Space reserved for content that arrives later: skeletons with the final
    size (`references/states.md`, Loading), no banner pushing the page down.
 4. **Long lists.** More than a few hundred rows render only what is visible (virtualisation).
    Pagination changes what the user sees: it is a proposal in the report.
 5. **Work on input.** Filtering, sorting or parsing on each keystroke is debounced or moved off
-   the main thread; a click answers first, then works.
+   the main thread; a search that calls the server waits for typing to pause. A click answers
+   first, then works: a toggle, like or reorder updates on screen before the server replies and
+   rolls back on error (optimistic update), when the data layer supports it.
 6. **Re-renders.** In React, a parent state that re-renders a whole table on each keystroke;
    React DevTools Profiler shows it. React Doctor (`references/review-ui.md` §3) flags common
    cases; it downloads a package, ask first.
@@ -67,6 +71,13 @@ Record the conditions: device, throttling, build (production, never dev).
       neither a wrong property nor a busy thread.
 8. **Bundle.** A heavy library loaded for one screen is split to that screen; an unused one is
    reported, not removed silently.
+9. **Data requests.** In the Network panel: requests that wait for each other without needing
+   to (fire independent ones together, or in the route loader), the same data fetched twice by
+   two components (one shared query cache), a page that renders empty then fills in when the
+   framework can render it on the server. A slow endpoint itself is a finding for the backend.
+10. **Third-party scripts.** Analytics, chat, pixels, embeds: loaded after the page
+    (`defer`, after `load`, or on first interaction), never blocking the first render; a video
+    embed shows a thumbnail until clicked.
 
 Stop at the first cause that explains the number. Report the others with their size.
 
@@ -213,6 +224,8 @@ content grows (`references/motion.md` §4, parent custom properties).
 | A rewrite to another framework | One cause, one fix, measured |
 | "It feels faster now" | Before and after, with the target |
 | A library removed because it looked heavy | Reported with its size; removed on a yes |
+| A chat widget or analytics tag in `<head>`, blocking | Loaded after the page or on first interaction |
+| Two requests chained when neither needs the other | Fired together |
 | `will-change` added first, "seems smoother" | The cause named from §2 step 7; `will-change` last |
 | "Smooth on my laptop" | A mid-range phone recording, or `Not verified` |
 | Animating a shadow with `box-shadow` | `filter: drop-shadow()` |
