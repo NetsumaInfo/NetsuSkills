@@ -3,6 +3,11 @@
 What a skill must satisfy to enter this repo. A rule broken is a skill not merged — no
 "we'll fix it later".
 
+Where a rule cites a measurement, the citation here is deliberately short. The full source — its
+date, sample size, what it actually measured, and how much to trust it — lives in
+[`RESEARCH.md`](RESEARCH.md), which also records the sources that disagree with each other and the
+ones that changed nothing. One home per rule applies to evidence too (rule 19).
+
 ---
 
 ## 0. The principle
@@ -250,8 +255,9 @@ Every skill ships at least one of:
 
 A skill that is only advice is rejected.
 
-**Date any claim about model behaviour.** A rule tuned to an earlier generation is tuned to a
-machine that no longer exists, and a threshold calibrated on an old figure fires on nothing.
+**Date any claim about model behaviour**, and put the source in [`RESEARCH.md`](RESEARCH.md). A
+rule tuned to an earlier generation is tuned to a machine that no longer exists, and a threshold
+calibrated on an old figure fires on nothing.
 Write the measurement date and the cohort next to every number you cite, so the next reader can
 tell a live threshold from a fossil. The underlying mechanism usually outlives the rate — say
 which is which, and if you cannot date a number, drop it.

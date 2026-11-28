@@ -1,16 +1,26 @@
 # NetsuSkills
 
-Agent skills for Claude Code and anything else that reads `SKILL.md`. Each one is a procedure an
-agent executes, not an article about a topic.
+Agent skills for Claude Code and anything else that reads `SKILL.md`, plus the rules they are
+written to. Each skill is a procedure an agent executes, not an article about a topic.
 
-Most skills published online are blog posts with frontmatter: long on context, short on steps, and
-they fire at the wrong moment. The ones here are rewritten from scratch or rebuilt from a generic
-version that almost worked, and nothing lands without a trigger test, a non-trigger test, and a
-run on a real case, recorded in [`docs/JOURNAL.md`](docs/JOURNAL.md).
+Two things live here, and the second one is the point:
 
-They are also small on purpose. A `SKILL.md` is loaded whole when it fires, next to whatever the
-user actually asked, so a long one dilutes its own instructions — a skill gets *less* reliable as
-it gets longer. Depth goes in `references/`, loaded only when the case calls for it.
+- **The skills.** Rewritten from scratch, or rebuilt from a generic version that almost worked.
+  Nothing lands without a trigger test, a non-trigger test and a run on a real case, recorded in
+  [`docs/JOURNAL.md`](docs/JOURNAL.md).
+- **The contract they are held to** — [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md). Twenty rules
+  on how to write a skill that keeps working: what belongs in a `description` and what does not,
+  how long a file may get before it starts drowning its own instructions, what to do when a rule
+  you add today contradicts one from three months ago. Each rule carries the measurement it comes
+  from, with a date. The sources are in [`docs/RESEARCH.md`](docs/RESEARCH.md).
+
+The contract is useful on its own. Most published advice on writing skills covers the first
+draft; almost none of it covers the fourth, which is where skills actually fail — rules piled on
+rules until two of them disagree and the agent quietly follows the wrong one.
+
+The skills are also small on purpose. A `SKILL.md` is loaded whole when it fires, next to
+whatever the user actually asked, so a long one dilutes its own instructions: a skill gets *less*
+reliable as it gets longer. Depth goes in `references/`, loaded only when the case calls for it.
 
 ## Install
 
@@ -71,16 +81,23 @@ repo and the part worth reading even if you never open a PR here. Start from
 [`docs/templates/UMBRELLA-SKILL.md`](docs/templates/UMBRELLA-SKILL.md) for a theme with children.
 Each template carries its own authoring notes.
 
-Two of those rules exist because of how skills actually fail over time, and they are the ones
-most authoring guides leave out:
+Two of those rules exist because of how skills fail over time, and they are the ones most
+authoring guides leave out:
 
 - **Never two rules in conflict in one file.** You cannot fix a contradiction by putting the
-  correction further down. Of two contradictory lines in one file, the first wins 72 to 95 % of
-  the time, and no model honoured a declared order of precedence in 95 % of responses
-  ([arXiv:2610.33201](https://arxiv.org/abs/2610.33201), October 2026). So the line to edit is
-  the earlier one. This is what a skill grown by accretion gets wrong.
+  correction further down. Of two contradictory lines in one file the first wins 72 to 95 % of
+  the time, a second line in a system message wins under half the time in every mode tested, and
+  no model honoured a declared order of precedence in 95 % of responses
+  ([arXiv:2610.33201](https://arxiv.org/abs/2610.33201), October 2026, 1.9M graded responses). So
+  the line to edit is the earlier one. This is what a skill grown by accretion gets wrong.
 - **Run a critique pass before the tests.** A conflict is invisible when you read your own file.
-  The contract gives the prompt to use and says where the result goes.
+  The contract gives the prompt to use, and says where the result goes.
+
+Why the rules cite anything at all: [`docs/RESEARCH.md`](docs/RESEARCH.md) holds every source
+behind them, with its date, its sample size and what it actually measured — including the sources
+that disagree with each other, the ones that changed nothing, and what was searched for and not
+found. A rule tuned to a model generation that no longer exists fires on nothing, so a threshold
+without a date is not worth keeping.
 
 Agents working in this repo read [`AGENTS.md`](AGENTS.md), which owns identity, workflow and git,
 and points at the contract for everything about skill content.
@@ -95,6 +112,7 @@ CONTRIBUTING.md       the bar a PR has to clear
 skills/               one folder per skill, SKILL.md required
 docs/
   SKILL-RULES.md      the authoring rules, in full
+  RESEARCH.md         every source behind them, dated
   BACKLOG.md          what gets built next
   JOURNAL.md          per-skill test log and evidence
   templates/          starting points, atomic and umbrella
