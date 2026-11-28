@@ -29,7 +29,7 @@ The full contract is [`docs/SKILL-RULES.md`](docs/SKILL-RULES.md). The short ver
 ## Layout
 
 ```
-skills/netsu-<domain>/
+skills/<skill-name>/
 ├── SKILL.md          # required, YAML frontmatter with name + description
 ├── references/       # optional, loaded on demand
 ├── scripts/          # optional
@@ -59,8 +59,8 @@ A PR without them is not reviewable. `NOT PROVEN` on any of them blocks the merg
 English, imperative, scoped to the skill's own name:
 
 ```
-feat(netsu-design-review): add the skill
-fix(netsu-commit): trigger too broad
+feat(design-review): add the skill
+fix(commit): trigger too broad
 docs: sharpen anti-slop rules
 ```
 

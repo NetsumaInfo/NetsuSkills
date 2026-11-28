@@ -27,7 +27,7 @@ Three shapes are allowed. Pick one deliberately — the choice drives the layout
 One procedure, one file. Most skills are this.
 
 ```
-skills/netsu-commit/
+skills/commit/
 └── SKILL.md
 ```
 
@@ -37,7 +37,7 @@ One entry point covering a theme, with children loaded on demand. Use it when a 
 several distinct cases and you do not want to remember a separate name for each.
 
 ```
-skills/netsu-design/
+skills/design/
 ├── SKILL.md              # short index: which case, and when
 └── references/
     ├── critique.md       # child: review an existing interface
@@ -76,7 +76,7 @@ A skill wrapping a set of concrete commands or operations on a tool. The `SKILL.
 decision table; `scripts/` holds anything longer than 10 lines (rule 6).
 
 ```
-skills/netsu-resolve-scripting/
+skills/resolve-scripting/
 ├── SKILL.md              # which operation, which script, which guard
 ├── references/
 │   └── api-notes.md
@@ -154,28 +154,30 @@ line, but attention taken from the lines that do change behaviour.
 
 - A single goal. If the description needs two unrelated "Use when" clauses, it is two skills.
 - If the description says "and also", it is two skills — or one umbrella with two children.
-- The name states the action or the domain, not the quality: `netsu-review-react-perf`, not
+- The name states the action or the domain, not the quality: `review-react-perf`, not
   `amazing-react-helper`. No quality prefix (`super-`, `ultra-`, `pro-`).
 
 ### Naming
 
-Every skill in this repo is named `netsu-<domain>`, in `kebab-case`, 64 characters max.
+The hard part, which the platform enforces: `kebab-case`, lowercase letters, digits and hyphens
+only, 64 characters max. The `name:` field and the directory name must be identical, and every
+cross-reference between skills uses that same string.
 
 ```
-netsu-readme          ✅
-NetsuReadme           ❌  no skill in the wild uses uppercase; risks validation
-netsu_readme          ❌  underscores likewise
-readme                ❌  collides with the three README generators already installed
+my-skill          ✅
+MySkill           ❌  uppercase risks validation; no skill in the wild uses it
+my_skill          ❌  underscores likewise
 ```
 
-Write it as **NetsuReadme** in the `# H1`, in prose and in the README. Lowercase everywhere a
-machine reads it: the directory name, the `name:` field, and any cross-reference between skills.
-The two must always point at the same skill.
+Beyond that, pick a name that states the action or the domain, not the quality — and give it a
+thought it usually does not get: **name collisions are real.** One reference machine carried
+three skills called `commit` and three README generators. A name already taken by something
+installed is a name you will not be able to tell apart at a glance.
 
-The prefix is a namespace, not decoration. It exists because name collisions are real — one
-reference machine carries three skills called `commit` and three README generators — and because
-a skill you wrote should be identifiable at a glance among two hundred you did not. It costs
-nothing at trigger time: the `description` decides whether a skill fires, never the name.
+A prefix of your own (`acme-`, your handle, anything) is one way to solve that, and it costs
+nothing at trigger time, since the `description` decides whether a skill fires and the name never
+does. It is a suggestion, not part of the bar. This repo happens to prefix everything `netsu-`;
+that is a local convention and no skill is held to it.
 
 ## 4. The `description` is the only thing always loaded
 
@@ -479,7 +481,8 @@ Every box is a yes/no a reader can settle from the files. No box is a judgement 
 box names the rule it comes from.
 
 - [ ] Type chosen deliberately: atomic, umbrella, or command-oriented (rule 1)
-- [ ] One goal; name is `netsu-<domain>` in `kebab-case`, within rule 3's length limit
+- [ ] One goal; name in `kebab-case`, within rule 3's length limit, not already taken by an
+      installed skill
 - [ ] Description in third person, real trigger words, and "Do NOT use for" naming every
       overlapping sibling — or `JOURNAL.md` says which siblings it was checked against (rule 4)
 - [ ] No flag or keyword in the description that cannot carry a request on its own (rule 4)
