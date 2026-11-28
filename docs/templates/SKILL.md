@@ -20,6 +20,11 @@ before acting; fail loudly if missing.
 
 ## Rules
 
+<Delete this line if the skill has no competing authorities. Otherwise state the order of
+precedence once, here, and have every later mention point back to it instead of restating it:>
+
+**Order of precedence.** <A> beats <B>, and <B> beats <C>.
+
 - <Hard constraint. "Never X." / "Always Y.">
 - <Hard constraint.>
 
@@ -37,3 +42,20 @@ before acting; fail loudly if missing.
 ## References
 
 - `references/<topic>.md` — <when to load it>
+
+---
+
+**Authoring notes — delete before shipping**
+
+The full contract is `docs/SKILL-RULES.md`; nothing here replaces reading it. These are the four
+that a template cannot scaffold for you:
+
+- **One order of precedence, stated once** (rule 17). Two rules that cannot both be followed is a
+  defect, not a nuance — and you cannot fix it by putting the correction lower down, because the
+  earlier line is the one that wins. Edit the earlier line.
+- **Adding to this file later is where conflicts get in** (rule 17). Read the whole file before
+  you change a section of it.
+- **Run the critique pass, then the three tests, then commit** (rules 18, 11, 16). In that order:
+  closing a critique issue changes the text the tests would have run on.
+- **Date every number you cite about model behaviour**, with what it was measured on (rule 8). If
+  you cannot date it, drop it.
