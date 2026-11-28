@@ -1454,4 +1454,26 @@ a Mac, and the §5 gesture pattern needs a phone.
 services, WorkManager, NNAPI, MediaStore) was considered and refused: the UI-facing half belongs
 here, the rest is either generic Android knowledge the model already has or project documentation
 that already exists in `docs/stack.md`. One mobile project does not justify a skill; a second one
-would.
+would.## `netsu-type-design` — blind runs moved out of the skill — 2026-11-27
+
+The run logs below lived in `skills/netsu-type-design/SKILL.md` until today. A `SKILL.md` is
+loaded whole when the skill fires, so a run log there is paid for on every run and changes
+nothing the agent does. Rule 11 puts results here; the rules those runs produced stay in the
+skill. Galet and Rivet already had fuller entries above, so only these were missing.
+
+### Execution: two blind runs (Sonnet, the skill alone, 2026-11-06)
+
+| Run | Result |
+|---|---|
+| Sahra (Kufi Arabic + Latin) | ar 150/150, en 81/81, 249 glyphs, 44 calls. The Arabic readable; its ع forms the weakest |
+| Deva Sans (rounded sans, Hindi) | hi 111/111, 183 glyphs, 56 calls. The Devanagari letters were guessed from memory and came out hard to read |
+
+**What they taught, fixed.** Deva Sans is why step 7 now traces a `model` font instead of drawing
+an unfamiliar script from memory.
+
+### Execution: one blind run (Lumen, 2026-11-22)
+
+A Bold made in 10 calls from the embolden path, with a, e, g, t, j and the marks redrawn by hand.
+Small counters close, sharp joins blot, dieresis dots merge, flat ends notch (e, t, g), and round
+letters grow past their overshoot — the list the skill now names at the embolden step. The result
+is a start, not the style: it still has to be spaced and kerned again.
