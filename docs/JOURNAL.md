@@ -1454,7 +1454,9 @@ a Mac, and the §5 gesture pattern needs a phone.
 services, WorkManager, NNAPI, MediaStore) was considered and refused: the UI-facing half belongs
 here, the rest is either generic Android knowledge the model already has or project documentation
 that already exists in `docs/stack.md`. One mobile project does not justify a skill; a second one
-would.## `netsu-taskbar-preview` — the icon in the real taskbar — 2026-10-28
+would.
+
+## `netsu-taskbar-preview` — the icon in the real taskbar — 2026-10-28
 
 Asked by Netsuma after an HTML imitation of a taskbar was refused: a real window, in the real bar.
 
